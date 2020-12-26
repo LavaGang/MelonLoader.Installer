@@ -192,7 +192,7 @@ namespace MelonLoader
                 Tab_PleaseWait.Text = "UPDATE   ";
                 PleaseWait_Text.Text = "Downloading Update...";
             }));
-            string downloadurl = assets[1]["browser_download_url"].AsString;
+            string downloadurl = assets[0]["browser_download_url"].AsString;
             string temp_path = TempFileCache.CreateFile();
             try { Program.webClient_update.DownloadFileAsync(new Uri(downloadurl), temp_path); while (Program.webClient.IsBusy) { } }
             catch
@@ -204,7 +204,7 @@ namespace MelonLoader
             if (Program.Closing)
                 return;
             string repo_hash = null;
-            try { repo_hash = Program.webClient_update.DownloadString(assets[0]["browser_download_url"].AsString); } catch { repo_hash = null; }
+            try { repo_hash = Program.webClient_update.DownloadString(assets[1]["browser_download_url"].AsString); } catch { repo_hash = null; }
             if (string.IsNullOrEmpty(repo_hash))
             {
                 TempFileCache.ClearCache();
