@@ -2,7 +2,7 @@
 
 - This is the Official Dedicated Installer for [MelonLoader](https://github.com/LavaGang/MelonLoader)
 - All Installer Settings get saved to "%appdata%/MelonLoader.Installer.cfg"
-- GUIDES: [INSTALL](#how-to-install-re-install-or-update-melonloader) | [RE-INSTALL](#how-to-install-re-install-or-update-melonloader) | [UPDATE](#how-to-install-re-install-or-update-melonloader) | [UNINSTALL](#how_to_uninstall_melonloader)
+- GUIDES: [INSTALL](#how-to-install-re-install-or-update-melonloader) | [RE-INSTALL](#how-to-install-re-install-or-update-melonloader) | [UPDATE](#how-to-install-re-install-or-update-melonloader) | [UN-INSTALL](#how_to_un-install_melonloader)
 
 ---
 
@@ -50,7 +50,7 @@
 
 ---
 
-## HOW TO UNINSTALL MELONLOADER:
+## HOW TO UN-INSTALL MELONLOADER:
 
 ### Automated:
 
