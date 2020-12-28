@@ -55,7 +55,7 @@
 ### Automated:
 
 1. Make sure the Game is Closed and Not Running before attempting to Install.
-2. Make sure you have all the [Requirements](#requirements) Installed before attempting to Install.
+2. Make sure you have all the [Requirements](#requirements) Installed before attempting to Un-Install.
 3. Open the Tab named Automated.
 4. Click the SELECT Button.
 5. Select and Open the Game's EXE in the Game's Installation Folder.
@@ -66,7 +66,7 @@
 ### Manual Zip:
 
 1. Make sure the Game is Closed and Not Running before attempting to Install.
-2. Make sure you have all the [Requirements](#requirements) Installed before attempting to Install.
+2. Make sure you have all the [Requirements](#requirements) Installed before attempting to Un-Install.
 3. Open the Tab named Manual Zip.
 4. Click the SELECT Button next to Unity Game.
 5. Select and Open the Game's EXE in the Game's Installation Folder.
