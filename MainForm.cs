@@ -152,9 +152,8 @@ namespace MelonLoader
 
         private void CheckForInstallerUpdate()
         {
-            Program.SetInvariantCulture();
             string response = null;
-            try { response = Program.webClient_update.DownloadString(Program.Repo_API_Installer); } catch { response = null; }
+            try { response = Program.webClient.DownloadString(Config.Repo_API_Installer); } catch { response = null; }
             if (string.IsNullOrEmpty(response))
             {
                 GetReleases();
@@ -194,7 +193,7 @@ namespace MelonLoader
             }));
             string downloadurl = assets[0]["browser_download_url"].AsString;
             string temp_path = TempFileCache.CreateFile();
-            try { Program.webClient_update.DownloadFileAsync(new Uri(downloadurl), temp_path); while (Program.webClient.IsBusy) { } }
+            try { Program.webClient.DownloadFileAsync(new Uri(downloadurl), temp_path); while (Program.webClient.IsBusy) { } }
             catch
             {
                 TempFileCache.ClearCache();
@@ -204,7 +203,7 @@ namespace MelonLoader
             if (Program.Closing)
                 return;
             string repo_hash = null;
-            try { repo_hash = Program.webClient_update.DownloadString(assets[1]["browser_download_url"].AsString); } catch { repo_hash = null; }
+            try { repo_hash = Program.webClient.DownloadString(assets[1]["browser_download_url"].AsString); } catch { repo_hash = null; }
             if (string.IsNullOrEmpty(repo_hash))
             {
                 TempFileCache.ClearCache();
@@ -239,7 +238,6 @@ namespace MelonLoader
 
         private void GetReleases()
         {
-            Program.SetInvariantCulture();
             Invoke(new Action(() => {
                 Tab_PleaseWait.Text = Tab_Automated.Text;
                 PleaseWait_Text.Text = "Getting List of Releases from GitHub...";
@@ -374,7 +372,7 @@ namespace MelonLoader
         private void ParseReleasesURL()
         {
             string response = null;
-            try { response = Program.webClient.DownloadString(Program.Repo_API_MelonLoader); } catch { response = null; }
+            try { response = Program.webClient.DownloadString(Config.Repo_API_MelonLoader); } catch { response = null; }
             if (string.IsNullOrEmpty(response))
                 return;
             JsonArray data = JsonValue.Parse(response).AsJsonArray;
@@ -464,7 +462,7 @@ namespace MelonLoader
             }
             bool legacy_version = (Automated_Version_Selection.Text.StartsWith("v0.2") || Automated_Version_Selection.Text.StartsWith("v0.1"));
             string selected_version = Automated_Version_Selection.Text;
-            new Thread(() => { Program.SetInvariantCulture(); OperationHandler.Automated_Install(Path.GetDirectoryName(Automated_UnityGame_Display.Text), selected_version, (legacy_version ? false : (Automated_Arch_Selection.SelectedIndex == 0)), legacy_version); }).Start();
+            new Thread(() => { OperationHandler.Automated_Install(Path.GetDirectoryName(Automated_UnityGame_Display.Text), selected_version, (legacy_version ? false : (Automated_Arch_Selection.SelectedIndex == 0)), legacy_version); }).Start();
             Program.SetTotalPercentage(0);
             PageManager.Cursor = Cursors.Default;
             TabBeforeOperation = PageManager.SelectedIndex;
@@ -484,7 +482,7 @@ namespace MelonLoader
                 OperationHandler.CurrentOperation = OperationHandler.Operations.REINSTALL;
                 Tab_Output.Text = "RE-INSTALL   ";
             }
-            new Thread(() => { Program.SetInvariantCulture(); OperationHandler.ManualZip_Install(ManualZip_ZipArchive_Display.Text, Path.GetDirectoryName(Automated_UnityGame_Display.Text)); }).Start();
+            new Thread(() => { OperationHandler.ManualZip_Install(ManualZip_ZipArchive_Display.Text, Path.GetDirectoryName(Automated_UnityGame_Display.Text)); }).Start();
             Program.SetTotalPercentage(0);
             PageManager.Cursor = Cursors.Default;
             TabBeforeOperation = PageManager.SelectedIndex;
@@ -499,7 +497,7 @@ namespace MelonLoader
                 return;
             OperationHandler.CurrentOperation = OperationHandler.Operations.UNINSTALL;
             Tab_Output.Text = "UN-INSTALL   ";
-            new Thread(() => { Program.SetInvariantCulture(); OperationHandler.Uninstall(Path.GetDirectoryName(Automated_UnityGame_Display.Text)); }).Start();
+            new Thread(() => { OperationHandler.Uninstall(Path.GetDirectoryName(Automated_UnityGame_Display.Text)); }).Start();
             Program.SetTotalPercentage(0);
             PageManager.Cursor = Cursors.Default;
             TabBeforeOperation = PageManager.SelectedIndex;
@@ -512,8 +510,6 @@ namespace MelonLoader
             Program.Closing = true;
             if ((Program.webClient != null) && Program.webClient.IsBusy)
                 Program.webClient.CancelAsync();
-            if ((Program.webClient_update != null) && Program.webClient_update.IsBusy)
-                Program.webClient_update.CancelAsync();
             if (OperationHandler.CurrentOperation != OperationHandler.Operations.NONE)
                 Thread.Sleep(1000);
             TempFileCache.ClearCache();
@@ -541,13 +537,13 @@ namespace MelonLoader
             OperationHandler.CurrentOperation = OperationHandler.Operations.NONE;
         }
 
-        private void Main_Load(object sender, EventArgs e) => new Thread(CheckForInstallerUpdate).Start();
+        private void Main_Load(object sender, EventArgs e) { if (Program.RunInstallerUpdateCheck) new Thread(CheckForInstallerUpdate).Start(); else new Thread(GetReleases).Start(); }
         private void Error_Retry_Click(object sender, EventArgs e) => new Thread(GetReleases).Start();
-        private void Link_Discord_Click(object sender, EventArgs e) => Process.Start(Program.Link_Discord);
-        private void Link_Twitter_Click(object sender, EventArgs e) => Process.Start(Program.Link_Twitter);
-        private void Link_GitHub_Click(object sender, EventArgs e) => Process.Start(Program.Link_GitHub);
-        private void Link_Wiki_Click(object sender, EventArgs e) => Process.Start(Program.Link_Wiki);
-        private void InstallerUpdateNotice_Click(object sender, EventArgs e) => Process.Start(Program.Link_Update);
+        private void Link_Discord_Click(object sender, EventArgs e) => Process.Start(Config.Link_Discord);
+        private void Link_Twitter_Click(object sender, EventArgs e) => Process.Start(Config.Link_Twitter);
+        private void Link_GitHub_Click(object sender, EventArgs e) => Process.Start(Config.Link_GitHub);
+        private void Link_Wiki_Click(object sender, EventArgs e) => Process.Start(Config.Link_Wiki);
+        private void InstallerUpdateNotice_Click(object sender, EventArgs e) => Process.Start(Config.Link_Update);
         private void Settings_AutoUpdateInstaller_CheckedChanged(object sender, EventArgs e) => Config.AutoUpdateInstaller = Settings_AutoUpdateInstaller.Checked;
         private void Settings_CloseAfterCompletion_CheckedChanged(object sender, EventArgs e) => Config.CloseAfterCompletion = Settings_CloseAfterCompletion.Checked;
         private void ManualZip_UnityGame_Select_Click(object sender, EventArgs e) => SelectUnityGame();

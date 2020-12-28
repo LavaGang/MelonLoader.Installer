@@ -59,7 +59,7 @@ namespace MelonLoader
         internal static void Automated_Install(string destination, string selected_version, bool is_x86, bool legacy_version)
         {
             Program.SetCurrentOperation("Downloading MelonLoader...");
-            string downloadurl = Program.Download_MelonLoader + "/" + selected_version + "/MelonLoader." + ((!legacy_version && is_x86) ? "x86" : "x64") + ".zip";
+            string downloadurl = Config.Download_MelonLoader + "/" + selected_version + "/MelonLoader." + ((!legacy_version && is_x86) ? "x86" : "x64") + ".zip";
             string temp_path = TempFileCache.CreateFile();
             try { Program.webClient.DownloadFileAsync(new Uri(downloadurl), temp_path); while (Program.webClient.IsBusy) { } }
             catch (Exception ex)
@@ -70,7 +70,7 @@ namespace MelonLoader
             Program.SetTotalPercentage(50);
             if (Program.Closing)
                 return;
-            string repo_hash_url = Program.Download_MelonLoader + "/" + selected_version + "/MelonLoader." + ((!legacy_version && is_x86) ? "x86" : "x64") + ".sha512";
+            string repo_hash_url = Config.Download_MelonLoader + "/" + selected_version + "/MelonLoader." + ((!legacy_version && is_x86) ? "x86" : "x64") + ".sha512";
             string repo_hash = null;
             try { repo_hash = Program.webClient.DownloadString(repo_hash_url); } catch { repo_hash = null; }
             if (string.IsNullOrEmpty(repo_hash))

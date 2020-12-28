@@ -8,6 +8,16 @@ namespace MelonLoader
 {
     internal static class Config
     {
+        internal static string Repo_API_Installer = "https://api.github.com/repos/LavaGang/MelonLoader.Installer/releases";
+        internal static string Repo_API_MelonLoader = "https://api.github.com/repos/LavaGang/MelonLoader/releases";
+        internal static string Download_MelonLoader = "https://github.com/LavaGang/MelonLoader/releases/download";
+
+        internal static string Link_Discord = "https://discord.gg/2Wn3N2P";
+        internal static string Link_Twitter = "https://twitter.com/lava_gang";
+        internal static string Link_GitHub = "https://github.com/LavaGang";
+        internal static string Link_Wiki = "https://melonwiki.xyz";
+        internal static string Link_Update = "https://github.com/LavaGang/MelonLoader.Installer/releases/latest";
+
         private static string FilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "MelonLoader.Installer.cfg");
 
         private static int _theme = 0;

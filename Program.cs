@@ -13,29 +13,20 @@ namespace MelonLoader
     {
         internal static MainForm mainForm = null;
         internal static WebClient webClient = null;
-        internal static WebClient webClient_update = null;
         internal static bool Closing = false;
-        internal static string Repo_API_Installer = "https://api.github.com/repos/LavaGang/MelonLoader.Installer/releases";
-        internal static string Repo_API_MelonLoader = "https://api.github.com/repos/LavaGang/MelonLoader/releases";
-        internal static string Download_MelonLoader = "https://github.com/LavaGang/MelonLoader/releases/download";
-        internal static string Link_Discord = "https://discord.gg/2Wn3N2P";
-        internal static string Link_Twitter = "https://twitter.com/lava_gang";
-        internal static string Link_GitHub = "https://github.com/LavaGang";
-        internal static string Link_Wiki = "https://melonwiki.xyz";
-        internal static string Link_Update = "https://github.com/LavaGang/MelonLoader.Installer/releases/latest";
+        internal static bool RunInstallerUpdateCheck = true;
 
         static Program()
         {
             AppDomain.CurrentDomain.UnhandledException += UnhandledExceptionHandler;
-            SetInvariantCulture();
+            Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
+            Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             ServicePointManager.Expect100Continue = true;
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Ssl3 | SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12 | (SecurityProtocolType)3072;
-            webClient_update = new WebClient();
-            webClient_update.Headers.Add("User-Agent", "Unity web player");
             webClient = new WebClient();
-            webClient.Headers = webClient_update.Headers;
+            webClient.Headers.Add("User-Agent", "Unity web player");
             webClient.DownloadProgressChanged += (object sender, DownloadProgressChangedEventArgs info) => { SetCurrentPercentage(info.ProgressPercentage); SetTotalPercentage(info.ProgressPercentage / 2); };
             Config.Load();
         }
@@ -49,12 +40,6 @@ namespace MelonLoader
 
             mainForm = new MainForm();
             Application.Run(mainForm);
-        }
-
-        internal static void SetInvariantCulture()
-        {
-            Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
-            Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
         }
 
         private static void FileNameCheck()
