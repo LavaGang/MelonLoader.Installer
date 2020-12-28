@@ -100,8 +100,6 @@ namespace MelonLoader
 
         internal static void GetReleases()
         {
-            Program.webClient.Headers.Clear();
-            Program.webClient.Headers.Add("User-Agent", "Unity web player");
             Program.mainForm.Invoke(new Action(() => {
                 Program.mainForm.Tab_PleaseWait.Text = Program.mainForm.Tab_Automated.Text;
                 Program.mainForm.PleaseWait_Text.Text = "Getting List of Releases from GitHub...";
@@ -135,6 +133,8 @@ namespace MelonLoader
 
         internal static void ParseReleasesURL()
         {
+            Program.webClient.Headers.Clear();
+            Program.webClient.Headers.Add("User-Agent", "Unity web player");
             string response = null;
             try { response = Program.webClient.DownloadString(Config.Repo_API_MelonLoader); } catch { response = null; }
             if (string.IsNullOrEmpty(response))
