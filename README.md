@@ -32,8 +32,9 @@
 3. Open the Tab named Automated.
 4. Click the SELECT Button.
 5. Select and Open the Game's Shortcut or the Game's EXE in the Game's Installation Folder.
-6. Select which Version of MelonLoader to install using the Drop-Down List.  (Or leave it as-is for the Latest Version.)
-7. Click the INSTALL / RE-INSTALL / UPDATE button.
+6. Select which Version of MelonLoader to install using it's Drop-Down List.  (Or leave it as-is for the Latest Version.)
+7. Select which Architecture of MelonLoader to install using it's Drop-Down List.  (Or leave it as-is for Auto-Detect.)
+8. Click the INSTALL / RE-INSTALL / UPDATE button.
 
 --
 
