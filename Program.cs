@@ -14,7 +14,11 @@ namespace MelonLoader
         internal static MainForm mainForm = null;
         internal static WebClient webClient = null;
         internal static bool Closing = false;
+#if DEBUG
+        internal static bool RunInstallerUpdateCheck = false;
+#else
         internal static bool RunInstallerUpdateCheck = true;
+#endif
 
         static Program()
         {
@@ -139,7 +143,14 @@ namespace MelonLoader
                     Process.GetCurrentProcess().Kill();
                     return;
                 }
-                mainForm.BackToHome();
+                mainForm.PageManager.Controls.Clear();
+                mainForm.PageManager.Controls.Add(mainForm.Tab_Automated);
+                mainForm.PageManager.Controls.Add(mainForm.Tab_ManualZip);
+                mainForm.PageManager.Controls.Add(mainForm.Tab_Settings);
+                mainForm.PageManager.Cursor = Cursors.Hand;
+                mainForm.PageManager.Select();
+                SetTotalPercentage(0);
+                OperationHandler.CurrentOperation = OperationHandler.Operations.NONE;
             }));
         }
 

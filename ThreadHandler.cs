@@ -50,7 +50,7 @@ namespace MelonLoader
             }
             OperationHandler.CurrentOperation = OperationHandler.Operations.INSTALLER_UPDATE;
             Program.mainForm.Invoke(new Action(() => {
-                Program.mainForm.Tab_PleaseWait.Text = "UPDATE   ";
+                Program.mainForm.Tab_Automated.Text = "UPDATE   ";
                 Program.mainForm.PleaseWait_Text.Text = "Downloading Update...";
             }));
             string downloadurl = assets[0]["browser_download_url"].AsString;
@@ -101,33 +101,70 @@ namespace MelonLoader
         internal static void GetReleases()
         {
             Program.mainForm.Invoke(new Action(() => {
-                Program.mainForm.Tab_PleaseWait.Text = Program.mainForm.Tab_Automated.Text;
+                Program.mainForm.PageManager.Controls.Add(Program.mainForm.Tab_ManualZip);
+                Program.mainForm.PageManager.Controls.Add(Program.mainForm.Tab_Settings);
+            }));
+            RefreshReleases();
+        }
+
+        internal static void RefreshReleases()
+        {
+            Program.mainForm.Invoke(new Action(() => {
+                Program.mainForm.PageManager.Cursor = Cursors.Hand;
+                Program.mainForm.Tab_Automated.Text = "Automated   ";
+                Program.mainForm.PleaseWait_PleaseWait.Visible = true;
+                Program.mainForm.PleaseWait_PleaseWait.ForeColor = SystemColors.Highlight;
+                Program.mainForm.PleaseWait_PleaseWait.Text = "PLEASE WAIT";
+                Program.mainForm.PleaseWait_PleaseWait.Location = new Point(161, 36);
+                Program.mainForm.PleaseWait_PleaseWait.Size = new Size(127, 25);
+                Program.mainForm.PleaseWait_Text.Visible = true;
                 Program.mainForm.PleaseWait_Text.Text = "Getting List of Releases from GitHub...";
                 Program.mainForm.PleaseWait_Text.Location = new Point(105, 79);
                 Program.mainForm.PleaseWait_Text.Size = new Size(250, 22);
-                int current_index = Program.mainForm.PageManager.SelectedIndex;
-                Program.mainForm.PageManager.Controls.Clear();
-                Program.mainForm.PageManager.Controls.Add(Program.mainForm.Tab_PleaseWait);
-                Program.mainForm.PageManager.Controls.Add(Program.mainForm.Tab_ManualZip);
-                Program.mainForm.PageManager.Controls.Add(Program.mainForm.Tab_Settings);
-                Program.mainForm.PageManager.SelectedIndex = current_index;
-                Program.mainForm.PageManager.Cursor = Cursors.Hand;
+                Program.mainForm.Error_Retry.Visible = false;
+                Program.mainForm.Automated_UnityGame_Text.Visible = false;
+                Program.mainForm.Automated_UnityGame_Select.Visible = false;
+                Program.mainForm.Automated_UnityGame_Display.Visible = false;
+                Program.mainForm.Automated_Arch_Text.Visible = false;
+                Program.mainForm.Automated_Arch_Selection.Visible = false;
+                Program.mainForm.Automated_Arch_AutoDetect.Visible = false;
+                Program.mainForm.Automated_x64Only.Visible = false;
+                Program.mainForm.Automated_Divider.Visible = false;
+                Program.mainForm.Automated_Install.Visible = false;
+                Program.mainForm.Automated_Version_Text.Visible = false;
+                Program.mainForm.Automated_Version_Selection.Visible = false;
+                Program.mainForm.Automated_Version_Latest.Visible = false;
+                Program.mainForm.Automated_Version_Selection.Items.Clear();
             }));
             ParseReleasesURL();
             Program.mainForm.Invoke(new Action(() =>
             {
-                int current_index = Program.mainForm.PageManager.SelectedIndex;
-                Program.mainForm.PageManager.Controls.Clear();
                 if (Program.mainForm.Automated_Version_Selection.Items.Count <= 0)
-                    Program.mainForm.PageManager.Controls.Add(Program.mainForm.Tab_Error);
-                else
                 {
-                    Program.mainForm.PageManager.Controls.Add(Program.mainForm.Tab_Automated);
-                    Program.mainForm.Automated_Version_Selection.SelectedIndex = 0;
+                    Program.mainForm.PageManager.Cursor = Cursors.Hand;
+                    Program.mainForm.PleaseWait_PleaseWait.ForeColor = Color.Red;
+                    Program.mainForm.PleaseWait_PleaseWait.Text = "ERROR";
+                    Program.mainForm.PleaseWait_PleaseWait.Location = new Point(184, 36);
+                    Program.mainForm.PleaseWait_PleaseWait.Size = new Size(72, 25);
+                    Program.mainForm.PleaseWait_Text.Text = "Failed to get List of Releases from GitHub!";
+                    Program.mainForm.PleaseWait_Text.Location = new Point(94, 79);
+                    Program.mainForm.PleaseWait_Text.Size = new Size(266, 19);
+                    Program.mainForm.Error_Retry.Visible = true;
+                    return;
                 }
-                Program.mainForm.PageManager.Controls.Add(Program.mainForm.Tab_ManualZip);
-                Program.mainForm.PageManager.Controls.Add(Program.mainForm.Tab_Settings);
-                Program.mainForm.PageManager.SelectedIndex = current_index;
+                Program.mainForm.PleaseWait_PleaseWait.Visible = false;
+                Program.mainForm.PleaseWait_Text.Visible = false;
+                Program.mainForm.Error_Retry.Visible = false;
+                Program.mainForm.Automated_Version_Selection.SelectedIndex = 0;
+                Program.mainForm.Automated_UnityGame_Text.Visible = true;
+                Program.mainForm.Automated_UnityGame_Select.Visible = true;
+                Program.mainForm.Automated_UnityGame_Display.Visible = true;
+                Program.mainForm.Automated_Arch_Text.Visible = true;
+                Program.mainForm.Automated_Divider.Visible = true;
+                Program.mainForm.Automated_Install.Visible = true;
+                Program.mainForm.Automated_Version_Text.Visible = true;
+                Program.mainForm.Automated_Version_Selection.Visible = true;
+                Program.mainForm.Automated_Version_Latest.Visible = true;
             }));
         }
 
@@ -155,7 +192,7 @@ namespace MelonLoader
             }
             releasesList.Sort();
             releasesList.Reverse();
-            Program.mainForm.Invoke(new Action(() => { Program.mainForm.Automated_Version_Selection.Items.Clear(); Program.mainForm.Automated_Version_Selection.Items.AddRange(releasesList.ToArray()); }));
+            Program.mainForm.Invoke(new Action(() => { Program.mainForm.Automated_Version_Selection.Items.AddRange(releasesList.ToArray()); }));
         }
     }
 }

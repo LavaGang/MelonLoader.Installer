@@ -25,10 +25,10 @@ namespace MelonLoader
             Settings_AutoUpdateInstaller.Checked = Config.AutoUpdateInstaller;
             Settings_CloseAfterCompletion.Checked = Config.CloseAfterCompletion;
             PageManager.Controls.Clear();
-            PageManager.Controls.Add(Tab_PleaseWait);
+            PageManager.Controls.Add(Tab_Automated);
+            Tab_Automated.Text = "Please Wait    ";
             Automated_Install.Size = new Size(419, 44);
             ManualZip_Install.Size = new Size(419, 44);
-            Tab_Error.Text = Tab_Automated.Text;
             Output_Current_Progress_Display.Value = 0;
             Output_Current_Progress_Text.Text = "0";
             Output_Total_Progress_Display.Value = 0;
@@ -172,7 +172,6 @@ namespace MelonLoader
             Tab_Automated.Theme = themeStyle;
             Tab_ManualZip.Theme = themeStyle;
             Tab_Settings.Theme = themeStyle;
-            Tab_Error.Theme = themeStyle;
             Settings_Theme_Text.Theme = themeStyle;
             Settings_Theme_Selection.Style = Style;
             Settings_Theme_Selection.Theme = MetroFramework.MetroThemeStyle.Light;
@@ -188,8 +187,6 @@ namespace MelonLoader
             Settings_ShowAlphaReleases.Theme = themeStyle;
             Settings_ShowAlphaReleases.ForeColor = Settings_AutoUpdateInstaller.ForeColor;
             Settings_ShowAlphaReleases.CustomForeColor = true;
-            Error_Error.Theme = themeStyle;
-            Error_Text.Theme = themeStyle;
             Automated_UnityGame_Text.Theme = themeStyle;
             Automated_UnityGame_Select.Theme = themeStyle;
             Automated_UnityGame_Display.BackColor = (lightmode ? Color.White : Color.FromArgb(34, 34, 34));
@@ -234,7 +231,6 @@ namespace MelonLoader
             Output_Total_Progress_Display.Theme = themeStyle;
             Output_Total_Progress_Text.Theme = themeStyle;
             Output_Total_Progress_Text_Label.Theme = themeStyle;
-            Tab_PleaseWait.Theme = themeStyle;
             PleaseWait_PleaseWait.Theme = themeStyle;
             PleaseWait_Text.Theme = themeStyle;
             Automated_x64Only.Theme = themeStyle;
@@ -243,8 +239,8 @@ namespace MelonLoader
         private void Settings_AutoUpdateInstaller_MouseLeave(object sender, EventArgs e) => Settings_AutoUpdateInstaller.ForeColor = ((Settings_Theme_Selection.SelectedIndex == 1) ? Color.FromKnownColor(KnownColor.ControlText) : Color.FromKnownColor(KnownColor.ControlDark));
         private void Settings_CloseAfterCompletion_MouseEnter(object sender, EventArgs e) => Settings_CloseAfterCompletion.ForeColor = ((Settings_Theme_Selection.SelectedIndex == 1) ? Color.FromKnownColor(KnownColor.ControlDarkDark) : Color.White);
         private void Settings_CloseAfterCompletion_MouseLeave(object sender, EventArgs e) => Settings_CloseAfterCompletion.ForeColor = ((Settings_Theme_Selection.SelectedIndex == 1) ? Color.FromKnownColor(KnownColor.ControlText) : Color.FromKnownColor(KnownColor.ControlDark));
-        private void Settings_ShowAlphaReleases_MouseEnter(object sender, EventArgs e) => Settings_CloseAfterCompletion.ForeColor = ((Settings_Theme_Selection.SelectedIndex == 1) ? Color.FromKnownColor(KnownColor.ControlText) : Color.White);
-        private void Settings_ShowAlphaReleases_MouseLeave(object sender, EventArgs e) => Settings_CloseAfterCompletion.ForeColor = ((Settings_Theme_Selection.SelectedIndex == 1) ? Color.FromKnownColor(KnownColor.ControlText) : Color.FromKnownColor(KnownColor.ControlDark));
+        private void Settings_ShowAlphaReleases_MouseEnter(object sender, EventArgs e) => Settings_ShowAlphaReleases.ForeColor = ((Settings_Theme_Selection.SelectedIndex == 1) ? Color.FromKnownColor(KnownColor.ControlText) : Color.White);
+        private void Settings_ShowAlphaReleases_MouseLeave(object sender, EventArgs e) => Settings_ShowAlphaReleases.ForeColor = ((Settings_Theme_Selection.SelectedIndex == 1) ? Color.FromKnownColor(KnownColor.ControlText) : Color.FromKnownColor(KnownColor.ControlDark));
         private void Automated_Version_Latest_MouseEnter(object sender, EventArgs e) => Automated_Version_Latest.ForeColor = ((Settings_Theme_Selection.SelectedIndex == 1) ? Color.FromKnownColor(KnownColor.ControlDarkDark) : Color.White);
         private void Automated_Version_Latest_MouseLeave(object sender, EventArgs e) => Automated_Version_Latest.ForeColor = ((Settings_Theme_Selection.SelectedIndex == 1) ? Color.FromKnownColor(KnownColor.ControlText) : Color.FromKnownColor(KnownColor.ControlDark));
         private void Automated_Arch_AutoDetect_MouseEnter(object sender, EventArgs e) => Automated_Arch_AutoDetect.ForeColor = ((Settings_Theme_Selection.SelectedIndex == 1) ? Color.FromKnownColor(KnownColor.ControlDarkDark) : Color.White);
@@ -321,7 +317,6 @@ namespace MelonLoader
             new Thread(() => { OperationHandler.Automated_Install(Path.GetDirectoryName(Automated_UnityGame_Display.Text), selected_version, (legacy_version ? false : (Automated_Arch_Selection.SelectedIndex == 0)), legacy_version); }).Start();
             Program.SetTotalPercentage(0);
             PageManager.Cursor = Cursors.Default;
-            TabBeforeOperation = PageManager.SelectedIndex;
             PageManager.Controls.Clear();
             PageManager.Controls.Add(Tab_Output);
         }
@@ -341,7 +336,6 @@ namespace MelonLoader
             new Thread(() => { OperationHandler.ManualZip_Install(ManualZip_ZipArchive_Display.Text, Path.GetDirectoryName(Automated_UnityGame_Display.Text)); }).Start();
             Program.SetTotalPercentage(0);
             PageManager.Cursor = Cursors.Default;
-            TabBeforeOperation = PageManager.SelectedIndex;
             PageManager.Controls.Clear();
             PageManager.Controls.Add(Tab_Output);
         }
@@ -356,7 +350,6 @@ namespace MelonLoader
             new Thread(() => { OperationHandler.Uninstall(Path.GetDirectoryName(Automated_UnityGame_Display.Text)); }).Start();
             Program.SetTotalPercentage(0);
             PageManager.Cursor = Cursors.Default;
-            TabBeforeOperation = PageManager.SelectedIndex;
             PageManager.Controls.Clear();
             PageManager.Controls.Add(Tab_Output);
         }
@@ -378,23 +371,8 @@ namespace MelonLoader
             MessageBox.Show((OperationHandler.CurrentOperationName + " was Cancelled!"), BuildInfo.Name, MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
 
-        private int TabBeforeOperation = 0;
-        internal void BackToHome()
-        {
-            CheckUnityGame();
-            PageManager.Controls.Clear();
-            PageManager.Controls.Add(Tab_Automated);
-            PageManager.Controls.Add(Tab_ManualZip);
-            PageManager.Controls.Add(Tab_Settings);
-            PageManager.Cursor = Cursors.Hand;
-            PageManager.SelectedIndex = TabBeforeOperation;
-            PageManager.Select();
-            Program.SetTotalPercentage(0);
-            OperationHandler.CurrentOperation = OperationHandler.Operations.NONE;
-        }
-
         private void Main_Load(object sender, EventArgs e) { if (Program.RunInstallerUpdateCheck) new Thread(ThreadHandler.CheckForInstallerUpdate).Start(); else new Thread(ThreadHandler.GetReleases).Start(); }
-        private void Error_Retry_Click(object sender, EventArgs e) => new Thread(ThreadHandler.GetReleases).Start();
+        private void Error_Retry_Click(object sender, EventArgs e) => new Thread(ThreadHandler.RefreshReleases).Start();
         private void Link_Discord_Click(object sender, EventArgs e) => Process.Start(Config.Link_Discord);
         private void Link_Twitter_Click(object sender, EventArgs e) => Process.Start(Config.Link_Twitter);
         private void Link_GitHub_Click(object sender, EventArgs e) => Process.Start(Config.Link_GitHub);
@@ -410,7 +388,7 @@ namespace MelonLoader
         private void Settings_ShowAlphaReleases_CheckedChanged(object sender, EventArgs e)
         {
             Config.ShowAlphaReleases = Settings_ShowAlphaReleases.Checked;
-            //new Thread(ThreadHandler.GetReleases).Start();
+            new Thread(ThreadHandler.RefreshReleases).Start();
         }
     }
 }
