@@ -152,6 +152,7 @@ namespace MelonLoader
 
         private void CheckForInstallerUpdate()
         {
+            Program.webClient.Headers.Add("User-Agent", "request");
             string response = null;
             try { response = Program.webClient.DownloadString(Config.Repo_API_Installer); } catch { response = null; }
             if (string.IsNullOrEmpty(response))
@@ -238,6 +239,8 @@ namespace MelonLoader
 
         private void GetReleases()
         {
+            Program.webClient.Headers.Clear();
+            Program.webClient.Headers.Add("User-Agent", "Unity web player");
             Invoke(new Action(() => {
                 Tab_PleaseWait.Text = Tab_Automated.Text;
                 PleaseWait_Text.Text = "Getting List of Releases from GitHub...";
