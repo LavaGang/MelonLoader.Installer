@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
-using System.Security.Cryptography;
 using System.Threading;
 using System.Windows.Forms;
-using MelonLoader.LightJson;
 
 namespace MelonLoader
 {
