@@ -385,10 +385,6 @@ namespace MelonLoader
         private void Automated_Uninstall_Click(object sender, EventArgs e) => ClickedUninstall();
         private void ManualZip_Uninstall_Click(object sender, EventArgs e) => ClickedUninstall();
         private void ManualZip_ZipArchive_Select_Click(object sender, EventArgs e) => SelectZipArchive();
-        private void Settings_ShowAlphaReleases_CheckedChanged(object sender, EventArgs e)
-        {
-            Config.ShowAlphaReleases = Settings_ShowAlphaReleases.Checked;
-            new Thread(ThreadHandler.RefreshReleases).Start();
-        }
+        private void Settings_ShowAlphaReleases_CheckedChanged(object sender, EventArgs e) { Config.ShowAlphaReleases = Settings_ShowAlphaReleases.Checked; new Thread(ThreadHandler.RefreshReleases).Start(); }
     }
 }
