@@ -150,128 +150,6 @@ namespace MelonLoader
             }
         }
 
-        private void CheckForInstallerUpdate()
-        {
-            Program.webClient.Headers.Add("User-Agent", "request");
-            string response = null;
-            try { response = Program.webClient.DownloadString(Config.Repo_API_Installer); } catch { response = null; }
-            if (string.IsNullOrEmpty(response))
-            {
-                GetReleases();
-                return;
-            }
-            if (Program.Closing)
-                return;
-            JsonArray data = JsonValue.Parse(response).AsJsonArray;
-            if (data.Count <= 0)
-            {
-                GetReleases();
-                return;
-            }
-            JsonValue release = data[0];
-            JsonArray assets = release["assets"].AsJsonArray;
-            if (assets.Count <= 0)
-            {
-                GetReleases();
-                return;
-            }
-            string version = release["tag_name"].AsString;
-            if (version.Equals(BuildInfo.Version))
-            {
-                GetReleases();
-                return;
-            }
-            Invoke(new Action(() => { InstallerUpdateNotice.Visible = true; }));
-            if (!Config.AutoUpdateInstaller)
-            {
-                GetReleases();
-                return;
-            }
-            OperationHandler.CurrentOperation = OperationHandler.Operations.INSTALLER_UPDATE;
-            Invoke(new Action(() => {
-                Tab_PleaseWait.Text = "UPDATE   ";
-                PleaseWait_Text.Text = "Downloading Update...";
-            }));
-            string downloadurl = assets[0]["browser_download_url"].AsString;
-            string temp_path = TempFileCache.CreateFile();
-            try { Program.webClient.DownloadFileAsync(new Uri(downloadurl), temp_path); while (Program.webClient.IsBusy) { } }
-            catch
-            {
-                TempFileCache.ClearCache();
-                GetReleases();
-                return;
-            }
-            if (Program.Closing)
-                return;
-            string repo_hash = null;
-            try { repo_hash = Program.webClient.DownloadString(assets[1]["browser_download_url"].AsString); } catch { repo_hash = null; }
-            if (string.IsNullOrEmpty(repo_hash))
-            {
-                TempFileCache.ClearCache();
-                GetReleases();
-                return;
-            }
-            if (Program.Closing)
-                return;
-            SHA512Managed sha512 = new SHA512Managed();
-            byte[] checksum = sha512.ComputeHash(File.ReadAllBytes(temp_path));
-            if ((checksum == null) || (checksum.Length <= 0))
-            {
-                TempFileCache.ClearCache();
-                GetReleases();
-                return;
-            }
-            string file_hash = BitConverter.ToString(checksum).Replace("-", string.Empty);
-            if (string.IsNullOrEmpty(file_hash) || !file_hash.Equals(repo_hash))
-            {
-                TempFileCache.ClearCache();
-                GetReleases();
-                return;
-            }
-            string exe_path = Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName);
-            string tmp_file_path = Path.Combine(exe_path, (Path.GetFileNameWithoutExtension(downloadurl) + ".tmp.exe"));
-            if (File.Exists(tmp_file_path))
-                File.Delete(tmp_file_path);
-            File.Move(temp_path, tmp_file_path);
-            Process.Start(tmp_file_path);
-            Process.GetCurrentProcess().Kill();
-        }
-
-        private void GetReleases()
-        {
-            Program.webClient.Headers.Clear();
-            Program.webClient.Headers.Add("User-Agent", "Unity web player");
-            Invoke(new Action(() => {
-                Tab_PleaseWait.Text = Tab_Automated.Text;
-                PleaseWait_Text.Text = "Getting List of Releases from GitHub...";
-                PleaseWait_Text.Location = new Point(105, 79);
-                PleaseWait_Text.Size = new Size(250, 22);
-                int current_index = PageManager.SelectedIndex;
-                PageManager.Controls.Clear();
-                PageManager.Controls.Add(Tab_PleaseWait);
-                PageManager.Controls.Add(Tab_ManualZip);
-                PageManager.Controls.Add(Tab_Settings);
-                PageManager.SelectedIndex = current_index;
-                PageManager.Cursor = Cursors.Hand;
-            }));
-            ParseReleasesURL();
-            Invoke(new Action(() =>
-            {
-                int current_index = PageManager.SelectedIndex;
-                PageManager.Controls.Clear();
-                if (Automated_Version_Selection.Items.Count <= 0)
-                    PageManager.Controls.Add(Tab_Error);
-                else
-                {
-                    PageManager.Controls.Add(Tab_Automated);
-                    Automated_Version_Selection.SelectedIndex = 0;
-                }
-                PageManager.Controls.Add(Tab_ManualZip);
-                PageManager.Controls.Add(Tab_Settings);
-                PageManager.SelectedIndex = current_index;
-            }));
-        }
-
         private void ThemeChanged(object sender, EventArgs e)
         {
             bool lightmode = (Settings_Theme_Selection.SelectedIndex == 1);
@@ -308,8 +186,8 @@ namespace MelonLoader
             Settings_CloseAfterCompletion.CustomForeColor = true;
             Settings_ShowAlphaReleases.Style = Style;
             Settings_ShowAlphaReleases.Theme = themeStyle;
-            //Settings_ShowAlphaReleases.ForeColor = Settings_AutoUpdateInstaller.ForeColor;
-            //Settings_ShowAlphaReleases.CustomForeColor = true;
+            Settings_ShowAlphaReleases.ForeColor = Settings_AutoUpdateInstaller.ForeColor;
+            Settings_ShowAlphaReleases.CustomForeColor = true;
             Error_Error.Theme = themeStyle;
             Error_Text.Theme = themeStyle;
             Automated_UnityGame_Text.Theme = themeStyle;
@@ -365,37 +243,12 @@ namespace MelonLoader
         private void Settings_AutoUpdateInstaller_MouseLeave(object sender, EventArgs e) => Settings_AutoUpdateInstaller.ForeColor = ((Settings_Theme_Selection.SelectedIndex == 1) ? Color.FromKnownColor(KnownColor.ControlText) : Color.FromKnownColor(KnownColor.ControlDark));
         private void Settings_CloseAfterCompletion_MouseEnter(object sender, EventArgs e) => Settings_CloseAfterCompletion.ForeColor = ((Settings_Theme_Selection.SelectedIndex == 1) ? Color.FromKnownColor(KnownColor.ControlDarkDark) : Color.White);
         private void Settings_CloseAfterCompletion_MouseLeave(object sender, EventArgs e) => Settings_CloseAfterCompletion.ForeColor = ((Settings_Theme_Selection.SelectedIndex == 1) ? Color.FromKnownColor(KnownColor.ControlText) : Color.FromKnownColor(KnownColor.ControlDark));
-        //private void Settings_ShowAlphaReleases_MouseEnter(object sender, EventArgs e) => Settings_CloseAfterCompletion.ForeColor = ((Settings_Theme_Selection.SelectedIndex == 1) ? Color.FromKnownColor(KnownColor.ControlText) : Color.White);
-        //private void Settings_ShowAlphaReleases_MouseLeave(object sender, EventArgs e) => Settings_CloseAfterCompletion.ForeColor = ((Settings_Theme_Selection.SelectedIndex == 1) ? Color.FromKnownColor(KnownColor.ControlText) : Color.FromKnownColor(KnownColor.ControlDark));
+        private void Settings_ShowAlphaReleases_MouseEnter(object sender, EventArgs e) => Settings_CloseAfterCompletion.ForeColor = ((Settings_Theme_Selection.SelectedIndex == 1) ? Color.FromKnownColor(KnownColor.ControlText) : Color.White);
+        private void Settings_ShowAlphaReleases_MouseLeave(object sender, EventArgs e) => Settings_CloseAfterCompletion.ForeColor = ((Settings_Theme_Selection.SelectedIndex == 1) ? Color.FromKnownColor(KnownColor.ControlText) : Color.FromKnownColor(KnownColor.ControlDark));
         private void Automated_Version_Latest_MouseEnter(object sender, EventArgs e) => Automated_Version_Latest.ForeColor = ((Settings_Theme_Selection.SelectedIndex == 1) ? Color.FromKnownColor(KnownColor.ControlDarkDark) : Color.White);
         private void Automated_Version_Latest_MouseLeave(object sender, EventArgs e) => Automated_Version_Latest.ForeColor = ((Settings_Theme_Selection.SelectedIndex == 1) ? Color.FromKnownColor(KnownColor.ControlText) : Color.FromKnownColor(KnownColor.ControlDark));
         private void Automated_Arch_AutoDetect_MouseEnter(object sender, EventArgs e) => Automated_Arch_AutoDetect.ForeColor = ((Settings_Theme_Selection.SelectedIndex == 1) ? Color.FromKnownColor(KnownColor.ControlDarkDark) : Color.White);
         private void Automated_Arch_AutoDetect_MouseLeave(object sender, EventArgs e) => Automated_Arch_AutoDetect.ForeColor = ((Settings_Theme_Selection.SelectedIndex == 1) ? Color.FromKnownColor(KnownColor.ControlText) : Color.FromKnownColor(KnownColor.ControlDark));
-
-        private void ParseReleasesURL()
-        {
-            string response = null;
-            try { response = Program.webClient.DownloadString(Config.Repo_API_MelonLoader); } catch { response = null; }
-            if (string.IsNullOrEmpty(response))
-                return;
-            JsonArray data = JsonValue.Parse(response).AsJsonArray;
-            if (data.Count <= 0)
-                return;
-            List<string> releasesList = new List<string>();
-            foreach (JsonValue release in data)
-            {
-                JsonArray assets = release["assets"].AsJsonArray;
-                if (assets.Count <= 0)
-                    continue;
-                if (!Config.ShowAlphaReleases && release["prerelease"].AsBoolean)
-                    continue;
-                string version = release["tag_name"].AsString;
-                releasesList.Add(version);
-            }
-            releasesList.Sort();
-            releasesList.Reverse();
-            Invoke(new Action(() => { Automated_Version_Selection.Items.Clear(); Automated_Version_Selection.Items.AddRange(releasesList.ToArray()); }));
-        }
 
         private void Automated_Version_Latest_CheckedChanged(object sender, EventArgs e)
         {
@@ -540,8 +393,8 @@ namespace MelonLoader
             OperationHandler.CurrentOperation = OperationHandler.Operations.NONE;
         }
 
-        private void Main_Load(object sender, EventArgs e) { if (Program.RunInstallerUpdateCheck) new Thread(CheckForInstallerUpdate).Start(); else new Thread(GetReleases).Start(); }
-        private void Error_Retry_Click(object sender, EventArgs e) => new Thread(GetReleases).Start();
+        private void Main_Load(object sender, EventArgs e) { if (Program.RunInstallerUpdateCheck) new Thread(ThreadHandler.CheckForInstallerUpdate).Start(); else new Thread(ThreadHandler.GetReleases).Start(); }
+        private void Error_Retry_Click(object sender, EventArgs e) => new Thread(ThreadHandler.GetReleases).Start();
         private void Link_Discord_Click(object sender, EventArgs e) => Process.Start(Config.Link_Discord);
         private void Link_Twitter_Click(object sender, EventArgs e) => Process.Start(Config.Link_Twitter);
         private void Link_GitHub_Click(object sender, EventArgs e) => Process.Start(Config.Link_GitHub);
@@ -557,7 +410,7 @@ namespace MelonLoader
         private void Settings_ShowAlphaReleases_CheckedChanged(object sender, EventArgs e)
         {
             Config.ShowAlphaReleases = Settings_ShowAlphaReleases.Checked;
-            new Thread(GetReleases).Start();
+            //new Thread(ThreadHandler.GetReleases).Start();
         }
     }
 }

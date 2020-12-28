@@ -177,6 +177,7 @@
     </Compile>
     <Compile Include="SteamHandler.cs" />
     <Compile Include="TempFileCache.cs" />
+    <Compile Include="ThreadHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MainForm.resx">
