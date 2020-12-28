@@ -368,7 +368,7 @@ namespace MelonLoader
             MessageBox.Show((OperationHandler.CurrentOperationName + " was Cancelled!"), BuildInfo.Name, MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
 
-        private void Main_Load(object sender, EventArgs e) { if (Program.RunInstallerUpdateCheck) new Thread(ThreadHandler.CheckForInstallerUpdate).Start(); else new Thread(ThreadHandler.GetReleases).Start(); }
+        private void Main_Load(object sender, EventArgs e) => new Thread(ThreadHandler.CheckForInstallerUpdate).Start();
         private void Error_Retry_Click(object sender, EventArgs e) => new Thread(ThreadHandler.RefreshReleases).Start();
         private void Link_Discord_Click(object sender, EventArgs e) => Process.Start(Config.Link_Discord);
         private void Link_Twitter_Click(object sender, EventArgs e) => Process.Start(Config.Link_Twitter);

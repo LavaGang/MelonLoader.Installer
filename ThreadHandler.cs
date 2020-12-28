@@ -13,6 +13,12 @@ namespace MelonLoader
     {
         internal static void CheckForInstallerUpdate()
         {
+            if (Program.RunInstallerUpdateCheck)
+            {
+                GetReleases();
+                return;
+            }
+            Program.webClient.Headers.Clear();
             Program.webClient.Headers.Add("User-Agent", "request");
             string response = null;
             try { response = Program.webClient.DownloadString(Config.Repo_API_Installer); } catch { response = null; }
@@ -50,18 +56,22 @@ namespace MelonLoader
             }
             OperationHandler.CurrentOperation = OperationHandler.Operations.INSTALLER_UPDATE;
             Program.mainForm.Invoke(new Action(() => {
-                Program.mainForm.Tab_Automated.Text = "UPDATE   ";
-                Program.mainForm.PleaseWait_Text.Text = "Downloading Update...";
+                Program.mainForm.Tab_Output.Text = "UPDATE   ";
+                Program.SetCurrentOperation("Updating Installer...");
+                Program.mainForm.PageManager.Controls.Clear();
+                Program.mainForm.PageManager.Controls.Add(Program.mainForm.Tab_Output);
             }));
             string downloadurl = assets[0]["browser_download_url"].AsString;
             string temp_path = TempFileCache.CreateFile();
             try { Program.webClient.DownloadFileAsync(new Uri(downloadurl), temp_path); while (Program.webClient.IsBusy) { } }
-            catch
+            catch (Exception ex)
             {
                 TempFileCache.ClearCache();
-                GetReleases();
+                Program.LogError(ex.ToString());
+                RefreshReleases();
                 return;
             }
+            Program.SetTotalPercentage(50);
             if (Program.Closing)
                 return;
             string repo_hash = null;
@@ -69,7 +79,8 @@ namespace MelonLoader
             if (string.IsNullOrEmpty(repo_hash))
             {
                 TempFileCache.ClearCache();
-                GetReleases();
+                Program.LogError("Failed to get SHA512 Hash from Repo!");
+                RefreshReleases();
                 return;
             }
             if (Program.Closing)
@@ -79,16 +90,19 @@ namespace MelonLoader
             if ((checksum == null) || (checksum.Length <= 0))
             {
                 TempFileCache.ClearCache();
-                GetReleases();
+                Program.LogError("Failed to get SHA512 Hash from Temp File!");
+                RefreshReleases();
                 return;
             }
             string file_hash = BitConverter.ToString(checksum).Replace("-", string.Empty);
             if (string.IsNullOrEmpty(file_hash) || !file_hash.Equals(repo_hash))
             {
                 TempFileCache.ClearCache();
-                GetReleases();
+                Program.LogError("Failed to get SHA512 Hash from Temp File!");
+                RefreshReleases();
                 return;
             }
+            Program.OperationSuccess();
             string exe_path = Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName);
             string tmp_file_path = Path.Combine(exe_path, (Path.GetFileNameWithoutExtension(downloadurl) + ".tmp.exe"));
             if (File.Exists(tmp_file_path))
@@ -98,7 +112,7 @@ namespace MelonLoader
             Process.GetCurrentProcess().Kill();
         }
 
-        internal static void GetReleases()
+        private static void GetReleases()
         {
             Program.mainForm.Invoke(new Action(() => {
                 Program.mainForm.PageManager.Controls.Add(Program.mainForm.Tab_ManualZip);
@@ -175,6 +189,8 @@ namespace MelonLoader
             string response = null;
             try { response = Program.webClient.DownloadString(Config.Repo_API_MelonLoader); } catch { response = null; }
             if (string.IsNullOrEmpty(response))
+                return;
+            if (Program.Closing)
                 return;
             JsonArray data = JsonValue.Parse(response).AsJsonArray;
             if (data.Count <= 0)

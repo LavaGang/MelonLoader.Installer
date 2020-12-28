@@ -3,7 +3,7 @@ using System.IO;
 
 namespace MelonLoader
 {
-    class TempFileCache
+    internal static class TempFileCache
     {
         private static List<string> TempFiles = new List<string>();
         internal static string CreateFile()

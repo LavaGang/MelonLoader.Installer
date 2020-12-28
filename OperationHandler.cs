@@ -11,7 +11,7 @@ using MelonLoader.Tomlyn.Syntax;
 
 namespace MelonLoader
 {
-    class OperationHandler
+    internal static class OperationHandler
     {
         private static string[] ProxyNames = { "version", "winmm", "winhttp" };
 
