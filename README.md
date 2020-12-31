@@ -52,7 +52,7 @@
 8. Download MelonLoader [[x86](https://github.com/LavaGang/MelonLoader/releases/latest/download/MelonLoader.x86.zip)] [[x64](https://github.com/LavaGang/MelonLoader/releases/latest/download/MelonLoader.x64.zip)]
 9. Click the SELECT Button next to Zip Archive.
 10. Select and Open the MelonLoader Zip Archive.
-11. Click the INSTALL / RE-INSTALL / UPDATE button.
+11. Click the INSTALL, RE-INSTALL, or UPDATE button.
 
 ---
 
