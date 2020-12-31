@@ -12,7 +12,6 @@
 3. Fixed Issue with Self-Update Check not running.
 4. Fixed Issue with "Show ALPHA Pre-Releases" Setting not Loading properly.
 5. Fixed Issue with "Show ALPHA Pre-Releases" Setting causing GitHub to Rate Limit the user if toggled off and on repeatedly.
-6. 
 
 ---
 
