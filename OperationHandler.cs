@@ -34,22 +34,22 @@ namespace MelonLoader
                 switch (CurrentOperation)
                 {
                     case Operations.DOWNGRADE:
-                        opname = "Downgrade";
+                        opname = "DOWNGRADE";
                         break;
                     case Operations.UPDATE:
-                        opname = "Update";
+                        opname = "UPDATE";
                         break;
                     case Operations.UNINSTALL:
-                        opname = "Uninstall";
+                        opname = "UN-INSTALL";
                         break;
                     case Operations.REINSTALL:
-                        opname = "Reinstall";
+                        opname = "RE-INSTALL";
                         break;
                     case Operations.INSTALL:
                     case Operations.INSTALLER_UPDATE:
                     case Operations.NONE:
                     default:
-                        opname = "Install";
+                        opname = "INSTALL";
                         break;
                 }
                 return opname;
