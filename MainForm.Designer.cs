@@ -50,6 +50,12 @@
             this.PleaseWait_PleaseWait = new MetroFramework.Controls.MetroLabel();
             this.PleaseWait_Text = new MetroFramework.Controls.MetroLabel();
             this.Error_Retry = new MetroFramework.Controls.MetroButton();
+            this.Tab_Settings = new MetroFramework.Controls.MetroTabPage();
+            this.Settings_ShowAlphaPreReleases = new MetroFramework.Controls.MetroCheckBox();
+            this.Settings_CloseAfterCompletion = new MetroFramework.Controls.MetroCheckBox();
+            this.Settings_AutoUpdateInstaller = new MetroFramework.Controls.MetroCheckBox();
+            this.Settings_Theme_Selection = new MetroFramework.Controls.MetroComboBox();
+            this.Settings_Theme_Text = new MetroFramework.Controls.MetroLabel();
             this.Tab_ManualZip = new MetroFramework.Controls.MetroTabPage();
             this.ManualZip_ZipArchive_Select = new MetroFramework.Controls.MetroButton();
             this.ManualZip_ZipArchive_Display = new System.Windows.Forms.TextBox();
@@ -60,12 +66,6 @@
             this.ManualZip_Uninstall = new MetroFramework.Controls.MetroButton();
             this.ManualZip_Install = new MetroFramework.Controls.MetroButton();
             this.ManualZip_Divider = new MetroFramework.Controls.MetroLabel();
-            this.Tab_Settings = new MetroFramework.Controls.MetroTabPage();
-            this.Settings_ShowAlphaReleases = new MetroFramework.Controls.MetroCheckBox();
-            this.Settings_CloseAfterCompletion = new MetroFramework.Controls.MetroCheckBox();
-            this.Settings_AutoUpdateInstaller = new MetroFramework.Controls.MetroCheckBox();
-            this.Settings_Theme_Selection = new MetroFramework.Controls.MetroComboBox();
-            this.Settings_Theme_Text = new MetroFramework.Controls.MetroLabel();
             this.Tab_Output = new MetroFramework.Controls.MetroTabPage();
             this.Output_Current_Operation = new MetroFramework.Controls.MetroLabel();
             this.Output_Divider = new MetroFramework.Controls.MetroLabel();
@@ -87,8 +87,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.ThemeManager)).BeginInit();
             this.PageManager.SuspendLayout();
             this.Tab_Automated.SuspendLayout();
-            this.Tab_ManualZip.SuspendLayout();
             this.Tab_Settings.SuspendLayout();
+            this.Tab_ManualZip.SuspendLayout();
             this.Tab_Output.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.Link_Wiki)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.Link_GitHub)).BeginInit();
@@ -127,7 +127,7 @@
             this.PageManager.ItemSize = new System.Drawing.Size(141, 34);
             this.PageManager.Location = new System.Drawing.Point(21, 203);
             this.PageManager.Name = "PageManager";
-            this.PageManager.SelectedIndex = 0;
+            this.PageManager.SelectedIndex = 1;
             this.PageManager.Size = new System.Drawing.Size(439, 222);
             this.PageManager.SizeMode = System.Windows.Forms.TabSizeMode.Fixed;
             this.PageManager.Style = MetroFramework.MetroColorStyle.Red;
@@ -377,6 +377,107 @@
             this.Error_Retry.Visible = false;
             this.Error_Retry.Click += new System.EventHandler(this.Error_Retry_Click);
             // 
+            // Tab_Settings
+            // 
+            this.Tab_Settings.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.Tab_Settings.Controls.Add(this.Settings_ShowAlphaPreReleases);
+            this.Tab_Settings.Controls.Add(this.Settings_CloseAfterCompletion);
+            this.Tab_Settings.Controls.Add(this.Settings_AutoUpdateInstaller);
+            this.Tab_Settings.Controls.Add(this.Settings_Theme_Selection);
+            this.Tab_Settings.Controls.Add(this.Settings_Theme_Text);
+            this.Tab_Settings.Cursor = System.Windows.Forms.Cursors.Default;
+            this.Tab_Settings.HorizontalScrollbarBarColor = true;
+            this.Tab_Settings.Location = new System.Drawing.Point(4, 38);
+            this.Tab_Settings.Name = "Tab_Settings";
+            this.Tab_Settings.Size = new System.Drawing.Size(431, 180);
+            this.Tab_Settings.TabIndex = 2;
+            this.Tab_Settings.Text = "Settings  ";
+            this.Tab_Settings.Theme = MetroFramework.MetroThemeStyle.Dark;
+            this.Tab_Settings.VerticalScrollbarBarColor = true;
+            // 
+            // Settings_ShowAlphaPreReleases
+            // 
+            this.Settings_ShowAlphaPreReleases.AutoSize = true;
+            this.Settings_ShowAlphaPreReleases.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.Settings_ShowAlphaPreReleases.Location = new System.Drawing.Point(150, 140);
+            this.Settings_ShowAlphaPreReleases.Name = "Settings_ShowAlphaPreReleases";
+            this.Settings_ShowAlphaPreReleases.Size = new System.Drawing.Size(162, 15);
+            this.Settings_ShowAlphaPreReleases.Style = MetroFramework.MetroColorStyle.Green;
+            this.Settings_ShowAlphaPreReleases.TabIndex = 6;
+            this.Settings_ShowAlphaPreReleases.Text = "Show ALPHA Pre-Releases";
+            this.Settings_ShowAlphaPreReleases.Theme = MetroFramework.MetroThemeStyle.Dark;
+            this.Settings_ShowAlphaPreReleases.UseVisualStyleBackColor = true;
+            this.Settings_ShowAlphaPreReleases.CheckedChanged += new System.EventHandler(this.Settings_ShowAlphaPreReleases_CheckedChanged);
+            this.Settings_ShowAlphaPreReleases.MouseEnter += new System.EventHandler(this.Settings_ShowAlphaReleases_MouseEnter);
+            this.Settings_ShowAlphaPreReleases.MouseLeave += new System.EventHandler(this.Settings_ShowAlphaReleases_MouseLeave);
+            // 
+            // Settings_CloseAfterCompletion
+            // 
+            this.Settings_CloseAfterCompletion.AutoSize = true;
+            this.Settings_CloseAfterCompletion.Checked = true;
+            this.Settings_CloseAfterCompletion.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.Settings_CloseAfterCompletion.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.Settings_CloseAfterCompletion.CustomForeColor = true;
+            this.Settings_CloseAfterCompletion.ForeColor = System.Drawing.SystemColors.ControlDark;
+            this.Settings_CloseAfterCompletion.Location = new System.Drawing.Point(154, 102);
+            this.Settings_CloseAfterCompletion.Name = "Settings_CloseAfterCompletion";
+            this.Settings_CloseAfterCompletion.Size = new System.Drawing.Size(147, 15);
+            this.Settings_CloseAfterCompletion.Style = MetroFramework.MetroColorStyle.Green;
+            this.Settings_CloseAfterCompletion.TabIndex = 5;
+            this.Settings_CloseAfterCompletion.Text = "Close After Completion";
+            this.Settings_CloseAfterCompletion.Theme = MetroFramework.MetroThemeStyle.Dark;
+            this.Settings_CloseAfterCompletion.UseVisualStyleBackColor = true;
+            this.Settings_CloseAfterCompletion.CheckedChanged += new System.EventHandler(this.Settings_CloseAfterCompletion_CheckedChanged);
+            this.Settings_CloseAfterCompletion.MouseEnter += new System.EventHandler(this.Settings_CloseAfterCompletion_MouseEnter);
+            this.Settings_CloseAfterCompletion.MouseLeave += new System.EventHandler(this.Settings_CloseAfterCompletion_MouseLeave);
+            // 
+            // Settings_AutoUpdateInstaller
+            // 
+            this.Settings_AutoUpdateInstaller.AutoSize = true;
+            this.Settings_AutoUpdateInstaller.Checked = true;
+            this.Settings_AutoUpdateInstaller.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.Settings_AutoUpdateInstaller.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.Settings_AutoUpdateInstaller.CustomForeColor = true;
+            this.Settings_AutoUpdateInstaller.ForeColor = System.Drawing.SystemColors.ControlDark;
+            this.Settings_AutoUpdateInstaller.Location = new System.Drawing.Point(158, 65);
+            this.Settings_AutoUpdateInstaller.Name = "Settings_AutoUpdateInstaller";
+            this.Settings_AutoUpdateInstaller.Size = new System.Drawing.Size(136, 15);
+            this.Settings_AutoUpdateInstaller.Style = MetroFramework.MetroColorStyle.Green;
+            this.Settings_AutoUpdateInstaller.TabIndex = 4;
+            this.Settings_AutoUpdateInstaller.Text = "Auto-Update Installer";
+            this.Settings_AutoUpdateInstaller.Theme = MetroFramework.MetroThemeStyle.Dark;
+            this.Settings_AutoUpdateInstaller.UseVisualStyleBackColor = true;
+            this.Settings_AutoUpdateInstaller.CheckedChanged += new System.EventHandler(this.Settings_AutoUpdateInstaller_CheckedChanged);
+            this.Settings_AutoUpdateInstaller.MouseEnter += new System.EventHandler(this.Settings_AutoUpdateInstaller_MouseEnter);
+            this.Settings_AutoUpdateInstaller.MouseLeave += new System.EventHandler(this.Settings_AutoUpdateInstaller_MouseLeave);
+            // 
+            // Settings_Theme_Selection
+            // 
+            this.Settings_Theme_Selection.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.Settings_Theme_Selection.FormattingEnabled = true;
+            this.Settings_Theme_Selection.ItemHeight = 23;
+            this.Settings_Theme_Selection.Items.AddRange(new object[] {
+            "Dark",
+            "Light"});
+            this.Settings_Theme_Selection.Location = new System.Drawing.Point(217, 18);
+            this.Settings_Theme_Selection.Name = "Settings_Theme_Selection";
+            this.Settings_Theme_Selection.Size = new System.Drawing.Size(61, 29);
+            this.Settings_Theme_Selection.Style = MetroFramework.MetroColorStyle.Green;
+            this.Settings_Theme_Selection.TabIndex = 3;
+            this.Settings_Theme_Selection.Theme = MetroFramework.MetroThemeStyle.Dark;
+            this.Settings_Theme_Selection.SelectedIndexChanged += new System.EventHandler(this.ThemeChanged);
+            // 
+            // Settings_Theme_Text
+            // 
+            this.Settings_Theme_Text.AutoSize = true;
+            this.Settings_Theme_Text.FontWeight = MetroFramework.MetroLabelWeight.Regular;
+            this.Settings_Theme_Text.Location = new System.Drawing.Point(158, 21);
+            this.Settings_Theme_Text.Name = "Settings_Theme_Text";
+            this.Settings_Theme_Text.Size = new System.Drawing.Size(53, 19);
+            this.Settings_Theme_Text.TabIndex = 2;
+            this.Settings_Theme_Text.Text = "Theme:";
+            this.Settings_Theme_Text.Theme = MetroFramework.MetroThemeStyle.Dark;
+            // 
             // Tab_ManualZip
             // 
             this.Tab_ManualZip.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
@@ -496,107 +597,6 @@
             this.ManualZip_Divider.TabIndex = 12;
             this.ManualZip_Divider.Text = "______________________________________________________________________";
             this.ManualZip_Divider.Theme = MetroFramework.MetroThemeStyle.Dark;
-            // 
-            // Tab_Settings
-            // 
-            this.Tab_Settings.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.Tab_Settings.Controls.Add(this.Settings_ShowAlphaReleases);
-            this.Tab_Settings.Controls.Add(this.Settings_CloseAfterCompletion);
-            this.Tab_Settings.Controls.Add(this.Settings_AutoUpdateInstaller);
-            this.Tab_Settings.Controls.Add(this.Settings_Theme_Selection);
-            this.Tab_Settings.Controls.Add(this.Settings_Theme_Text);
-            this.Tab_Settings.Cursor = System.Windows.Forms.Cursors.Default;
-            this.Tab_Settings.HorizontalScrollbarBarColor = true;
-            this.Tab_Settings.Location = new System.Drawing.Point(4, 38);
-            this.Tab_Settings.Name = "Tab_Settings";
-            this.Tab_Settings.Size = new System.Drawing.Size(431, 180);
-            this.Tab_Settings.TabIndex = 2;
-            this.Tab_Settings.Text = "Settings  ";
-            this.Tab_Settings.Theme = MetroFramework.MetroThemeStyle.Dark;
-            this.Tab_Settings.VerticalScrollbarBarColor = true;
-            // 
-            // Settings_ShowAlphaReleases
-            // 
-            this.Settings_ShowAlphaReleases.AutoSize = true;
-            this.Settings_ShowAlphaReleases.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.Settings_ShowAlphaReleases.Location = new System.Drawing.Point(150, 140);
-            this.Settings_ShowAlphaReleases.Name = "Settings_ShowAlphaReleases";
-            this.Settings_ShowAlphaReleases.Size = new System.Drawing.Size(162, 15);
-            this.Settings_ShowAlphaReleases.Style = MetroFramework.MetroColorStyle.Green;
-            this.Settings_ShowAlphaReleases.TabIndex = 6;
-            this.Settings_ShowAlphaReleases.Text = "Show ALPHA Pre-Releases";
-            this.Settings_ShowAlphaReleases.Theme = MetroFramework.MetroThemeStyle.Dark;
-            this.Settings_ShowAlphaReleases.UseVisualStyleBackColor = true;
-            this.Settings_ShowAlphaReleases.CheckedChanged += new System.EventHandler(this.Settings_ShowAlphaReleases_CheckedChanged);
-            this.Settings_ShowAlphaReleases.MouseEnter += new System.EventHandler(this.Settings_ShowAlphaReleases_MouseEnter);
-            this.Settings_ShowAlphaReleases.MouseLeave += new System.EventHandler(this.Settings_ShowAlphaReleases_MouseLeave);
-            // 
-            // Settings_CloseAfterCompletion
-            // 
-            this.Settings_CloseAfterCompletion.AutoSize = true;
-            this.Settings_CloseAfterCompletion.Checked = true;
-            this.Settings_CloseAfterCompletion.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.Settings_CloseAfterCompletion.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.Settings_CloseAfterCompletion.CustomForeColor = true;
-            this.Settings_CloseAfterCompletion.ForeColor = System.Drawing.SystemColors.ControlDark;
-            this.Settings_CloseAfterCompletion.Location = new System.Drawing.Point(154, 102);
-            this.Settings_CloseAfterCompletion.Name = "Settings_CloseAfterCompletion";
-            this.Settings_CloseAfterCompletion.Size = new System.Drawing.Size(147, 15);
-            this.Settings_CloseAfterCompletion.Style = MetroFramework.MetroColorStyle.Green;
-            this.Settings_CloseAfterCompletion.TabIndex = 5;
-            this.Settings_CloseAfterCompletion.Text = "Close After Completion";
-            this.Settings_CloseAfterCompletion.Theme = MetroFramework.MetroThemeStyle.Dark;
-            this.Settings_CloseAfterCompletion.UseVisualStyleBackColor = true;
-            this.Settings_CloseAfterCompletion.CheckedChanged += new System.EventHandler(this.Settings_CloseAfterCompletion_CheckedChanged);
-            this.Settings_CloseAfterCompletion.MouseEnter += new System.EventHandler(this.Settings_CloseAfterCompletion_MouseEnter);
-            this.Settings_CloseAfterCompletion.MouseLeave += new System.EventHandler(this.Settings_CloseAfterCompletion_MouseLeave);
-            // 
-            // Settings_AutoUpdateInstaller
-            // 
-            this.Settings_AutoUpdateInstaller.AutoSize = true;
-            this.Settings_AutoUpdateInstaller.Checked = true;
-            this.Settings_AutoUpdateInstaller.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.Settings_AutoUpdateInstaller.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.Settings_AutoUpdateInstaller.CustomForeColor = true;
-            this.Settings_AutoUpdateInstaller.ForeColor = System.Drawing.SystemColors.ControlDark;
-            this.Settings_AutoUpdateInstaller.Location = new System.Drawing.Point(158, 65);
-            this.Settings_AutoUpdateInstaller.Name = "Settings_AutoUpdateInstaller";
-            this.Settings_AutoUpdateInstaller.Size = new System.Drawing.Size(136, 15);
-            this.Settings_AutoUpdateInstaller.Style = MetroFramework.MetroColorStyle.Green;
-            this.Settings_AutoUpdateInstaller.TabIndex = 4;
-            this.Settings_AutoUpdateInstaller.Text = "Auto-Update Installer";
-            this.Settings_AutoUpdateInstaller.Theme = MetroFramework.MetroThemeStyle.Dark;
-            this.Settings_AutoUpdateInstaller.UseVisualStyleBackColor = true;
-            this.Settings_AutoUpdateInstaller.CheckedChanged += new System.EventHandler(this.Settings_AutoUpdateInstaller_CheckedChanged);
-            this.Settings_AutoUpdateInstaller.MouseEnter += new System.EventHandler(this.Settings_AutoUpdateInstaller_MouseEnter);
-            this.Settings_AutoUpdateInstaller.MouseLeave += new System.EventHandler(this.Settings_AutoUpdateInstaller_MouseLeave);
-            // 
-            // Settings_Theme_Selection
-            // 
-            this.Settings_Theme_Selection.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.Settings_Theme_Selection.FormattingEnabled = true;
-            this.Settings_Theme_Selection.ItemHeight = 23;
-            this.Settings_Theme_Selection.Items.AddRange(new object[] {
-            "Dark",
-            "Light"});
-            this.Settings_Theme_Selection.Location = new System.Drawing.Point(217, 18);
-            this.Settings_Theme_Selection.Name = "Settings_Theme_Selection";
-            this.Settings_Theme_Selection.Size = new System.Drawing.Size(61, 29);
-            this.Settings_Theme_Selection.Style = MetroFramework.MetroColorStyle.Green;
-            this.Settings_Theme_Selection.TabIndex = 3;
-            this.Settings_Theme_Selection.Theme = MetroFramework.MetroThemeStyle.Dark;
-            this.Settings_Theme_Selection.SelectedIndexChanged += new System.EventHandler(this.ThemeChanged);
-            // 
-            // Settings_Theme_Text
-            // 
-            this.Settings_Theme_Text.AutoSize = true;
-            this.Settings_Theme_Text.FontWeight = MetroFramework.MetroLabelWeight.Regular;
-            this.Settings_Theme_Text.Location = new System.Drawing.Point(158, 21);
-            this.Settings_Theme_Text.Name = "Settings_Theme_Text";
-            this.Settings_Theme_Text.Size = new System.Drawing.Size(53, 19);
-            this.Settings_Theme_Text.TabIndex = 2;
-            this.Settings_Theme_Text.Text = "Theme:";
-            this.Settings_Theme_Text.Theme = MetroFramework.MetroThemeStyle.Dark;
             // 
             // Tab_Output
             // 
@@ -861,10 +861,10 @@
             this.PageManager.ResumeLayout(false);
             this.Tab_Automated.ResumeLayout(false);
             this.Tab_Automated.PerformLayout();
-            this.Tab_ManualZip.ResumeLayout(false);
-            this.Tab_ManualZip.PerformLayout();
             this.Tab_Settings.ResumeLayout(false);
             this.Tab_Settings.PerformLayout();
+            this.Tab_ManualZip.ResumeLayout(false);
+            this.Tab_ManualZip.PerformLayout();
             this.Tab_Output.ResumeLayout(false);
             this.Tab_Output.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.Link_Wiki)).EndInit();
@@ -929,7 +929,7 @@
         internal MetroFramework.Controls.MetroLabel Output_Current_Operation;
         internal MetroFramework.Controls.MetroLabel Output_Current_Progress_Text;
         internal MetroFramework.Controls.MetroLabel Automated_x64Only;
-        internal MetroFramework.Controls.MetroCheckBox Settings_ShowAlphaReleases;
+        internal MetroFramework.Controls.MetroCheckBox Settings_ShowAlphaPreReleases;
         internal MetroFramework.Controls.MetroLabel PleaseWait_Text;
         internal MetroFramework.Controls.MetroLabel PleaseWait_PleaseWait;
         internal MetroFramework.Controls.MetroButton Error_Retry;

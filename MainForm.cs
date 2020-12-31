@@ -21,6 +21,7 @@ namespace MelonLoader
             Settings_Theme_Selection.SelectedIndex = Config.Theme;
             Settings_AutoUpdateInstaller.Checked = Config.AutoUpdateInstaller;
             Settings_CloseAfterCompletion.Checked = Config.CloseAfterCompletion;
+            Settings_ShowAlphaPreReleases.Checked = Config.ShowAlphaPreReleases;
             PageManager.Controls.Clear();
             PageManager.Controls.Add(Tab_Automated);
             Tab_Automated.Text = "Please Wait    ";
@@ -180,10 +181,10 @@ namespace MelonLoader
             Settings_CloseAfterCompletion.Theme = themeStyle;
             Settings_CloseAfterCompletion.ForeColor = Settings_AutoUpdateInstaller.ForeColor;
             Settings_CloseAfterCompletion.CustomForeColor = true;
-            Settings_ShowAlphaReleases.Style = Style;
-            Settings_ShowAlphaReleases.Theme = themeStyle;
-            Settings_ShowAlphaReleases.ForeColor = Settings_AutoUpdateInstaller.ForeColor;
-            Settings_ShowAlphaReleases.CustomForeColor = true;
+            Settings_ShowAlphaPreReleases.Style = Style;
+            Settings_ShowAlphaPreReleases.Theme = themeStyle;
+            Settings_ShowAlphaPreReleases.ForeColor = Settings_AutoUpdateInstaller.ForeColor;
+            Settings_ShowAlphaPreReleases.CustomForeColor = true;
             Automated_UnityGame_Text.Theme = themeStyle;
             Automated_UnityGame_Select.Theme = themeStyle;
             Automated_UnityGame_Display.BackColor = (lightmode ? Color.White : Color.FromArgb(34, 34, 34));
@@ -236,8 +237,8 @@ namespace MelonLoader
         private void Settings_AutoUpdateInstaller_MouseLeave(object sender, EventArgs e) => Settings_AutoUpdateInstaller.ForeColor = ((Settings_Theme_Selection.SelectedIndex == 1) ? Color.FromKnownColor(KnownColor.ControlText) : Color.FromKnownColor(KnownColor.ControlDark));
         private void Settings_CloseAfterCompletion_MouseEnter(object sender, EventArgs e) => Settings_CloseAfterCompletion.ForeColor = ((Settings_Theme_Selection.SelectedIndex == 1) ? Color.FromKnownColor(KnownColor.ControlDarkDark) : Color.White);
         private void Settings_CloseAfterCompletion_MouseLeave(object sender, EventArgs e) => Settings_CloseAfterCompletion.ForeColor = ((Settings_Theme_Selection.SelectedIndex == 1) ? Color.FromKnownColor(KnownColor.ControlText) : Color.FromKnownColor(KnownColor.ControlDark));
-        private void Settings_ShowAlphaReleases_MouseEnter(object sender, EventArgs e) => Settings_ShowAlphaReleases.ForeColor = ((Settings_Theme_Selection.SelectedIndex == 1) ? Color.FromKnownColor(KnownColor.ControlText) : Color.White);
-        private void Settings_ShowAlphaReleases_MouseLeave(object sender, EventArgs e) => Settings_ShowAlphaReleases.ForeColor = ((Settings_Theme_Selection.SelectedIndex == 1) ? Color.FromKnownColor(KnownColor.ControlText) : Color.FromKnownColor(KnownColor.ControlDark));
+        private void Settings_ShowAlphaReleases_MouseEnter(object sender, EventArgs e) => Settings_ShowAlphaPreReleases.ForeColor = ((Settings_Theme_Selection.SelectedIndex == 1) ? Color.FromKnownColor(KnownColor.ControlDarkDark) : Color.White);
+        private void Settings_ShowAlphaReleases_MouseLeave(object sender, EventArgs e) => Settings_ShowAlphaPreReleases.ForeColor = ((Settings_Theme_Selection.SelectedIndex == 1) ? Color.FromKnownColor(KnownColor.ControlText) : Color.FromKnownColor(KnownColor.ControlDark));
         private void Automated_Version_Latest_MouseEnter(object sender, EventArgs e) => Automated_Version_Latest.ForeColor = ((Settings_Theme_Selection.SelectedIndex == 1) ? Color.FromKnownColor(KnownColor.ControlDarkDark) : Color.White);
         private void Automated_Version_Latest_MouseLeave(object sender, EventArgs e) => Automated_Version_Latest.ForeColor = ((Settings_Theme_Selection.SelectedIndex == 1) ? Color.FromKnownColor(KnownColor.ControlText) : Color.FromKnownColor(KnownColor.ControlDark));
         private void Automated_Arch_AutoDetect_MouseEnter(object sender, EventArgs e) => Automated_Arch_AutoDetect.ForeColor = ((Settings_Theme_Selection.SelectedIndex == 1) ? Color.FromKnownColor(KnownColor.ControlDarkDark) : Color.White);
@@ -382,6 +383,21 @@ namespace MelonLoader
         private void Automated_Uninstall_Click(object sender, EventArgs e) => ClickedUninstall();
         private void ManualZip_Uninstall_Click(object sender, EventArgs e) => ClickedUninstall();
         private void ManualZip_ZipArchive_Select_Click(object sender, EventArgs e) => SelectZipArchive();
-        private void Settings_ShowAlphaReleases_CheckedChanged(object sender, EventArgs e) { Config.ShowAlphaReleases = Settings_ShowAlphaReleases.Checked; new Thread(ThreadHandler.RefreshReleases).Start(); }
+
+        internal void RefreshReleasesListing()
+        {
+            if (Automated_Version_Selection == null)
+                return;
+            Automated_Version_Selection.Items.Clear();
+            Automated_Version_Selection.Items.AddRange((Config.ShowAlphaPreReleases
+                ? ThreadHandler.releasesList_All.ToArray()
+                : ThreadHandler.releasesList.ToArray()));
+            Automated_Version_Selection.SelectedIndex = 0;
+        }
+        private void Settings_ShowAlphaPreReleases_CheckedChanged(object sender, EventArgs e)
+        {
+            Config.ShowAlphaPreReleases = Settings_ShowAlphaPreReleases.Checked;
+            RefreshReleasesListing();
+        }
     }
 }

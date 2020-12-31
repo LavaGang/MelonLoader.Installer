@@ -13,11 +13,6 @@ namespace MelonLoader
     {
         internal static void CheckForInstallerUpdate()
         {
-            if (Program.RunInstallerUpdateCheck)
-            {
-                GetReleases();
-                return;
-            }
             Program.webClient.Headers.Clear();
             Program.webClient.Headers.Add("User-Agent", "request");
             string response = null;
@@ -49,7 +44,7 @@ namespace MelonLoader
                 return;
             }
             Program.mainForm.Invoke(new Action(() => { Program.mainForm.InstallerUpdateNotice.Visible = true; }));
-            if (!Config.AutoUpdateInstaller)
+            if (!Program.RunInstallerUpdateCheck || !Config.AutoUpdateInstaller)
             {
                 GetReleases();
                 return;
@@ -169,7 +164,6 @@ namespace MelonLoader
                 Program.mainForm.PleaseWait_PleaseWait.Visible = false;
                 Program.mainForm.PleaseWait_Text.Visible = false;
                 Program.mainForm.Error_Retry.Visible = false;
-                Program.mainForm.Automated_Version_Selection.SelectedIndex = 0;
                 Program.mainForm.Automated_UnityGame_Text.Visible = true;
                 Program.mainForm.Automated_UnityGame_Select.Visible = true;
                 Program.mainForm.Automated_UnityGame_Display.Visible = true;
@@ -182,6 +176,8 @@ namespace MelonLoader
             }));
         }
 
+        internal static List<string> releasesList = new List<string>();
+        internal static List<string> releasesList_All = new List<string>();
         internal static void ParseReleasesURL()
         {
             Program.webClient.Headers.Clear();
@@ -195,20 +191,23 @@ namespace MelonLoader
             JsonArray data = JsonValue.Parse(response).AsJsonArray;
             if (data.Count <= 0)
                 return;
-            List<string> releasesList = new List<string>();
+            releasesList.Clear();
+            releasesList_All.Clear();
             foreach (JsonValue release in data)
             {
                 JsonArray assets = release["assets"].AsJsonArray;
                 if (assets.Count <= 0)
                     continue;
-                if (!Config.ShowAlphaReleases && release["prerelease"].AsBoolean)
-                    continue;
                 string version = release["tag_name"].AsString;
-                releasesList.Add(version);
+                if (!release["prerelease"].AsBoolean)
+                    releasesList.Add(version);
+                releasesList_All.Add(version);
             }
             releasesList.Sort();
             releasesList.Reverse();
-            Program.mainForm.Invoke(new Action(() => { Program.mainForm.Automated_Version_Selection.Items.AddRange(releasesList.ToArray()); }));
+            releasesList_All.Sort();
+            releasesList_All.Reverse();
+            Program.mainForm.Invoke(new Action(() => Program.mainForm.RefreshReleasesListing()));
         }
     }
 }
