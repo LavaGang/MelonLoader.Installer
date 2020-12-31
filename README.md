@@ -27,28 +27,32 @@
 
 ### Automated:
 
-1. Make sure the Game is Closed and Not Running before attempting to Install MelonLoader.
-2. Make sure you have all the [Requirements](#requirements) installed before attempting to Install MelonLoader.
-3. Open the Tab named Automated.
-4. Click the SELECT Button.
-5. Select and Open the Game's Shortcut or the Game's EXE in the Game's Installation Folder.
-6. Select which Version of MelonLoader to install using it's Drop-Down List.  (Or leave it as-is for the Latest Version.)
-7. Select which Architecture of MelonLoader to install using it's Drop-Down List.  (Or leave it as-is for Auto-Detect.)
-8. Click the INSTALL / RE-INSTALL / UPDATE button.
+1. Make sure the Game is Closed and Not Running before attempting to INSTALL, RE-INSTALL, or UPDATE MelonLoader.
+2. Make sure you have all the [Requirements](#requirements) installed before attempting to INSTALL, RE-INSTALL, or UPDATE MelonLoader.
+3. Download [MelonLoader.Installer.exe](https://github.com/LavaGang/MelonLoader.Installer/releases/latest/download/MelonLoader.Installer.exe).
+4. Run MelonLoader.Installer.exe.
+5. Open the Tab named Automated.
+6. Click the SELECT Button.
+7. Select and Open the Game's Shortcut or the Game's EXE in the Game's Installation Folder.
+8. Select which Version of MelonLoader to install using it's Drop-Down List.  (Or leave it as-is for the Latest Version.)
+9. Select which Architecture of MelonLoader to install using it's Drop-Down List.  (Or leave it as-is for Auto-Detect.)
+10. Click the INSTALL, RE-INSTALL, or UPDATE button.
 
 --
 
 ### Manual Zip:
 
-1. Make sure the Game is Closed and Not Running before attempting to Install MelonLoader.
-2. Make sure you have all the [Requirements](#requirements) installed before attempting to Install MelonLoader.
-3. Open the Tab named Manual Zip.
-4. Click the SELECT Button next to Unity Game.
-5. Select and Open the Game's Shortcut or the Game's EXE in the Game's Installation Folder.
-6. Download MelonLoader [[x86](https://github.com/LavaGang/MelonLoader/releases/latest/download/MelonLoader.x86.zip)] [[x64](https://github.com/LavaGang/MelonLoader/releases/latest/download/MelonLoader.x64.zip)]
-7. Click the SELECT Button next to Zip Archive.
-7. Select and Open the MelonLoader Zip Archive.
-8. Click the INSTALL / RE-INSTALL / UPDATE button.
+1. Make sure the Game is Closed and Not Running before attempting to INSTALL, RE-INSTALL, or UPDATE MelonLoader.
+2. Make sure you have all the [Requirements](#requirements) installed before attempting to INSTALL, RE-INSTALL, or UPDATE MelonLoader.
+3. Download [MelonLoader.Installer.exe](https://github.com/LavaGang/MelonLoader.Installer/releases/latest/download/MelonLoader.Installer.exe).
+4. Run MelonLoader.Installer.exe.
+5. Open the Tab named Manual Zip.
+6. Click the SELECT Button next to Unity Game.
+7. Select and Open the Game's Shortcut or the Game's EXE in the Game's Installation Folder.
+8. Download MelonLoader [[x86](https://github.com/LavaGang/MelonLoader/releases/latest/download/MelonLoader.x86.zip)] [[x64](https://github.com/LavaGang/MelonLoader/releases/latest/download/MelonLoader.x64.zip)]
+9. Click the SELECT Button next to Zip Archive.
+10. Select and Open the MelonLoader Zip Archive.
+11. Click the INSTALL / RE-INSTALL / UPDATE button.
 
 ---
 
@@ -56,23 +60,27 @@
 
 ### Automated:
 
-1. Make sure the Game is Closed and Not Running before attempting to Un-Install MelonLoader.
-2. Make sure you have all the [Requirements](#requirements) installed before attempting to Un-Install MelonLoader.
-3. Open the Tab named Automated.
-4. Click the SELECT Button.
-5. Select and Open the Game's Shortcut or the Game's EXE in the Game's Installation Folder.
-6. Click the UN-INSTALL button.
+1. Make sure the Game is Closed and Not Running before attempting to UN-INSTALL MelonLoader.
+2. Make sure you have all the [Requirements](#requirements) installed before attempting to UN-INSTALL MelonLoader.
+3. Download [MelonLoader.Installer.exe](https://github.com/LavaGang/MelonLoader.Installer/releases/latest/download/MelonLoader.Installer.exe).
+4. Run MelonLoader.Installer.exe.
+5. Open the Tab named Automated.
+6. Click the SELECT Button.
+7. Select and Open the Game's Shortcut or the Game's EXE in the Game's Installation Folder.
+8. Click the UN-INSTALL button.
 
 --
 
 ### Manual Zip:
 
-1. Make sure the Game is Closed and Not Running before attempting to Un-Install MelonLoader.
-2. Make sure you have all the [Requirements](#requirements) installed before attempting to Un-Install MelonLoader.
-3. Open the Tab named Manual Zip.
-4. Click the SELECT Button next to Unity Game.
-5. Select and Open the Game's Shortcut or the Game's EXE in the Game's Installation Folder.
-6. Click the UN-INSTALL button.
+1. Make sure the Game is Closed and Not Running before attempting to UN-INSTALL MelonLoader.
+2. Make sure you have all the [Requirements](#requirements) installed before attempting to UN-INSTALL MelonLoader.
+3. Download [MelonLoader.Installer.exe](https://github.com/LavaGang/MelonLoader.Installer/releases/latest/download/MelonLoader.Installer.exe).
+4. Run MelonLoader.Installer.exe.
+5. Open the Tab named Manual Zip.
+6. Click the SELECT Button next to Unity Game.
+7. Select and Open the Game's Shortcut or the Game's EXE in the Game's Installation Folder.
+8. Click the UN-INSTALL button.
 
 ---
 
