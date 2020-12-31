@@ -45,8 +45,9 @@
 3. Open the Tab named Manual Zip.
 4. Click the SELECT Button next to Unity Game.
 5. Select and Open the Game's Shortcut or the Game's EXE in the Game's Installation Folder.
-6. Click the SELECT Button next to Zip Archive.
-7. Select and Open the MelonLoader Zip Archive you wish to Install.
+6. Download MelonLoader [[x86](https://github.com/LavaGang/MelonLoader/releases/latest/download/MelonLoader.x86.zip)] [[x64](https://github.com/LavaGang/MelonLoader/releases/latest/download/MelonLoader.x64.zip)]
+7. Click the SELECT Button next to Zip Archive.
+7. Select and Open the MelonLoader Zip Archive.
 8. Click the INSTALL / RE-INSTALL / UPDATE button.
 
 ---
