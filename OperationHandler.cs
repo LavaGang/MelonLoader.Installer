@@ -147,7 +147,6 @@ namespace MelonLoader
                         throw new IOException("Zip entry name ends in directory separator character but contains data.");
                     Directory.CreateDirectory(fullPath);
                 }
-
                 string pluginsDirectory = Path.GetFullPath(Path.Combine(destination, "Plugins"));
                 if (!Directory.Exists(pluginsDirectory))
                     Directory.CreateDirectory(pluginsDirectory);
@@ -208,7 +207,6 @@ namespace MelonLoader
                         throw new IOException("Zip entry name ends in directory separator character but contains data.");
                     Directory.CreateDirectory(fullPath);
                 }
-
                 string pluginsDirectory = Path.GetFullPath(Path.Combine(destination, "Plugins"));
                 if (!Directory.Exists(pluginsDirectory))
                     Directory.CreateDirectory(pluginsDirectory);
