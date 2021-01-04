@@ -12,6 +12,9 @@
 3. Fixed Issue with Self-Update Check not running.
 4. Fixed Issue with "Show ALPHA Pre-Releases" Setting not Loading properly.
 5. Fixed Issue with "Show ALPHA Pre-Releases" Setting causing GitHub to Rate Limit the user if toggled off and on repeatedly.
+6. Fixed Issue with not Auto-Creating a Plugins folder.
+7. Fixed Issue with not Auto-Creating a Mods folder.
+8. Fixed Issue with not Auto-Creating a UserData folder.
 
 ---
 
