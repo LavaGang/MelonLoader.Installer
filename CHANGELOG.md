@@ -15,6 +15,7 @@
 6. Fixed Issue with not Auto-Creating a Plugins folder.
 7. Fixed Issue with not Auto-Creating a Mods folder.
 8. Fixed Issue with not Auto-Creating a UserData folder.
+9. Fixed Issue with Null Reference Exception with getting Existing MelonLoader Install Version.
 
 ---
 

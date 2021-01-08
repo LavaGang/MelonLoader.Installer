@@ -119,25 +119,7 @@ namespace MelonLoader
             string folder_path = Path.Combine(Path.GetDirectoryName(Automated_UnityGame_Display.Text), "MelonLoader");
             string legacy_file_path = Path.Combine(folder_path, "MelonLoader.ModHandler.dll");
             string file_path = Path.Combine(folder_path, "MelonLoader.dll");
-            if (File.Exists(legacy_file_path) || File.Exists(file_path))
-            {
-                FileVersionInfo fileVersionInfo = FileVersionInfo.GetVersionInfo((File.Exists(legacy_file_path) ? legacy_file_path : file_path));
-                CurrentInstalledVersion = new Version(fileVersionInfo.ProductVersion);
-                Automated_Install.Size = new Size(206, 44);
-                ManualZip_Install.Size = new Size(206, 44);
-                Automated_Uninstall.Visible = true;
-                ManualZip_Uninstall.Visible = true;
-                ManualZip_Install.Text = "RE-INSTALL";
-                Version selected_ver = new Version(Automated_Version_Selection.Text.Substring(1));
-                int compare_ver = selected_ver.CompareTo(CurrentInstalledVersion);
-                if (compare_ver < 0)
-                    Automated_Install.Text = "DOWNGRADE";
-                else if (compare_ver > 0)
-                    Automated_Install.Text = "UPDATE";
-                else
-                    Automated_Install.Text = "RE-INSTALL";
-            }
-            else
+            if (!File.Exists(legacy_file_path) || !File.Exists(file_path))
             {
                 ManualZip_Install.Text = "INSTALL";
                 Automated_Install.Text = "INSTALL";
@@ -145,7 +127,32 @@ namespace MelonLoader
                 ManualZip_Install.Size = new Size(419, 44);
                 Automated_Uninstall.Visible = false;
                 ManualZip_Uninstall.Visible = false;
+                return;
             }
+            string fileversion = null;
+            FileVersionInfo fileVersionInfo = FileVersionInfo.GetVersionInfo((File.Exists(legacy_file_path) ? legacy_file_path : file_path));
+            if (fileVersionInfo != null)
+            {
+                fileversion = fileVersionInfo.ProductVersion;
+                if (string.IsNullOrEmpty(fileversion))
+                    fileversion = fileVersionInfo.FileVersion;
+            }
+            if (string.IsNullOrEmpty(fileversion))
+                fileversion = "0.0.0.0";
+            CurrentInstalledVersion = new Version(fileversion);
+            Automated_Install.Size = new Size(206, 44);
+            ManualZip_Install.Size = new Size(206, 44);
+            Automated_Uninstall.Visible = true;
+            ManualZip_Uninstall.Visible = true;
+            ManualZip_Install.Text = "RE-INSTALL";
+            Version selected_ver = new Version(Automated_Version_Selection.Text.Substring(1));
+            int compare_ver = selected_ver.CompareTo(CurrentInstalledVersion);
+            if (compare_ver < 0)
+                Automated_Install.Text = "DOWNGRADE";
+            else if (compare_ver > 0)
+                Automated_Install.Text = "UPDATE";
+            else
+                Automated_Install.Text = "RE-INSTALL";
         }
 
         private void ThemeChanged(object sender, EventArgs e)
