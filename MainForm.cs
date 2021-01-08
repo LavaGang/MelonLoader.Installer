@@ -399,7 +399,8 @@ namespace MelonLoader
             Automated_Version_Selection.Items.AddRange((Config.ShowAlphaPreReleases
                 ? ThreadHandler.releasesList_All.ToArray()
                 : ThreadHandler.releasesList.ToArray()));
-            Automated_Version_Selection.SelectedIndex = 0;
+            if (Automated_Version_Selection.Items.Count > 0)
+                Automated_Version_Selection.SelectedIndex = 0;
         }
         private void Settings_ShowAlphaPreReleases_CheckedChanged(object sender, EventArgs e)
         {
