@@ -119,7 +119,7 @@ namespace MelonLoader
             string folder_path = Path.Combine(Path.GetDirectoryName(Automated_UnityGame_Display.Text), "MelonLoader");
             string legacy_file_path = Path.Combine(folder_path, "MelonLoader.ModHandler.dll");
             string file_path = Path.Combine(folder_path, "MelonLoader.dll");
-            if (!File.Exists(legacy_file_path) || !File.Exists(file_path))
+            if (!File.Exists(legacy_file_path) && !File.Exists(file_path))
             {
                 ManualZip_Install.Text = "INSTALL";
                 Automated_Install.Text = "INSTALL";

@@ -1,7 +1,14 @@
 ### Version List:
 
+[v3.0.2](#v302)
 [v3.0.1](#v301)  
 [v3.0.0](#v300)  
+
+---
+
+### v3.0.2:
+
+1. Fixed Issue with Existing MelonLoader Install Check Failing to Detect.
 
 ---
 
