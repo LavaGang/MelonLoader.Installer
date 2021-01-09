@@ -1,8 +1,13 @@
 ### Version List:
 
+[v3.0.3](#v303)
 [v3.0.2](#v302)
 [v3.0.1](#v301)  
 [v3.0.0](#v300)  
+
+### v3.0.3:
+
+1. Fixed Issue with Legacy Detection bugging out causing modprefs.ini to Delete Itself.
 
 ---
 

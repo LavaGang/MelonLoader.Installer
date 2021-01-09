@@ -107,8 +107,8 @@ namespace MelonLoader
                 string proxy_path = null;
                 if (GetExistingProxyPath(destination, out proxy_path))
                     File.Delete(proxy_path);
-                if (legacy_version)
-                    DowngradeMelonPreferences(destination);
+                //if (legacy_version)
+                //    DowngradeMelonPreferences(destination);
                 using FileStream stream = new FileStream(temp_path, FileMode.Open, FileAccess.Read);
                 using ZipArchive zip = new ZipArchive(stream);
                 int total_entry_count = zip.Entries.Count;
@@ -255,6 +255,7 @@ namespace MelonLoader
             return !string.IsNullOrEmpty(proxy_path);
         }
 
+        /*
         private static void DowngradeMelonPreferences(string destination)
         {
             string userdatapath = Path.Combine(destination, "UserData");
@@ -309,6 +310,7 @@ namespace MelonLoader
             }
             File.Delete(oldfilepath);
         }
+        */
 
         private static void ExtraDirectoryChecks(string destination)
         {
