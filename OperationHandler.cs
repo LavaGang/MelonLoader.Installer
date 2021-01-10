@@ -107,8 +107,6 @@ namespace MelonLoader
                 string proxy_path = null;
                 if (GetExistingProxyPath(destination, out proxy_path))
                     File.Delete(proxy_path);
-                //if (legacy_version)
-                //    DowngradeMelonPreferences(destination);
                 using FileStream stream = new FileStream(temp_path, FileMode.Open, FileAccess.Read);
                 using ZipArchive zip = new ZipArchive(stream);
                 int total_entry_count = zip.Entries.Count;
@@ -147,6 +145,7 @@ namespace MelonLoader
                         throw new IOException("Zip entry name ends in directory separator character but contains data.");
                     Directory.CreateDirectory(fullPath);
                 }
+                DowngradeMelonPreferences(destination, legacy_version);
                 ExtraDirectoryChecks(destination);
             }
             catch (Exception ex)
@@ -255,13 +254,13 @@ namespace MelonLoader
             return !string.IsNullOrEmpty(proxy_path);
         }
 
-        /*
-        private static void DowngradeMelonPreferences(string destination)
+        private static void DowngradeMelonPreferences(string destination, bool legacy_version)
         {
+            if (!legacy_version || (Program.mainForm.CurrentInstalledVersion == null) || (Program.mainForm.CurrentInstalledVersion.CompareTo(new Version("0.3.0")) < 0))
+                return;
             string userdatapath = Path.Combine(destination, "UserData");
-            string newfilepath = Path.Combine(userdatapath, "modprefs.ini");
-            if (File.Exists(newfilepath))
-                File.Delete(newfilepath);
+            if (!Directory.Exists(userdatapath))
+                return;
             string oldfilepath = Path.Combine(userdatapath, "MelonPreferences.cfg");
             if (!File.Exists(oldfilepath))
                 return;
@@ -274,6 +273,9 @@ namespace MelonLoader
             TomlTable model = docsyn.ToModel();
             if (model.Count <= 0)
                 return;
+            string newfilepath = Path.Combine(userdatapath, "modprefs.ini");
+            if (File.Exists(newfilepath))
+                File.Delete(newfilepath);
             IniFile iniFile = new IniFile(newfilepath);
             foreach (KeyValuePair<string, object> keypair in model)
             {
@@ -310,7 +312,6 @@ namespace MelonLoader
             }
             File.Delete(oldfilepath);
         }
-        */
 
         private static void ExtraDirectoryChecks(string destination)
         {
