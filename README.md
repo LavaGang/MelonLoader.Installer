@@ -90,7 +90,7 @@ MelonLoader.Installer is licensed under the Apache License, Version 2.0. See [LI
 
 Third-party libraries used as source code:
 - [LightJson](https://github.com/MarcosLopezC/LightJson) is licensed under the MIT License. See [LICENSE](https://github.com/LavaGang/MelonLoader.Installer/blob/master/Libs/LightJson/LICENSE.txt) for the full License.
-- [Tomlyn](https://github.com/xoofx/Tomlyn) is licensed under the MIT License. See [LICENSE](https://github.com/LavaGang/MelonLoader.Installer/blob/master/Libs/Tomlyn/license.txt) for the full License.
+- [Tomlyn](https://github.com/xoofx/Tomlyn) is licensed under the BSD 2-Clause "Simplified" License. See [LICENSE](https://github.com/LavaGang/MelonLoader.Installer/blob/master/Libs/Tomlyn/license.txt) for the full License.
 - Steam Library, VDF, and ACF Parsing from [SteamFinder.cs](https://github.com/Umbranoxio/BeatSaberModInstaller/blob/master/BeatSaberModManager/Dependencies/SteamFinder.cs) by [Umbranoxio](https://github.com/Umbranoxio) and [Dalet](https://github.com/Dalet).
 
 External tools downloaded:
