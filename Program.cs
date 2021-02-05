@@ -86,7 +86,7 @@ namespace MelonLoader
 #if DEBUG
             FinishingMessageBox(msg, MessageBoxButtons.OK, MessageBoxIcon.Error);
 #else
-            FinishingMessageBox($"INTERNAL FAILURE! Please upload the created log file \"{filePath}\"to #melonloader-support on Discord.", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            FinishingMessageBox($"INTERNAL FAILURE! Please upload the log file \"{filePath}\" to #melonloader-support on Discord.", MessageBoxButtons.OK, MessageBoxIcon.Error);
 #endif
         }
 
