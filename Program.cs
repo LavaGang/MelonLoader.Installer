@@ -81,9 +81,10 @@ namespace MelonLoader
         {
             TempFileCache.ClearCache();
             OperationError();
-            string filePath = Directory.GetCurrentDirectory() + $@"\MLInstaller_{DateTime.Now:yy-M-dd_HH-mm-ss.fff}.log";
+
             try 
             {
+                string filePath = Directory.GetCurrentDirectory() + $@"\MLInstaller_{DateTime.Now:yy-M-dd_HH-mm-ss.fff}.log";
                 File.WriteAllText(filePath, msg);
                 Process.Start("explorer.exe", $"/select, {filePath}");
 #if DEBUG
