@@ -94,7 +94,7 @@ namespace MelonLoader
             }
             catch (UnauthorizedAccessException)
             {
-                FinishingMessageBox($"Couldn't create log file! Try running the installer from a different directory", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                FinishingMessageBox($"Couldn't create log file! Try running the installer as administrator or run the installer from a different directory", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
         }
