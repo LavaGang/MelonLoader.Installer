@@ -81,13 +81,23 @@ namespace MelonLoader
         {
             TempFileCache.ClearCache();
             OperationError();
-            string filePath = Directory.GetCurrentDirectory() + $@"\MLInstaller_{DateTime.Now:yy-M-dd_HH-mm-ss.fff}.log";
-            File.WriteAllText(filePath, msg);
+
+            try 
+            {
+                string filePath = Directory.GetCurrentDirectory() + $@"\MLInstaller_{DateTime.Now:yy-M-dd_HH-mm-ss.fff}.log";
+                File.WriteAllText(filePath, msg);
+                Process.Start("explorer.exe", $"/select, {filePath}");
 #if DEBUG
-            FinishingMessageBox(msg, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                FinishingMessageBox(msg, MessageBoxButtons.OK, MessageBoxIcon.Error);
 #else
-            FinishingMessageBox($"INTERNAL FAILURE! Please upload the log file \"{filePath}\" to #melonloader-support on Discord.", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                FinishingMessageBox($"INTERNAL FAILURE! Please upload the log file \"{filePath}\" to #melonloader-support on Discord.", MessageBoxButtons.OK, MessageBoxIcon.Error);
 #endif
+            }
+            catch (UnauthorizedAccessException)
+            {
+                FinishingMessageBox($"Couldn't create log file! Try running the installer as administrator or run the installer from a different directory", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
         }
 
         internal static void OperationError()
