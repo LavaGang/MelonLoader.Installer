@@ -1,10 +1,21 @@
 ### Version List:
 
+[v3.0.5](#v305)  
 [v3.0.4](#v304)  
 [v3.0.3](#v303)  
 [v3.0.2](#v302)  
 [v3.0.1](#v301)  
 [v3.0.0](#v300)  
+
+---
+
+### v3.0.5:
+
+1. Errors now explicitly state Log File Location.    (Credits to gompocp :3)
+2. Errors now open File Explorer and Highlight the Log File.    (Credits to gompocp :3)
+3. Fixed Issue with Double File Extensions when Self-Updating.
+4. Fixed Issue with Command Line Arguments not being passed when Self-Updating.
+5. Added Extra File Cleanup.
 
 ---
 

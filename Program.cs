@@ -4,6 +4,7 @@ using System.Globalization;
 using System.IO;
 using System.Net;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows.Forms;
 
@@ -13,6 +14,7 @@ namespace MelonLoader
     {
         internal static MainForm mainForm = null;
         internal static WebClient webClient = null;
+        internal static Version CurrentInstalledVersion = null;
         internal static bool Closing = false;
 #if DEBUG
         internal static bool RunInstallerUpdateCheck = false;
@@ -35,17 +37,19 @@ namespace MelonLoader
         }
 
         [STAThread]
-        private static void Main()
+        private static int Main(string[] args)
         {
-            FileNameCheck();
-
-            // Add Command Line Options
-
+            if (FileNameCheck(args))
+                return 0;
+            //int commandlineval = 0;
+            //if (CommandLine.Run(args, ref commandlineval))
+            //    return commandlineval;
             mainForm = new MainForm();
             Application.Run(mainForm);
+            return 0;
         }
 
-        private static void FileNameCheck()
+        private static bool FileNameCheck(string[] args)
         {
             string exe_fullpath = Process.GetCurrentProcess().MainModule.FileName;
             string exe_path = Path.GetDirectoryName(exe_fullpath);
@@ -55,14 +59,19 @@ namespace MelonLoader
                 string tmp_exe_path = Path.Combine(exe_path, (exe_name + ".tmp.exe"));
                 if (File.Exists(tmp_exe_path))
                     File.Delete(tmp_exe_path);
-                return;
+                return false;
             }
-            string new_exe_path = Path.Combine(exe_path, (Path.GetFileNameWithoutExtension(exe_name) + ".exe"));
+            string new_exe_name = exe_name.Substring(0, (exe_name.Length - 4));
+            string new_exe_path = Path.Combine(exe_path, (new_exe_name + ".exe"));
             if (File.Exists(new_exe_path))
                 File.Delete(new_exe_path);
             File.Copy(exe_fullpath, new_exe_path);
-            Process.Start(new_exe_path);
+            ProcessStartInfo procinfo = new ProcessStartInfo(new_exe_path);
+            if ((args != null) && (args.Length > 0))
+                procinfo.Arguments = string.Join(" ", args.Where(s => !string.IsNullOrEmpty(s)).Select(it => ("\"" + Regex.Replace(it, @"(\\+)$", @"$1$1") + "\""))); ;
+            Process.Start(procinfo);
             Process.GetCurrentProcess().Kill();
+            return true;
         }
 
         internal static void SetCurrentOperation(string op)
@@ -90,12 +99,12 @@ namespace MelonLoader
 #if DEBUG
                 FinishingMessageBox(msg, MessageBoxButtons.OK, MessageBoxIcon.Error);
 #else
-                FinishingMessageBox($"INTERNAL FAILURE! Please upload the log file \"{filePath}\" to #melonloader-support on Discord.", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                FinishingMessageBox($"INTERNAL FAILURE! Please upload the log file \"{filePath}\" when requesting support.", MessageBoxButtons.OK, MessageBoxIcon.Error);
 #endif
             }
             catch (UnauthorizedAccessException)
             {
-                FinishingMessageBox($"Couldn't create log file! Try running the installer as administrator or run the installer from a different directory", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                FinishingMessageBox($"Couldn't create log file! Try running the Installer as Administrator or run the Installer from a different directory.", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
         }
@@ -163,6 +172,56 @@ namespace MelonLoader
                 SetTotalPercentage(0);
                 OperationHandler.CurrentOperation = OperationHandler.Operations.NONE;
             }));
+        }
+
+        internal static void GetCurrentInstallVersion(string dirpath)
+        {
+            string folder_path = Path.Combine(dirpath, "MelonLoader");
+            string legacy_file_path = Path.Combine(folder_path, "MelonLoader.ModHandler.dll");
+            string file_path = Path.Combine(folder_path, "MelonLoader.dll");
+            if (!File.Exists(legacy_file_path) && !File.Exists(file_path))
+                return;
+            string fileversion = null;
+            FileVersionInfo fileVersionInfo = FileVersionInfo.GetVersionInfo((File.Exists(legacy_file_path) ? legacy_file_path : file_path));
+            if (fileVersionInfo != null)
+            {
+                fileversion = fileVersionInfo.ProductVersion;
+                if (string.IsNullOrEmpty(fileversion))
+                    fileversion = fileVersionInfo.FileVersion;
+            }
+            if (string.IsNullOrEmpty(fileversion))
+                fileversion = "0.0.0.0";
+            CurrentInstalledVersion = new Version(fileversion);
+        }
+
+        internal static bool ValidateUnityGamePath(ref string filepath)
+        {
+            if (string.IsNullOrEmpty(filepath))
+                return false;
+            string file_extension = Path.GetExtension(filepath);
+            if (string.IsNullOrEmpty(file_extension) || (!file_extension.Equals(".exe") && !file_extension.Equals(".lnk") && !file_extension.Equals(".url")))
+                return false;
+            if (file_extension.Equals(".lnk") || file_extension.Equals(".url"))
+            {
+                string newfilepath = GetFilePathFromShortcut(filepath);
+                if (string.IsNullOrEmpty(newfilepath) || !newfilepath.EndsWith(".exe"))
+                    return false;
+                filepath = newfilepath;
+            }
+
+            // Verify Unity Game
+
+            return true;
+        }
+
+        internal static bool ValidateZipPath(string filepath)
+        {
+            if (string.IsNullOrEmpty(filepath))
+                return false;
+            string file_extension = Path.GetExtension(filepath);
+            if (string.IsNullOrEmpty(file_extension) || !file_extension.Equals(".zip"))
+                return false;
+            return true;
         }
 
         internal static string GetFilePathFromShortcut(string shortcut_path)

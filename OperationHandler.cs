@@ -118,7 +118,7 @@ namespace MelonLoader
                     Program.SetCurrentPercentage(percentage);
                     Program.SetTotalPercentage((50 + (percentage / 2)));
                     ZipArchiveEntry entry = zip.Entries[i];
-                    string fullPath = Path.GetFullPath(Path.Combine(destination, entry.FullName));
+                    string fullPath = Path.Combine(destination, entry.FullName);
                     if (!fullPath.StartsWith(destination))
                         throw new IOException("Extracting Zip entry would have resulted in a file outside the specified destination directory.");
                     string filename = Path.GetFileName(fullPath);
@@ -131,7 +131,7 @@ namespace MelonLoader
                                 string new_proxy_path = Path.Combine(destination, (proxyname + ".dll"));
                                 if (File.Exists(new_proxy_path))
                                     continue;
-                                fullPath = Path.GetFullPath(new_proxy_path);
+                                fullPath = new_proxy_path;
                                 break;
                             }
                         }
@@ -147,6 +147,7 @@ namespace MelonLoader
                 }
                 DowngradeMelonPreferences(destination, legacy_version);
                 ExtraDirectoryChecks(destination);
+                ExtraCleanupCheck(destination);
             }
             catch (Exception ex)
             {
@@ -182,7 +183,7 @@ namespace MelonLoader
                     Program.SetCurrentPercentage(percentage);
                     Program.SetTotalPercentage(percentage);
                     ZipArchiveEntry entry = zip.Entries[i];
-                    string fullPath = Path.GetFullPath(Path.Combine(destination, entry.FullName));
+                    string fullPath = Path.Combine(destination, entry.FullName);
                     if (!fullPath.StartsWith(destination))
                         throw new IOException("Extracting Zip entry would have resulted in a file outside the specified destination directory.");
                     string filename = Path.GetFileName(fullPath);
@@ -199,6 +200,7 @@ namespace MelonLoader
                     Directory.CreateDirectory(fullPath);
                 }
                 ExtraDirectoryChecks(destination);
+                ExtraCleanupCheck(destination);
             }
             catch (Exception ex)
             {
@@ -222,6 +224,7 @@ namespace MelonLoader
                 string proxy_path = null;
                 if (GetExistingProxyPath(destination, out proxy_path))
                     File.Delete(proxy_path);
+                ExtraCleanupCheck(destination);
             }
             catch (Exception ex)
             {
@@ -230,7 +233,7 @@ namespace MelonLoader
             }
             if (Program.Closing)
                 return;
-            Program.mainForm.CurrentInstalledVersion = null;
+            Program.CurrentInstalledVersion = null;
             Program.OperationSuccess();
             Program.FinishingMessageBox((CurrentOperationName + " was Successful!"), MessageBoxButtons.OK, MessageBoxIcon.None);
         }
@@ -256,7 +259,7 @@ namespace MelonLoader
 
         private static void DowngradeMelonPreferences(string destination, bool legacy_version)
         {
-            if (!legacy_version || (Program.mainForm.CurrentInstalledVersion == null) || (Program.mainForm.CurrentInstalledVersion.CompareTo(new Version("0.3.0")) < 0))
+            if (!legacy_version || (Program.CurrentInstalledVersion == null) || (Program.CurrentInstalledVersion.CompareTo(new Version("0.3.0")) < 0))
                 return;
             string userdatapath = Path.Combine(destination, "UserData");
             if (!Directory.Exists(userdatapath))
@@ -315,15 +318,28 @@ namespace MelonLoader
 
         private static void ExtraDirectoryChecks(string destination)
         {
-            string pluginsDirectory = Path.GetFullPath(Path.Combine(destination, "Plugins"));
+            string pluginsDirectory = Path.Combine(destination, "Plugins");
             if (!Directory.Exists(pluginsDirectory))
                 Directory.CreateDirectory(pluginsDirectory);
-            string modsDirectory = Path.GetFullPath(Path.Combine(destination, "Mods"));
+            string modsDirectory = Path.Combine(destination, "Mods");
             if (!Directory.Exists(modsDirectory))
                 Directory.CreateDirectory(modsDirectory);
-            string userdataDirectory = Path.GetFullPath(Path.Combine(destination, "UserData"));
+            string userdataDirectory = Path.Combine(destination, "UserData");
             if (!Directory.Exists(userdataDirectory))
                 Directory.CreateDirectory(userdataDirectory);
+        }
+
+        private static void ExtraCleanupCheck(string destination)
+        {
+            string main_dll = Path.Combine(destination, "MelonLoader.dll");
+            if (File.Exists(main_dll))
+                File.Delete(main_dll);
+            string main2_dll = Path.Combine(destination, "MelonLoader.ModHandler.dll");
+            if (File.Exists(main2_dll))
+                File.Delete(main2_dll);
+            string logs_path = Path.Combine(destination, "Logs");
+            if (Directory.Exists(logs_path))
+                Directory.Delete(logs_path, true);
         }
     }
 }

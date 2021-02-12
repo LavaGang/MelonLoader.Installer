@@ -10,7 +10,6 @@ namespace MelonLoader
     public partial class MainForm : MetroFramework.Forms.MetroForm
     {
         private int GameArch = 0;
-        internal Version CurrentInstalledVersion = null;
 
         public MainForm()
         {
@@ -44,32 +43,22 @@ namespace MelonLoader
                 if ((opd.ShowDialog() != DialogResult.OK) || string.IsNullOrEmpty(opd.FileName))
                     return;
                 string filepath = opd.FileName;
-                string file_extension = Path.GetExtension(filepath);
-                if (string.IsNullOrEmpty(file_extension) || (!file_extension.Equals(".exe") && !file_extension.Equals(".lnk") && !file_extension.Equals(".url")))
+                if (!Program.ValidateUnityGamePath(ref filepath))
                 {
-                    MessageBox.Show("Invalid File Selected!", BuildInfo.Name, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("Invalid Unity Game Selected!", BuildInfo.Name, MessageBoxButtons.OK, MessageBoxIcon.Error);
                     SelectUnityGame();
                     return;
                 }
-                if (file_extension.Equals(".lnk") || file_extension.Equals(".url"))
-                {
-                    string newfilepath = Program.GetFilePathFromShortcut(filepath);
-                    if (string.IsNullOrEmpty(newfilepath) || !newfilepath.EndsWith(".exe"))
-                    {
-                        MessageBox.Show("Invalid File Selected!", BuildInfo.Name, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        SelectUnityGame();
-                        return;
-                    }
-                    filepath = newfilepath;
-                }
-
-                // Verify Unity Game
-
-                Automated_UnityGame_Display.Text = filepath;
-                ManualZip_UnityGame_Display.Text = filepath;
-                Automated_Install.Enabled = true;
-                CheckUnityGame();
+                SetUnityGame(filepath);
             }
+        }
+
+        internal void SetUnityGame(string filepath)
+        {
+            Automated_UnityGame_Display.Text = filepath;
+            ManualZip_UnityGame_Display.Text = filepath;
+            Automated_Install.Enabled = true;
+            CheckUnityGame();
         }
 
         private void SelectZipArchive()
@@ -83,18 +72,22 @@ namespace MelonLoader
                 if ((opd.ShowDialog() != DialogResult.OK) || string.IsNullOrEmpty(opd.FileName))
                     return;
                 string filepath = opd.FileName;
-                string file_extension = Path.GetExtension(filepath);
-                if (string.IsNullOrEmpty(file_extension) || !file_extension.Equals(".zip"))
+                if (!Program.ValidateZipPath(filepath))
                 {
-                    MessageBox.Show("Invalid File Selected!", BuildInfo.Name, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("Invalid Zip Selected!", BuildInfo.Name, MessageBoxButtons.OK, MessageBoxIcon.Error);
                     SelectZipArchive();
                     return;
                 }
-                ManualZip_ZipArchive_Display.Text = filepath;
-                if (!string.IsNullOrEmpty(ManualZip_UnityGame_Display.Text)
-                && !ManualZip_UnityGame_Display.Text.Equals("Please Select your Unity Game..."))
-                    ManualZip_Install.Enabled = true;
+                SetZipArchive(filepath);
             }
+        }
+
+        internal void SetZipArchive(string filepath)
+        {
+            ManualZip_ZipArchive_Display.Text = filepath;
+            if (!string.IsNullOrEmpty(ManualZip_UnityGame_Display.Text)
+            && !ManualZip_UnityGame_Display.Text.Equals("Please Select your Unity Game..."))
+                ManualZip_Install.Enabled = true;
         }
 
         private void CheckUnityGame()
@@ -116,10 +109,8 @@ namespace MelonLoader
                 Automated_Arch_Selection.SelectedIndex = GameArch;
                 Automated_Arch_Selection.Select();
             }
-            string folder_path = Path.Combine(Path.GetDirectoryName(Automated_UnityGame_Display.Text), "MelonLoader");
-            string legacy_file_path = Path.Combine(folder_path, "MelonLoader.ModHandler.dll");
-            string file_path = Path.Combine(folder_path, "MelonLoader.dll");
-            if (!File.Exists(legacy_file_path) && !File.Exists(file_path))
+            Program.GetCurrentInstallVersion(Path.GetDirectoryName(Automated_UnityGame_Display.Text));
+            if (Program.CurrentInstalledVersion == null)
             {
                 ManualZip_Install.Text = "INSTALL";
                 Automated_Install.Text = "INSTALL";
@@ -129,24 +120,13 @@ namespace MelonLoader
                 ManualZip_Uninstall.Visible = false;
                 return;
             }
-            string fileversion = null;
-            FileVersionInfo fileVersionInfo = FileVersionInfo.GetVersionInfo((File.Exists(legacy_file_path) ? legacy_file_path : file_path));
-            if (fileVersionInfo != null)
-            {
-                fileversion = fileVersionInfo.ProductVersion;
-                if (string.IsNullOrEmpty(fileversion))
-                    fileversion = fileVersionInfo.FileVersion;
-            }
-            if (string.IsNullOrEmpty(fileversion))
-                fileversion = "0.0.0.0";
-            CurrentInstalledVersion = new Version(fileversion);
             Automated_Install.Size = new Size(206, 44);
             ManualZip_Install.Size = new Size(206, 44);
             Automated_Uninstall.Visible = true;
             ManualZip_Uninstall.Visible = true;
             ManualZip_Install.Text = "RE-INSTALL";
             Version selected_ver = new Version(Automated_Version_Selection.Text.Substring(1));
-            int compare_ver = selected_ver.CompareTo(CurrentInstalledVersion);
+            int compare_ver = selected_ver.CompareTo(Program.CurrentInstalledVersion);
             if (compare_ver < 0)
                 Automated_Install.Text = "DOWNGRADE";
             else if (compare_ver > 0)
@@ -266,12 +246,12 @@ namespace MelonLoader
             Automated_x64Only.Visible = legacy_version;
             Automated_Arch_Selection.Visible = !legacy_version;
             Automated_Arch_AutoDetect.Visible = !legacy_version;
-            if ((CurrentInstalledVersion == null) || string.IsNullOrEmpty(Automated_Version_Selection.Text))
+            if ((Program.CurrentInstalledVersion == null) || string.IsNullOrEmpty(Automated_Version_Selection.Text))
                 Automated_Install.Text = "INSTALL";
             else
             {
                 Version selected_ver = new Version(Automated_Version_Selection.Text.Substring(1));
-                int compare_ver = selected_ver.CompareTo(CurrentInstalledVersion);
+                int compare_ver = selected_ver.CompareTo(Program.CurrentInstalledVersion);
                 if (compare_ver < 0)
                     Automated_Install.Text = "DOWNGRADE";
                 else if (compare_ver > 0)
@@ -292,7 +272,7 @@ namespace MelonLoader
 
         private void Automated_Install_Click(object sender, EventArgs e)
         {
-            if ((CurrentInstalledVersion == null) || string.IsNullOrEmpty(Automated_Version_Selection.Text))
+            if ((Program.CurrentInstalledVersion == null) || string.IsNullOrEmpty(Automated_Version_Selection.Text))
             {
                 OperationHandler.CurrentOperation = OperationHandler.Operations.INSTALL;
                 Tab_Output.Text = "INSTALL  ";
@@ -300,7 +280,7 @@ namespace MelonLoader
             else
             {
                 Version selected_ver = new Version(Automated_Version_Selection.Text.Substring(1));
-                int compare_ver = selected_ver.CompareTo(CurrentInstalledVersion);
+                int compare_ver = selected_ver.CompareTo(Program.CurrentInstalledVersion);
                 if (compare_ver < 0)
                 {
                     OperationHandler.CurrentOperation = OperationHandler.Operations.DOWNGRADE;
@@ -328,7 +308,7 @@ namespace MelonLoader
 
         private void ManualZip_Install_Click(object sender, EventArgs e)
         {
-            if (CurrentInstalledVersion == null)
+            if (Program.CurrentInstalledVersion == null)
             {
                 OperationHandler.CurrentOperation = OperationHandler.Operations.INSTALL;
                 Tab_Output.Text = "INSTALL  ";
@@ -397,8 +377,8 @@ namespace MelonLoader
                 return;
             Automated_Version_Selection.Items.Clear();
             Automated_Version_Selection.Items.AddRange((Config.ShowAlphaPreReleases
-                ? ThreadHandler.releasesList_All.ToArray()
-                : ThreadHandler.releasesList.ToArray()));
+                ? Releases.All.ToArray()
+                : Releases.Official.ToArray()));
             if (Automated_Version_Selection.Items.Count > 0)
                 Automated_Version_Selection.SelectedIndex = 0;
         }

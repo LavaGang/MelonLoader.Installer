@@ -79,6 +79,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CommandLine.cs" />
     <Compile Include="Config.cs" />
     <Compile Include="Libs\IniFile.cs" />
     <Compile Include="Libs\Tomlyn\Collections\Iterator.cs" />
@@ -175,6 +176,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Releases.cs" />
     <Compile Include="SteamHandler.cs" />
     <Compile Include="TempFileCache.cs" />
     <Compile Include="ThreadHandler.cs" />
@@ -189,6 +191,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="Libs\Tomlyn\readme.md" />
     <None Include="Libs\Tomlyn\Syntax\Syntax.cd" />
     <None Include="packages.config" />

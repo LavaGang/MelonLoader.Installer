@@ -119,6 +119,16 @@ namespace MelonLoader
         internal static void RefreshReleases()
         {
             Program.mainForm.Invoke(new Action(() => {
+                if (!string.IsNullOrEmpty(CommandLine.ExePath))
+                {
+                    if (Program.ValidateUnityGamePath(ref CommandLine.ExePath))
+                    {
+                        MessageBox.Show(CommandLine.ExePath);
+                        Program.mainForm.SetUnityGame(CommandLine.ExePath);
+                    }
+                    else
+                        MessageBox.Show("Invalid File Selected!", BuildInfo.Name, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
                 Program.mainForm.PageManager.Cursor = Cursors.Hand;
                 Program.mainForm.Tab_Automated.Text = "Automated   ";
                 Program.mainForm.PleaseWait_PleaseWait.Visible = true;
@@ -145,9 +155,11 @@ namespace MelonLoader
                 Program.mainForm.Automated_Version_Latest.Visible = false;
                 Program.mainForm.Automated_Version_Selection.Items.Clear();
             }));
-            ParseReleasesURL();
+            if (Releases.All.Count <= 0)
+                Releases.RequestLists();
             Program.mainForm.Invoke(new Action(() =>
             {
+                Program.mainForm.RefreshReleasesListing();
                 if (Program.mainForm.Automated_Version_Selection.Items.Count <= 0)
                 {
                     Program.mainForm.PageManager.Cursor = Cursors.Hand;
@@ -174,40 +186,6 @@ namespace MelonLoader
                 Program.mainForm.Automated_Version_Selection.Visible = true;
                 Program.mainForm.Automated_Version_Latest.Visible = true;
             }));
-        }
-
-        internal static List<string> releasesList = new List<string>();
-        internal static List<string> releasesList_All = new List<string>();
-        internal static void ParseReleasesURL()
-        {
-            Program.webClient.Headers.Clear();
-            Program.webClient.Headers.Add("User-Agent", "Unity web player");
-            string response = null;
-            try { response = Program.webClient.DownloadString(Config.Repo_API_MelonLoader); } catch { response = null; }
-            if (string.IsNullOrEmpty(response))
-                return;
-            if (Program.Closing)
-                return;
-            JsonArray data = JsonValue.Parse(response).AsJsonArray;
-            if (data.Count <= 0)
-                return;
-            releasesList.Clear();
-            releasesList_All.Clear();
-            foreach (JsonValue release in data)
-            {
-                JsonArray assets = release["assets"].AsJsonArray;
-                if (assets.Count <= 0)
-                    continue;
-                string version = release["tag_name"].AsString;
-                if (!release["prerelease"].AsBoolean)
-                    releasesList.Add(version);
-                releasesList_All.Add(version);
-            }
-            releasesList.Sort();
-            releasesList.Reverse();
-            releasesList_All.Sort();
-            releasesList_All.Reverse();
-            Program.mainForm.Invoke(new Action(() => Program.mainForm.RefreshReleasesListing()));
         }
     }
 }
