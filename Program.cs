@@ -224,7 +224,7 @@ namespace MelonLoader
             return true;
         }
 
-        internal static string GetFilePathFromShortcut(string shortcut_path)
+        private static string GetFilePathFromShortcut(string shortcut_path)
         {
             string shortcut_extension = Path.GetExtension(shortcut_path);
             if (shortcut_extension.Equals(".lnk"))

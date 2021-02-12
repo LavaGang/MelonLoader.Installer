@@ -118,6 +118,7 @@ namespace MelonLoader
         internal static void RefreshReleases()
         {
             Program.mainForm.Invoke(new Action(() => {
+                /*
                 if (!string.IsNullOrEmpty(CommandLine.ExePath))
                 {
                     if (Program.ValidateUnityGamePath(ref CommandLine.ExePath))
@@ -128,6 +129,7 @@ namespace MelonLoader
                     else
                         MessageBox.Show("Invalid File Selected!", BuildInfo.Name, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
+                */
                 Program.mainForm.PageManager.Cursor = Cursors.Hand;
                 Program.mainForm.Tab_Automated.Text = "Automated   ";
                 Program.mainForm.PleaseWait_PleaseWait.Visible = true;
