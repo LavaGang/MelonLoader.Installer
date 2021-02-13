@@ -21,16 +21,22 @@ namespace MelonLoader
         private static string FilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "MelonLoader.Installer.cfg");
 
         private static int _theme = 0;
-        internal static int Theme { get { return _theme; } set { _theme = value; Save(); } }
+        internal static int Theme { get => _theme; set { _theme = value; Save(); } }
 
         private static bool _autoupdateinstaller = true;
-        internal static bool AutoUpdateInstaller { get { return _autoupdateinstaller; } set { _autoupdateinstaller = value; Save(); } }
+        internal static bool AutoUpdateInstaller { get => _autoupdateinstaller; set { _autoupdateinstaller = value; Save(); } }
 
         private static bool _closeaftercompletion = true;
-        internal static bool CloseAfterCompletion { get { return _closeaftercompletion; } set { _closeaftercompletion = value; Save(); } }
+        internal static bool CloseAfterCompletion { get => _closeaftercompletion; set { _closeaftercompletion = value; Save(); } }
 
         private static bool _showalphaprereleases = false;
-        internal static bool ShowAlphaPreReleases { get { return _showalphaprereleases; } set { _showalphaprereleases = value; Save(); } }
+        internal static bool ShowAlphaPreReleases { get => _showalphaprereleases; set { _showalphaprereleases = value; Save(); } }
+
+        private static bool _rememberlastselectedgame = false;
+        internal static bool RememberLastSelectedGame { get => _rememberlastselectedgame; set { _rememberlastselectedgame = value; Save(); } }
+
+        private static string _lastselectedgamepath = null;
+        internal static string LastSelectedGamePath { get => _lastselectedgamepath; set { _lastselectedgamepath = value; Save(); } }
 
         internal static void Load()
         {
@@ -56,6 +62,11 @@ namespace MelonLoader
                 Boolean.TryParse(installertbl["CloseAfterCompletion"].ToString(), out _closeaftercompletion);
             if (installertbl.ContainsKey("ShowAlphaPreReleases"))
                 Boolean.TryParse(installertbl["ShowAlphaPreReleases"].ToString(), out _showalphaprereleases);
+            if (installertbl.ContainsKey("RememberLastSelectedGame"))
+                Boolean.TryParse(installertbl["RememberLastSelectedGame"].ToString(), out _rememberlastselectedgame);
+            if (installertbl.ContainsKey("LastSelectedGamePath"))
+                _lastselectedgamepath = installertbl["LastSelectedGamePath"].ToString();
+
         }
 
         internal static void Save()
@@ -66,6 +77,8 @@ namespace MelonLoader
             tbl.Items.Add(new KeyValueSyntax("AutoUpdateInstaller", new BooleanValueSyntax(_autoupdateinstaller)));
             tbl.Items.Add(new KeyValueSyntax("CloseAfterCompletion", new BooleanValueSyntax(_closeaftercompletion)));
             tbl.Items.Add(new KeyValueSyntax("ShowAlphaPreReleases", new BooleanValueSyntax(_showalphaprereleases)));
+            tbl.Items.Add(new KeyValueSyntax("RememberLastSelectedGame", new BooleanValueSyntax(_rememberlastselectedgame)));
+            tbl.Items.Add(new KeyValueSyntax("LastSelectedGamePath", new StringValueSyntax(string.IsNullOrEmpty(_lastselectedgamepath) ? "" : _lastselectedgamepath)));
             doc.Tables.Add(tbl);
             File.WriteAllText(FilePath, doc.ToString());
         }

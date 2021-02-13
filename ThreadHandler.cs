@@ -118,18 +118,6 @@ namespace MelonLoader
         internal static void RefreshReleases()
         {
             Program.mainForm.Invoke(new Action(() => {
-                /*
-                if (!string.IsNullOrEmpty(CommandLine.ExePath))
-                {
-                    if (Program.ValidateUnityGamePath(ref CommandLine.ExePath))
-                    {
-                        MessageBox.Show(CommandLine.ExePath);
-                        Program.mainForm.SetUnityGame(CommandLine.ExePath);
-                    }
-                    else
-                        MessageBox.Show("Invalid File Selected!", BuildInfo.Name, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-                */
                 Program.mainForm.PageManager.Cursor = Cursors.Hand;
                 Program.mainForm.Tab_Automated.Text = "Automated   ";
                 Program.mainForm.PleaseWait_PleaseWait.Visible = true;
@@ -186,6 +174,27 @@ namespace MelonLoader
                 Program.mainForm.Automated_Version_Text.Visible = true;
                 Program.mainForm.Automated_Version_Selection.Visible = true;
                 Program.mainForm.Automated_Version_Latest.Visible = true;
+
+                if (Config.RememberLastSelectedGame)
+                {
+                    if (!string.IsNullOrEmpty(Config.LastSelectedGamePath))
+                        Program.mainForm.SetUnityGame(Config.LastSelectedGamePath);
+                }
+                else
+                    Config.LastSelectedGamePath = null;
+
+                /*
+                if (!string.IsNullOrEmpty(CommandLine.ExePath))
+                {
+                    if (Program.ValidateUnityGamePath(ref CommandLine.ExePath))
+                    {
+                        MessageBox.Show(CommandLine.ExePath);
+                        Program.mainForm.SetUnityGame(CommandLine.ExePath);
+                    }
+                    else
+                        MessageBox.Show("Invalid File Selected!", BuildInfo.Name, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                */
             }));
         }
 
