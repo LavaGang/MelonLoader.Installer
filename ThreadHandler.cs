@@ -188,5 +188,14 @@ namespace MelonLoader
                 Program.mainForm.Automated_Version_Latest.Visible = true;
             }));
         }
+
+        internal delegate void RecursiveFuncRecurse();
+        internal delegate void RecursiveFuncVoid(RecursiveFuncRecurse recurse);
+        internal static void RecursiveFuncRun(RecursiveFuncVoid func)
+        {
+            if (func == null)
+                return;
+            func.Invoke(delegate () { RecursiveFuncRun(func); });
+        }
     }
 }

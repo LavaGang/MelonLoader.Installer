@@ -103,10 +103,36 @@ namespace MelonLoader
             {
                 string MelonLoader_Folder = Path.Combine(destination, "MelonLoader");
                 if (Directory.Exists(MelonLoader_Folder))
-                    Directory.Delete(MelonLoader_Folder, true);
+                {
+                    ThreadHandler.RecursiveFuncRun(delegate (ThreadHandler.RecursiveFuncRecurse recurse)
+                    {
+                        try { Directory.Delete(MelonLoader_Folder, true); }
+                        catch (Exception ex)
+                        {
+                            if (!ex.GetType().IsAssignableFrom(typeof(UnauthorizedAccessException))
+                                && !ex.GetType().IsAssignableFrom(typeof(IOException)))
+                                throw ex;
+                            DialogResult result = MessageBox.Show($"Unable to remove Existing MelonLoader Folder! Make sure the Unity Game is not running or try running the Installer as Administrator.", BuildInfo.Name, MessageBoxButtons.RetryCancel, MessageBoxIcon.Error);
+                            if (result == DialogResult.Retry) recurse.Invoke(); else throw ex;
+                        }
+                    });
+                }
                 string proxy_path = null;
                 if (GetExistingProxyPath(destination, out proxy_path))
-                    File.Delete(proxy_path);
+                {
+                    ThreadHandler.RecursiveFuncRun(delegate (ThreadHandler.RecursiveFuncRecurse recurse)
+                    {
+                        try { File.Delete(proxy_path); }
+                        catch (Exception ex)
+                        {
+                            if (!ex.GetType().IsAssignableFrom(typeof(UnauthorizedAccessException))
+                                && !ex.GetType().IsAssignableFrom(typeof(IOException)))
+                                throw ex;
+                            DialogResult result = MessageBox.Show($"Unable to remove Existing Proxy Module! Make sure the Unity Game is not running or try running the Installer as Administrator.", BuildInfo.Name, MessageBoxButtons.RetryCancel, MessageBoxIcon.Error);
+                            if (result == DialogResult.Retry) recurse.Invoke(); else throw ex;
+                        }
+                    });
+                }
                 using FileStream stream = new FileStream(temp_path, FileMode.Open, FileAccess.Read);
                 using ZipArchive zip = new ZipArchive(stream);
                 int total_entry_count = zip.Entries.Count;
@@ -135,19 +161,55 @@ namespace MelonLoader
                                 break;
                             }
                         }
-                        Directory.CreateDirectory(Path.GetDirectoryName(fullPath));
+                        string directorypath = Path.GetDirectoryName(fullPath);
+                        if (!Directory.Exists(directorypath))
+                            Directory.CreateDirectory(directorypath);
                         using FileStream targetStream = new FileStream(fullPath, FileMode.OpenOrCreate, FileAccess.Write);
                         using Stream entryStream = entry.Open();
-                        entryStream.CopyTo(targetStream);
+                        ThreadHandler.RecursiveFuncRun(delegate (ThreadHandler.RecursiveFuncRecurse recurse)
+                        {
+                            try { entryStream.CopyTo(targetStream); }
+                            catch (Exception ex)
+                            {
+                                if (!ex.GetType().IsAssignableFrom(typeof(UnauthorizedAccessException))
+                                    && !ex.GetType().IsAssignableFrom(typeof(IOException)))
+                                    throw ex;
+                                DialogResult result = MessageBox.Show($"Couldn't extract file {filename}! Make sure the Unity Game is not running or try running the Installer as Administrator.", BuildInfo.Name, MessageBoxButtons.RetryCancel, MessageBoxIcon.Error);
+                                if (result == DialogResult.Retry) recurse.Invoke(); else throw ex;
+                            }
+                        });
                         continue;
                     }
                     if (entry.Length != 0)
                         throw new IOException("Zip entry name ends in directory separator character but contains data.");
-                    Directory.CreateDirectory(fullPath);
+                    if (!Directory.Exists(fullPath))
+                        Directory.CreateDirectory(fullPath);
                 }
-                DowngradeMelonPreferences(destination, legacy_version);
+                ThreadHandler.RecursiveFuncRun(delegate (ThreadHandler.RecursiveFuncRecurse recurse)
+                {
+                    try { DowngradeMelonPreferences(destination, legacy_version); }
+                    catch (Exception ex)
+                    {
+                        if (!ex.GetType().IsAssignableFrom(typeof(UnauthorizedAccessException))
+                            && !ex.GetType().IsAssignableFrom(typeof(IOException)))
+                            throw ex;
+                        DialogResult result = MessageBox.Show($"Unable to Downgrade MelonLoader Preferences! Make sure the Unity Game is not running or try running the Installer as Administrator.", BuildInfo.Name, MessageBoxButtons.RetryCancel, MessageBoxIcon.Error);
+                        if (result == DialogResult.Retry) recurse.Invoke(); else throw ex;
+                    }
+                });
                 ExtraDirectoryChecks(destination);
-                ExtraCleanupCheck(destination);
+                ThreadHandler.RecursiveFuncRun(delegate (ThreadHandler.RecursiveFuncRecurse recurse)
+                {
+                    try { ExtraCleanupCheck(destination); }
+                    catch (Exception ex)
+                    {
+                        if (!ex.GetType().IsAssignableFrom(typeof(UnauthorizedAccessException))
+                            && !ex.GetType().IsAssignableFrom(typeof(IOException)))
+                            throw ex;
+                        DialogResult result = MessageBox.Show($"Couldn't do Extra File Cleanup! Make sure the Unity Game is not running or try running the Installer as Administrator.", BuildInfo.Name, MessageBoxButtons.RetryCancel, MessageBoxIcon.Error);
+                        if (result == DialogResult.Retry) recurse.Invoke(); else throw ex;
+                    }
+                });
             }
             catch (Exception ex)
             {
@@ -168,10 +230,36 @@ namespace MelonLoader
             {
                 string MelonLoader_Folder = Path.Combine(destination, "MelonLoader");
                 if (Directory.Exists(MelonLoader_Folder))
-                    Directory.Delete(MelonLoader_Folder, true);
+                {
+                    ThreadHandler.RecursiveFuncRun(delegate (ThreadHandler.RecursiveFuncRecurse recurse)
+                    {
+                        try { Directory.Delete(MelonLoader_Folder, true); }
+                        catch (Exception ex)
+                        {
+                            if (!ex.GetType().IsAssignableFrom(typeof(UnauthorizedAccessException))
+                                && !ex.GetType().IsAssignableFrom(typeof(IOException)))
+                                throw ex;
+                            DialogResult result = MessageBox.Show($"Unable to remove Existing MelonLoader Folder! Make sure the Unity Game is not running or try running the Installer as Administrator.", BuildInfo.Name, MessageBoxButtons.RetryCancel, MessageBoxIcon.Error);
+                            if (result == DialogResult.Retry) recurse.Invoke(); else throw ex;
+                        }
+                    });
+                }
                 string proxy_path = null;
                 if (GetExistingProxyPath(destination, out proxy_path))
-                    File.Delete(proxy_path);
+                {
+                    ThreadHandler.RecursiveFuncRun(delegate (ThreadHandler.RecursiveFuncRecurse recurse)
+                    {
+                        try { File.Delete(proxy_path); }
+                        catch (Exception ex)
+                        {
+                            if (!ex.GetType().IsAssignableFrom(typeof(UnauthorizedAccessException))
+                                && !ex.GetType().IsAssignableFrom(typeof(IOException)))
+                                throw ex;
+                            DialogResult result = MessageBox.Show($"Unable to remove Existing Proxy Module! Make sure the Unity Game is not running or try running the Installer as Administrator.", BuildInfo.Name, MessageBoxButtons.RetryCancel, MessageBoxIcon.Error);
+                            if (result == DialogResult.Retry) recurse.Invoke(); else throw ex;
+                        }
+                    });
+                }
                 using FileStream stream = new FileStream(zip_path, FileMode.Open, FileAccess.Read);
                 using ZipArchive zip = new ZipArchive(stream);
                 int total_entry_count = zip.Entries.Count;
@@ -189,18 +277,42 @@ namespace MelonLoader
                     string filename = Path.GetFileName(fullPath);
                     if (filename.Length != 0)
                     {
-                        Directory.CreateDirectory(Path.GetDirectoryName(fullPath));
+                        string directorypath = Path.GetDirectoryName(fullPath);
+                        if (!Directory.Exists(directorypath))
+                            Directory.CreateDirectory(directorypath);
                         using FileStream targetStream = new FileStream(fullPath, FileMode.OpenOrCreate, FileAccess.Write);
                         using Stream entryStream = entry.Open();
-                        entryStream.CopyTo(targetStream);
+                        ThreadHandler.RecursiveFuncRun(delegate (ThreadHandler.RecursiveFuncRecurse recurse)
+                        {
+                            try { entryStream.CopyTo(targetStream); }
+                            catch (Exception ex)
+                            {
+                                if (!ex.GetType().IsAssignableFrom(typeof(UnauthorizedAccessException))
+                                    && !ex.GetType().IsAssignableFrom(typeof(IOException)))
+                                    throw ex;
+                                DialogResult result = MessageBox.Show($"Couldn't extract file {filename}! Make sure the Unity Game is not running or try running the Installer as Administrator.", BuildInfo.Name, MessageBoxButtons.RetryCancel, MessageBoxIcon.Error);
+                                if (result == DialogResult.Retry) recurse.Invoke(); else throw ex;
+                            }
+                        });
                         continue;
                     }
                     if (entry.Length != 0)
                         throw new IOException("Zip entry name ends in directory separator character but contains data.");
-                    Directory.CreateDirectory(fullPath);
+                    if (!Directory.Exists(fullPath))
+                        Directory.CreateDirectory(fullPath);
                 }
                 ExtraDirectoryChecks(destination);
-                ExtraCleanupCheck(destination);
+                ThreadHandler.RecursiveFuncRun(delegate (ThreadHandler.RecursiveFuncRecurse recurse)
+                {
+                    try { ExtraCleanupCheck(destination); } catch (Exception ex)
+                    {
+                        if (!ex.GetType().IsAssignableFrom(typeof(UnauthorizedAccessException))
+                            && !ex.GetType().IsAssignableFrom(typeof(IOException)))
+                            throw ex;
+                        DialogResult result = MessageBox.Show($"Couldn't do Extra File Cleanup! Make sure the Unity Game is not running or try running the Installer as Administrator.", BuildInfo.Name, MessageBoxButtons.RetryCancel, MessageBoxIcon.Error);
+                        if (result == DialogResult.Retry) recurse.Invoke(); else throw ex;
+                    }
+                });
             }
             catch (Exception ex)
             {
@@ -220,11 +332,48 @@ namespace MelonLoader
             {
                 string MelonLoader_Folder = Path.Combine(destination, "MelonLoader");
                 if (Directory.Exists(MelonLoader_Folder))
-                    Directory.Delete(MelonLoader_Folder, true);
+                {
+                    ThreadHandler.RecursiveFuncRun(delegate (ThreadHandler.RecursiveFuncRecurse recurse)
+                    {
+                        try { Directory.Delete(MelonLoader_Folder, true); }
+                        catch (Exception ex)
+                        {
+                            if (!ex.GetType().IsAssignableFrom(typeof(UnauthorizedAccessException))
+                                && !ex.GetType().IsAssignableFrom(typeof(IOException)))
+                                throw ex;
+                            DialogResult result = MessageBox.Show($"Unable to remove Existing MelonLoader Folder! Make sure the Unity Game is not running or try running the Installer as Administrator.", BuildInfo.Name, MessageBoxButtons.RetryCancel, MessageBoxIcon.Error);
+                            if (result == DialogResult.Retry) recurse.Invoke(); else throw ex;
+                        }
+                    });
+                }
                 string proxy_path = null;
                 if (GetExistingProxyPath(destination, out proxy_path))
-                    File.Delete(proxy_path);
-                ExtraCleanupCheck(destination);
+                {
+                    ThreadHandler.RecursiveFuncRun(delegate (ThreadHandler.RecursiveFuncRecurse recurse)
+                    {
+                        try { File.Delete(proxy_path); }
+                        catch (Exception ex)
+                        {
+                            if (!ex.GetType().IsAssignableFrom(typeof(UnauthorizedAccessException))
+                                && !ex.GetType().IsAssignableFrom(typeof(IOException)))
+                                throw ex;
+                            DialogResult result = MessageBox.Show($"Unable to remove Existing Proxy Module! Make sure the Unity Game is not running or try running the Installer as Administrator.", BuildInfo.Name, MessageBoxButtons.RetryCancel, MessageBoxIcon.Error);
+                            if (result == DialogResult.Retry) recurse.Invoke(); else throw ex;
+                        }
+                    });
+                }
+                ThreadHandler.RecursiveFuncRun(delegate (ThreadHandler.RecursiveFuncRecurse recurse)
+                {
+                    try { ExtraCleanupCheck(destination); }
+                    catch (Exception ex)
+                    {
+                        if (!ex.GetType().IsAssignableFrom(typeof(UnauthorizedAccessException))
+                            && !ex.GetType().IsAssignableFrom(typeof(IOException)))
+                            throw ex;
+                        DialogResult result = MessageBox.Show($"Couldn't do Extra File Cleanup! Make sure the Unity Game is not running or try running the Installer as Administrator.", BuildInfo.Name, MessageBoxButtons.RetryCancel, MessageBoxIcon.Error);
+                        if (result == DialogResult.Retry) recurse.Invoke(); else throw ex;
+                    }
+                });
             }
             catch (Exception ex)
             {
