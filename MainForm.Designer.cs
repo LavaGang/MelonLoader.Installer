@@ -127,7 +127,7 @@
             this.PageManager.ItemSize = new System.Drawing.Size(141, 34);
             this.PageManager.Location = new System.Drawing.Point(21, 203);
             this.PageManager.Name = "PageManager";
-            this.PageManager.SelectedIndex = 1;
+            this.PageManager.SelectedIndex = 0;
             this.PageManager.Size = new System.Drawing.Size(439, 222);
             this.PageManager.SizeMode = System.Windows.Forms.TabSizeMode.Fixed;
             this.PageManager.Style = MetroFramework.MetroColorStyle.Red;
@@ -227,11 +227,11 @@
             // 
             this.Automated_Arch_Text.AutoSize = true;
             this.Automated_Arch_Text.FontWeight = MetroFramework.MetroLabelWeight.Regular;
-            this.Automated_Arch_Text.Location = new System.Drawing.Point(142, 88);
+            this.Automated_Arch_Text.Location = new System.Drawing.Point(105, 88);
             this.Automated_Arch_Text.Name = "Automated_Arch_Text";
-            this.Automated_Arch_Text.Size = new System.Drawing.Size(40, 19);
+            this.Automated_Arch_Text.Size = new System.Drawing.Size(80, 19);
             this.Automated_Arch_Text.TabIndex = 8;
-            this.Automated_Arch_Text.Text = "Arch:";
+            this.Automated_Arch_Text.Text = "Game Arch:";
             this.Automated_Arch_Text.Theme = MetroFramework.MetroThemeStyle.Dark;
             this.Automated_Arch_Text.Visible = false;
             // 
