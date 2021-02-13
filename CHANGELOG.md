@@ -1,11 +1,19 @@
 ### Version List:
 
+[v3.0.6](#v306)  
 [v3.0.5](#v305)  
 [v3.0.4](#v304)  
 [v3.0.3](#v303)  
 [v3.0.2](#v302)  
 [v3.0.1](#v301)  
 [v3.0.0](#v300)  
+
+---
+
+### v3.0.6:
+
+1. Added More File Cleanup.
+2. Fixed Issue where leaving "Close after Completion" disabled wouldn't refresh Current Installed Version.
 
 ---
 

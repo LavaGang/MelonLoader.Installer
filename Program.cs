@@ -91,22 +91,21 @@ namespace MelonLoader
             TempFileCache.ClearCache();
             OperationError();
 
-            try 
+#if DEBUG
+            FinishingMessageBox(msg, MessageBoxButtons.OK, MessageBoxIcon.Error);
+#else
+            try
             {
                 string filePath = Directory.GetCurrentDirectory() + $@"\MLInstaller_{DateTime.Now:yy-M-dd_HH-mm-ss.fff}.log";
                 File.WriteAllText(filePath, msg);
                 Process.Start("explorer.exe", $"/select, {filePath}");
-#if DEBUG
-                FinishingMessageBox(msg, MessageBoxButtons.OK, MessageBoxIcon.Error);
-#else
                 FinishingMessageBox($"INTERNAL FAILURE! Please upload the log file \"{filePath}\" when requesting support.", MessageBoxButtons.OK, MessageBoxIcon.Error);
-#endif
             }
             catch (UnauthorizedAccessException)
             {
                 FinishingMessageBox($"Couldn't create log file! Try running the Installer as Administrator or run the Installer from a different directory.", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-
+#endif
         }
 
         internal static void OperationError()
@@ -158,11 +157,16 @@ namespace MelonLoader
             mainForm.Invoke(new Action(() =>
             {
                 MessageBox.Show(msg, BuildInfo.Name, buttons, icon);
-                if ((icon != MessageBoxIcon.Error) && Config.CloseAfterCompletion)
+                if (icon != MessageBoxIcon.Error)
                 {
-                    Process.GetCurrentProcess().Kill();
-                    return;
+                    if (Config.CloseAfterCompletion)
+                    {
+                        Process.GetCurrentProcess().Kill();
+                        return;
+                    }
                 }
+                mainForm.Automated_Install.Enabled = true;
+                mainForm.CheckUnityGame();
                 mainForm.PageManager.Controls.Clear();
                 mainForm.PageManager.Controls.Add(mainForm.Tab_Automated);
                 mainForm.PageManager.Controls.Add(mainForm.Tab_ManualZip);

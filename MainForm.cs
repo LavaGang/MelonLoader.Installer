@@ -90,7 +90,7 @@ namespace MelonLoader
                 ManualZip_Install.Enabled = true;
         }
 
-        private void CheckUnityGame()
+        internal void CheckUnityGame()
         {
             if (string.IsNullOrEmpty(Automated_UnityGame_Display.Text) || Automated_UnityGame_Display.Text.Equals("Please Select your Unity Game..."))
                 return;

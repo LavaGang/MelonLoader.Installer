@@ -334,7 +334,25 @@ namespace MelonLoader
             string main_dll = Path.Combine(destination, "MelonLoader.dll");
             if (File.Exists(main_dll))
                 File.Delete(main_dll);
+            main_dll = Path.Combine(destination, "Mods", "MelonLoader.dll");
+            if (File.Exists(main_dll))
+                File.Delete(main_dll);
+            main_dll = Path.Combine(destination, "Plugins", "MelonLoader.dll");
+            if (File.Exists(main_dll))
+                File.Delete(main_dll);
+            main_dll = Path.Combine(destination, "UserData", "MelonLoader.dll");
+            if (File.Exists(main_dll))
+                File.Delete(main_dll);
             string main2_dll = Path.Combine(destination, "MelonLoader.ModHandler.dll");
+            if (File.Exists(main2_dll))
+                File.Delete(main2_dll);
+            main2_dll = Path.Combine(destination, "Mods", "MelonLoader.ModHandler.dll");
+            if (File.Exists(main2_dll))
+                File.Delete(main2_dll);
+            main2_dll = Path.Combine(destination, "Plugins", "MelonLoader.ModHandler.dll");
+            if (File.Exists(main2_dll))
+                File.Delete(main2_dll);
+            main2_dll = Path.Combine(destination, "UserData", "MelonLoader.ModHandler.dll");
             if (File.Exists(main2_dll))
                 File.Delete(main2_dll);
             string logs_path = Path.Combine(destination, "Logs");
