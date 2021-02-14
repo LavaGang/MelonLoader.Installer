@@ -38,6 +38,9 @@ namespace MelonLoader
         private static string _lastselectedgamepath = null;
         internal static string LastSelectedGamePath { get => _lastselectedgamepath; set { _lastselectedgamepath = value; Save(); } }
 
+        private static bool _highlightlogfilelocation = true;
+        internal static bool HighlightLogFileLocation { get => _highlightlogfilelocation; set { _highlightlogfilelocation = value; Save(); } }
+
         internal static void Load()
         {
             if (!File.Exists(FilePath))
@@ -66,6 +69,8 @@ namespace MelonLoader
                 Boolean.TryParse(installertbl["RememberLastSelectedGame"].ToString(), out _rememberlastselectedgame);
             if (installertbl.ContainsKey("LastSelectedGamePath"))
                 _lastselectedgamepath = installertbl["LastSelectedGamePath"].ToString();
+            if (installertbl.ContainsKey("HighlightLogFileLocation"))
+                Boolean.TryParse(installertbl["HighlightLogFileLocation"].ToString(), out _highlightlogfilelocation);
 
         }
 
@@ -79,6 +84,7 @@ namespace MelonLoader
             tbl.Items.Add(new KeyValueSyntax("ShowAlphaPreReleases", new BooleanValueSyntax(_showalphaprereleases)));
             tbl.Items.Add(new KeyValueSyntax("RememberLastSelectedGame", new BooleanValueSyntax(_rememberlastselectedgame)));
             tbl.Items.Add(new KeyValueSyntax("LastSelectedGamePath", new StringValueSyntax(string.IsNullOrEmpty(_lastselectedgamepath) ? "" : _lastselectedgamepath)));
+            tbl.Items.Add(new KeyValueSyntax("HighlightLogFileLocation", new BooleanValueSyntax(_highlightlogfilelocation)));
             doc.Tables.Add(tbl);
             File.WriteAllText(FilePath, doc.ToString());
         }

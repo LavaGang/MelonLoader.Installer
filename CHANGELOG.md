@@ -16,6 +16,7 @@
 2. Fixed Issue where leaving "Close after Completion" disabled wouldn't refresh Current Installed Version.
 3. Added Recursive Retry Error Popup when File Access Issues Occur.
 4. Added "Remember Last Selected Game" Setting.
+5. Added "Highlight Log File Location" Setting.
 
 ---
 

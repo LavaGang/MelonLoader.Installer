@@ -22,6 +22,7 @@ namespace MelonLoader
             Settings_CloseAfterCompletion.Checked = Config.CloseAfterCompletion;
             Settings_ShowAlphaPreReleases.Checked = Config.ShowAlphaPreReleases;
             Settings_RememberLastSelectedGame.Checked = Config.RememberLastSelectedGame;
+            Settings_HighlightLogFileLocation.Checked = Config.HighlightLogFileLocation;
             PageManager.Controls.Clear();
             PageManager.Controls.Add(Tab_Automated);
             Tab_Automated.Text = "Please Wait    ";
@@ -178,6 +179,10 @@ namespace MelonLoader
             Settings_RememberLastSelectedGame.Theme = themeStyle;
             Settings_RememberLastSelectedGame.ForeColor = Settings_AutoUpdateInstaller.ForeColor;
             Settings_RememberLastSelectedGame.CustomForeColor = true;
+            Settings_HighlightLogFileLocation.Style = Style;
+            Settings_HighlightLogFileLocation.Theme = themeStyle;
+            Settings_HighlightLogFileLocation.ForeColor = Settings_AutoUpdateInstaller.ForeColor;
+            Settings_HighlightLogFileLocation.CustomForeColor = true;
             Automated_UnityGame_Text.Theme = themeStyle;
             Automated_UnityGame_Select.Theme = themeStyle;
             Automated_UnityGame_Display.BackColor = (lightmode ? Color.White : Color.FromArgb(34, 34, 34));
@@ -234,6 +239,8 @@ namespace MelonLoader
         private void Settings_ShowAlphaReleases_MouseLeave(object sender, EventArgs e) => Settings_ShowAlphaPreReleases.ForeColor = ((Settings_Theme_Selection.SelectedIndex == 1) ? Color.FromKnownColor(KnownColor.ControlText) : Color.FromKnownColor(KnownColor.ControlDark));
         private void Settings_RememberLastSelectedGame_MouseEnter(object sender, EventArgs e) => Settings_RememberLastSelectedGame.ForeColor = ((Settings_Theme_Selection.SelectedIndex == 1) ? Color.FromKnownColor(KnownColor.ControlDarkDark) : Color.White);
         private void Settings_RememberLastSelectedGame_MouseLeave(object sender, EventArgs e) => Settings_RememberLastSelectedGame.ForeColor = ((Settings_Theme_Selection.SelectedIndex == 1) ? Color.FromKnownColor(KnownColor.ControlText) : Color.FromKnownColor(KnownColor.ControlDark));
+        private void Settings_HighlightLogFileLocation_MouseEnter(object sender, EventArgs e) => Settings_HighlightLogFileLocation.ForeColor = ((Settings_Theme_Selection.SelectedIndex == 1) ? Color.FromKnownColor(KnownColor.ControlDarkDark) : Color.White);
+        private void Settings_HighlightLogFileLocation_MouseLeave(object sender, EventArgs e) => Settings_HighlightLogFileLocation.ForeColor = ((Settings_Theme_Selection.SelectedIndex == 1) ? Color.FromKnownColor(KnownColor.ControlText) : Color.FromKnownColor(KnownColor.ControlDark));
         private void Automated_Version_Latest_MouseEnter(object sender, EventArgs e) => Automated_Version_Latest.ForeColor = ((Settings_Theme_Selection.SelectedIndex == 1) ? Color.FromKnownColor(KnownColor.ControlDarkDark) : Color.White);
         private void Automated_Version_Latest_MouseLeave(object sender, EventArgs e) => Automated_Version_Latest.ForeColor = ((Settings_Theme_Selection.SelectedIndex == 1) ? Color.FromKnownColor(KnownColor.ControlText) : Color.FromKnownColor(KnownColor.ControlDark));
         private void Automated_Arch_AutoDetect_MouseEnter(object sender, EventArgs e) => Automated_Arch_AutoDetect.ForeColor = ((Settings_Theme_Selection.SelectedIndex == 1) ? Color.FromKnownColor(KnownColor.ControlDarkDark) : Color.White);
@@ -374,6 +381,7 @@ namespace MelonLoader
         private void Settings_AutoUpdateInstaller_CheckedChanged(object sender, EventArgs e) => Config.AutoUpdateInstaller = Settings_AutoUpdateInstaller.Checked;
         private void Settings_CloseAfterCompletion_CheckedChanged(object sender, EventArgs e) => Config.CloseAfterCompletion = Settings_CloseAfterCompletion.Checked;
         private void Settings_RememberLastSelectedGame_CheckedChanged(object sender, EventArgs e) => Config.RememberLastSelectedGame = Settings_RememberLastSelectedGame.Checked;
+        private void Settings_HighlightLogFileLocation_CheckedChanged(object sender, EventArgs e) => Config.HighlightLogFileLocation = Settings_HighlightLogFileLocation.Checked;
         private void ManualZip_UnityGame_Select_Click(object sender, EventArgs e) => SelectUnityGame();
         private void Automated_UnityGame_Select_Click(object sender, EventArgs e) => SelectUnityGame();
         private void Automated_Uninstall_Click(object sender, EventArgs e) => ClickedUninstall();

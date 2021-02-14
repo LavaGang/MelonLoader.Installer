@@ -85,6 +85,7 @@
             this.Link_Discord = new System.Windows.Forms.PictureBox();
             this.ML_Text = new System.Windows.Forms.PictureBox();
             this.ML_Logo = new System.Windows.Forms.PictureBox();
+            this.Settings_HighlightLogFileLocation = new MetroFramework.Controls.MetroCheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.ThemeManager)).BeginInit();
             this.PageManager.SuspendLayout();
             this.Tab_Automated.SuspendLayout();
@@ -381,6 +382,7 @@
             // Tab_Settings
             // 
             this.Tab_Settings.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.Tab_Settings.Controls.Add(this.Settings_HighlightLogFileLocation);
             this.Tab_Settings.Controls.Add(this.Settings_CloseAfterCompletion);
             this.Tab_Settings.Controls.Add(this.Settings_AutoUpdateInstaller);
             this.Tab_Settings.Controls.Add(this.Settings_Theme_Selection);
@@ -405,7 +407,7 @@
             this.Settings_CloseAfterCompletion.Cursor = System.Windows.Forms.Cursors.Hand;
             this.Settings_CloseAfterCompletion.CustomForeColor = true;
             this.Settings_CloseAfterCompletion.ForeColor = System.Drawing.SystemColors.ControlDark;
-            this.Settings_CloseAfterCompletion.Location = new System.Drawing.Point(154, 89);
+            this.Settings_CloseAfterCompletion.Location = new System.Drawing.Point(29, 109);
             this.Settings_CloseAfterCompletion.Name = "Settings_CloseAfterCompletion";
             this.Settings_CloseAfterCompletion.Size = new System.Drawing.Size(147, 15);
             this.Settings_CloseAfterCompletion.Style = MetroFramework.MetroColorStyle.Green;
@@ -425,7 +427,7 @@
             this.Settings_AutoUpdateInstaller.Cursor = System.Windows.Forms.Cursors.Hand;
             this.Settings_AutoUpdateInstaller.CustomForeColor = true;
             this.Settings_AutoUpdateInstaller.ForeColor = System.Drawing.SystemColors.ControlDark;
-            this.Settings_AutoUpdateInstaller.Location = new System.Drawing.Point(158, 59);
+            this.Settings_AutoUpdateInstaller.Location = new System.Drawing.Point(158, 71);
             this.Settings_AutoUpdateInstaller.Name = "Settings_AutoUpdateInstaller";
             this.Settings_AutoUpdateInstaller.Size = new System.Drawing.Size(136, 15);
             this.Settings_AutoUpdateInstaller.Style = MetroFramework.MetroColorStyle.Green;
@@ -445,7 +447,7 @@
             this.Settings_Theme_Selection.Items.AddRange(new object[] {
             "Dark",
             "Light"});
-            this.Settings_Theme_Selection.Location = new System.Drawing.Point(217, 15);
+            this.Settings_Theme_Selection.Location = new System.Drawing.Point(217, 21);
             this.Settings_Theme_Selection.Name = "Settings_Theme_Selection";
             this.Settings_Theme_Selection.Size = new System.Drawing.Size(61, 29);
             this.Settings_Theme_Selection.Style = MetroFramework.MetroColorStyle.Green;
@@ -457,7 +459,7 @@
             // 
             this.Settings_Theme_Text.AutoSize = true;
             this.Settings_Theme_Text.FontWeight = MetroFramework.MetroLabelWeight.Regular;
-            this.Settings_Theme_Text.Location = new System.Drawing.Point(158, 18);
+            this.Settings_Theme_Text.Location = new System.Drawing.Point(158, 24);
             this.Settings_Theme_Text.Name = "Settings_Theme_Text";
             this.Settings_Theme_Text.Size = new System.Drawing.Size(53, 19);
             this.Settings_Theme_Text.TabIndex = 2;
@@ -468,7 +470,7 @@
             // 
             this.Settings_RememberLastSelectedGame.AutoSize = true;
             this.Settings_RememberLastSelectedGame.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.Settings_RememberLastSelectedGame.Location = new System.Drawing.Point(138, 148);
+            this.Settings_RememberLastSelectedGame.Location = new System.Drawing.Point(226, 145);
             this.Settings_RememberLastSelectedGame.Name = "Settings_RememberLastSelectedGame";
             this.Settings_RememberLastSelectedGame.Size = new System.Drawing.Size(186, 15);
             this.Settings_RememberLastSelectedGame.Style = MetroFramework.MetroColorStyle.Green;
@@ -484,7 +486,7 @@
             // 
             this.Settings_ShowAlphaPreReleases.AutoSize = true;
             this.Settings_ShowAlphaPreReleases.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.Settings_ShowAlphaPreReleases.Location = new System.Drawing.Point(150, 119);
+            this.Settings_ShowAlphaPreReleases.Location = new System.Drawing.Point(29, 145);
             this.Settings_ShowAlphaPreReleases.Name = "Settings_ShowAlphaPreReleases";
             this.Settings_ShowAlphaPreReleases.Size = new System.Drawing.Size(162, 15);
             this.Settings_ShowAlphaPreReleases.Style = MetroFramework.MetroColorStyle.Green;
@@ -850,6 +852,21 @@
             this.ML_Logo.TabIndex = 0;
             this.ML_Logo.TabStop = false;
             // 
+            // Settings_HighlightLogFileLocation
+            // 
+            this.Settings_HighlightLogFileLocation.AutoSize = true;
+            this.Settings_HighlightLogFileLocation.Checked = true;
+            this.Settings_HighlightLogFileLocation.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.Settings_HighlightLogFileLocation.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.Settings_HighlightLogFileLocation.Location = new System.Drawing.Point(226, 109);
+            this.Settings_HighlightLogFileLocation.Name = "Settings_HighlightLogFileLocation";
+            this.Settings_HighlightLogFileLocation.Size = new System.Drawing.Size(166, 15);
+            this.Settings_HighlightLogFileLocation.Style = MetroFramework.MetroColorStyle.Green;
+            this.Settings_HighlightLogFileLocation.TabIndex = 8;
+            this.Settings_HighlightLogFileLocation.Text = "Highlight Log File Location";
+            this.Settings_HighlightLogFileLocation.Theme = MetroFramework.MetroThemeStyle.Dark;
+            this.Settings_HighlightLogFileLocation.UseVisualStyleBackColor = true;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -952,5 +969,6 @@
         internal MetroFramework.Controls.MetroLabel PleaseWait_PleaseWait;
         internal MetroFramework.Controls.MetroButton Error_Retry;
         private MetroFramework.Controls.MetroCheckBox Settings_RememberLastSelectedGame;
+        private MetroFramework.Controls.MetroCheckBox Settings_HighlightLogFileLocation;
     }
 }
