@@ -866,6 +866,9 @@
             this.Settings_HighlightLogFileLocation.Text = "Highlight Log File Location";
             this.Settings_HighlightLogFileLocation.Theme = MetroFramework.MetroThemeStyle.Dark;
             this.Settings_HighlightLogFileLocation.UseVisualStyleBackColor = true;
+            this.Settings_HighlightLogFileLocation.CheckedChanged += new System.EventHandler(this.Settings_HighlightLogFileLocation_CheckedChanged);
+            this.Settings_HighlightLogFileLocation.MouseEnter += new System.EventHandler(this.Settings_HighlightLogFileLocation_MouseEnter);
+            this.Settings_HighlightLogFileLocation.MouseLeave += new System.EventHandler(this.Settings_HighlightLogFileLocation_MouseLeave);
             // 
             // MainForm
             // 
