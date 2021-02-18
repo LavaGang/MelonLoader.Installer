@@ -480,33 +480,23 @@ namespace MelonLoader
 
         private static void ExtraCleanupCheck(string destination)
         {
+            ExtraCleanupCheck2(destination);
+            ExtraCleanupCheck2(Path.Combine(destination, "Mods"));
+            ExtraCleanupCheck2(Path.Combine(destination, "Plugins"));
+            ExtraCleanupCheck2(Path.Combine(destination, "UserData"));
+            string logs_path = Path.Combine(destination, "Logs");
+            if (Directory.Exists(logs_path))
+                Directory.Delete(logs_path, true);
+        }
+		
+		private static void ExtraCleanupCheck2(string destination)
+        {
             string main_dll = Path.Combine(destination, "MelonLoader.dll");
-            if (File.Exists(main_dll))
-                File.Delete(main_dll);
-            main_dll = Path.Combine(destination, "Mods", "MelonLoader.dll");
-            if (File.Exists(main_dll))
-                File.Delete(main_dll);
-            main_dll = Path.Combine(destination, "Plugins", "MelonLoader.dll");
-            if (File.Exists(main_dll))
-                File.Delete(main_dll);
-            main_dll = Path.Combine(destination, "UserData", "MelonLoader.dll");
             if (File.Exists(main_dll))
                 File.Delete(main_dll);
             string main2_dll = Path.Combine(destination, "MelonLoader.ModHandler.dll");
             if (File.Exists(main2_dll))
                 File.Delete(main2_dll);
-            main2_dll = Path.Combine(destination, "Mods", "MelonLoader.ModHandler.dll");
-            if (File.Exists(main2_dll))
-                File.Delete(main2_dll);
-            main2_dll = Path.Combine(destination, "Plugins", "MelonLoader.ModHandler.dll");
-            if (File.Exists(main2_dll))
-                File.Delete(main2_dll);
-            main2_dll = Path.Combine(destination, "UserData", "MelonLoader.ModHandler.dll");
-            if (File.Exists(main2_dll))
-                File.Delete(main2_dll);
-            string logs_path = Path.Combine(destination, "Logs");
-            if (Directory.Exists(logs_path))
-                Directory.Delete(logs_path, true);
         }
     }
 }
