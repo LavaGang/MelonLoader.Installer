@@ -28,6 +28,7 @@
 13. Made Self-Update Tab Hidden on Debug Build.
 14. Added Drop Down Selection for forcing the State of the Automated Tab.
 15. Added Output Tests to Debug Tab.
+16. Fixed Issue with Divider not Offsetting for Automated and Manual Zip Tabs.
 
 ---
 

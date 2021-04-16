@@ -60,6 +60,9 @@ namespace MelonLoader.Managers
                 && (page != mainForm.Tab_Debug)
 #endif
             );
+            bool should_offset = ((page == mainForm.Tab_Automated)
+                    || (page == mainForm.Tab_ManualZip));
+            mainForm.Divider.Location = should_offset ? new Point(29, 347) : new Point(29, 320);
         }
 
         internal static void OnLoad()
