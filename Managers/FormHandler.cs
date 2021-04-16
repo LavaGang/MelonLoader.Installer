@@ -60,10 +60,11 @@ namespace MelonLoader.Managers
                 && (page != mainForm.Tab_Debug)
 #endif
             );
-            mainForm.Divider.Location = ((page == mainForm.Tab_Automated)
+            mainForm.Divider.Location = new Point(29,
+                ((page == mainForm.Tab_Automated)
                     || (page == mainForm.Tab_ManualZip))
-                        ? new Point(29, 347) 
-                        : new Point(29, 320);
+                        ? 347
+                        : 320);
         }
 
         internal static void OnLoad()
