@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 
-namespace MelonLoader
+namespace MelonLoader.Managers
 {
     internal static class TempFileCache
     {
@@ -19,6 +19,7 @@ namespace MelonLoader
             foreach (string file in TempFiles)
                 if (File.Exists(file))
                     File.Delete(file);
+            TempFiles.Clear();
         }
     }
 }

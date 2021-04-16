@@ -33,21 +33,10 @@
             this.ThemeManager = new MetroFramework.Components.MetroStyleManager(this.components);
             this.InstallerVersion = new MetroFramework.Controls.MetroLabel();
             this.PageManager = new MetroFramework.Controls.MetroTabControl();
-#if DEBUG
-            this.Tab_Debug = new MetroFramework.Controls.MetroTabPage();
-            this.Debug_OutputSuccessTest = new MetroFramework.Controls.MetroButton();
-            this.Debug_OutputFailureTest = new MetroFramework.Controls.MetroButton();
-            this.Debug_OutputTest = new MetroFramework.Controls.MetroButton();
-            this.Debug_AutomatedState = new MetroFramework.Controls.MetroComboBox();
-            this.Debug_LatestInstallerRelease = new MetroFramework.Controls.MetroLabel();
-            this.Debug_LatestInstallerRelease_Text = new MetroFramework.Controls.MetroLabel();
-            this.Debug_AutomatedState_Text = new MetroFramework.Controls.MetroLabel();
-#endif
             this.Tab_Automated = new MetroFramework.Controls.MetroTabPage();
-            this.Automated_Text_Failure = new MetroFramework.Controls.MetroLabel();
             this.Automated_TmpDivider = new MetroFramework.Controls.MetroLabel();
-            this.Automated_Retry = new MetroFramework.Controls.MetroButton();
             this.Automated_Text = new MetroFramework.Controls.MetroLabel();
+            this.Automated_Text_Failure = new MetroFramework.Controls.MetroLabel();
             this.Tab_SelfUpdate = new MetroFramework.Controls.MetroTabPage();
             this.SelfUpdate_Text = new MetroFramework.Controls.MetroLabel();
             this.Tab_Settings = new MetroFramework.Controls.MetroTabPage();
@@ -79,9 +68,16 @@
             this.Link_Discord = new System.Windows.Forms.PictureBox();
             this.ML_Text = new System.Windows.Forms.PictureBox();
             this.ML_Logo = new System.Windows.Forms.PictureBox();
+            this.Automated_Retry = new MetroFramework.Controls.MetroButton();
 #if DEBUG
-            this.Debug_OutputState = new MetroFramework.Controls.MetroComboBox();
-            this.Debug_OutputState_Text = new MetroFramework.Controls.MetroLabel();
+            this.Tab_Debug = new MetroFramework.Controls.MetroTabPage();
+            this.Debug_AutomatedState = new MetroFramework.Controls.MetroComboBox();
+            this.Debug_LatestInstallerRelease = new MetroFramework.Controls.MetroLabel();
+            this.Debug_LatestInstallerRelease_Text = new MetroFramework.Controls.MetroLabel();
+            this.Debug_AutomatedState_Text = new MetroFramework.Controls.MetroLabel();
+            this.Debug_OutputTest = new MetroFramework.Controls.MetroButton();
+            this.Debug_OutputFailureTest = new MetroFramework.Controls.MetroButton();
+            this.Debug_OutputSuccessTest = new MetroFramework.Controls.MetroButton();
 #endif
             ((System.ComponentModel.ISupportInitialize)(this.ThemeManager)).BeginInit();
             this.PageManager.SuspendLayout();
@@ -137,7 +133,7 @@
             this.PageManager.ItemSize = new System.Drawing.Size(141, 34);
             this.PageManager.Location = new System.Drawing.Point(21, 203);
             this.PageManager.Name = "PageManager";
-            this.PageManager.SelectedIndex = 0;
+            this.PageManager.SelectedIndex = 1;
             this.PageManager.Size = new System.Drawing.Size(439, 222);
             this.PageManager.SizeMode = System.Windows.Forms.TabSizeMode.Fixed;
             this.PageManager.Style = MetroFramework.MetroColorStyle.Red;
@@ -151,8 +147,6 @@
             // 
             this.Tab_Debug.BackColor = System.Drawing.Color.Transparent;
             this.Tab_Debug.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.Tab_Debug.Controls.Add(this.Debug_OutputState);
-            this.Tab_Debug.Controls.Add(this.Debug_OutputState_Text);
             this.Tab_Debug.Controls.Add(this.Debug_OutputSuccessTest);
             this.Tab_Debug.Controls.Add(this.Debug_OutputFailureTest);
             this.Tab_Debug.Controls.Add(this.Debug_OutputTest);
@@ -170,52 +164,15 @@
             this.Tab_Debug.Theme = MetroFramework.MetroThemeStyle.Dark;
             this.Tab_Debug.VerticalScrollbarBarColor = true;
             // 
-            // Debug_OutputSuccessTest
-            // 
-            this.Debug_OutputSuccessTest.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.Debug_OutputSuccessTest.Location = new System.Drawing.Point(297, 116);
-            this.Debug_OutputSuccessTest.Name = "Debug_OutputSuccessTest";
-            this.Debug_OutputSuccessTest.Size = new System.Drawing.Size(113, 23);
-            this.Debug_OutputSuccessTest.Style = MetroFramework.MetroColorStyle.Green;
-            this.Debug_OutputSuccessTest.TabIndex = 22;
-            this.Debug_OutputSuccessTest.Text = "Output Success Test";
-            this.Debug_OutputSuccessTest.Theme = MetroFramework.MetroThemeStyle.Dark;
-            this.Debug_OutputSuccessTest.Click += new System.EventHandler(this.Debug_OutputSuccessTest_Click);
-            // 
-            // Debug_OutputFailureTest
-            // 
-            this.Debug_OutputFailureTest.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.Debug_OutputFailureTest.Location = new System.Drawing.Point(296, 81);
-            this.Debug_OutputFailureTest.Name = "Debug_OutputFailureTest";
-            this.Debug_OutputFailureTest.Size = new System.Drawing.Size(113, 23);
-            this.Debug_OutputFailureTest.Style = MetroFramework.MetroColorStyle.Green;
-            this.Debug_OutputFailureTest.TabIndex = 21;
-            this.Debug_OutputFailureTest.Text = "Output Failure Test";
-            this.Debug_OutputFailureTest.Theme = MetroFramework.MetroThemeStyle.Dark;
-            this.Debug_OutputFailureTest.Click += new System.EventHandler(this.Debug_OutputFailureTest_Click);
-            // 
-            // Debug_OutputTest
-            // 
-            this.Debug_OutputTest.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.Debug_OutputTest.Location = new System.Drawing.Point(296, 45);
-            this.Debug_OutputTest.Name = "Debug_OutputTest";
-            this.Debug_OutputTest.Size = new System.Drawing.Size(113, 23);
-            this.Debug_OutputTest.Style = MetroFramework.MetroColorStyle.Green;
-            this.Debug_OutputTest.TabIndex = 20;
-            this.Debug_OutputTest.Text = "Output Test";
-            this.Debug_OutputTest.Theme = MetroFramework.MetroThemeStyle.Dark;
-            this.Debug_OutputTest.Click += new System.EventHandler(this.Debug_OutputTest_Click);
-            // 
             // Debug_AutomatedState
             // 
-            this.Debug_AutomatedState.Cursor = System.Windows.Forms.Cursors.Hand;
             this.Debug_AutomatedState.FormattingEnabled = true;
             this.Debug_AutomatedState.ItemHeight = 23;
             this.Debug_AutomatedState.Items.AddRange(new object[] {
             "Pending",
             "Failure",
             "Success"});
-            this.Debug_AutomatedState.Location = new System.Drawing.Point(137, 76);
+            this.Debug_AutomatedState.Location = new System.Drawing.Point(137, 87);
             this.Debug_AutomatedState.Name = "Debug_AutomatedState";
             this.Debug_AutomatedState.Size = new System.Drawing.Size(131, 29);
             this.Debug_AutomatedState.TabIndex = 19;
@@ -230,7 +187,7 @@
             this.Debug_LatestInstallerRelease.CustomForeColor = true;
             this.Debug_LatestInstallerRelease.FontWeight = MetroFramework.MetroLabelWeight.Bold;
             this.Debug_LatestInstallerRelease.ForeColor = System.Drawing.Color.Lime;
-            this.Debug_LatestInstallerRelease.Location = new System.Drawing.Point(172, 39);
+            this.Debug_LatestInstallerRelease.Location = new System.Drawing.Point(172, 50);
             this.Debug_LatestInstallerRelease.Name = "Debug_LatestInstallerRelease";
             this.Debug_LatestInstallerRelease.Size = new System.Drawing.Size(96, 33);
             this.Debug_LatestInstallerRelease.TabIndex = 16;
@@ -247,7 +204,7 @@
             this.Debug_LatestInstallerRelease_Text.CustomForeColor = true;
             this.Debug_LatestInstallerRelease_Text.FontWeight = MetroFramework.MetroLabelWeight.Bold;
             this.Debug_LatestInstallerRelease_Text.ForeColor = System.Drawing.SystemColors.Highlight;
-            this.Debug_LatestInstallerRelease_Text.Location = new System.Drawing.Point(13, 39);
+            this.Debug_LatestInstallerRelease_Text.Location = new System.Drawing.Point(13, 50);
             this.Debug_LatestInstallerRelease_Text.Name = "Debug_LatestInstallerRelease_Text";
             this.Debug_LatestInstallerRelease_Text.Size = new System.Drawing.Size(165, 33);
             this.Debug_LatestInstallerRelease_Text.TabIndex = 15;
@@ -264,23 +221,56 @@
             this.Debug_AutomatedState_Text.CustomForeColor = true;
             this.Debug_AutomatedState_Text.FontWeight = MetroFramework.MetroLabelWeight.Bold;
             this.Debug_AutomatedState_Text.ForeColor = System.Drawing.SystemColors.Highlight;
-            this.Debug_AutomatedState_Text.Location = new System.Drawing.Point(13, 72);
+            this.Debug_AutomatedState_Text.Location = new System.Drawing.Point(13, 83);
             this.Debug_AutomatedState_Text.Name = "Debug_AutomatedState_Text";
             this.Debug_AutomatedState_Text.Size = new System.Drawing.Size(132, 33);
             this.Debug_AutomatedState_Text.TabIndex = 14;
             this.Debug_AutomatedState_Text.Text = "Automated State:";
             this.Debug_AutomatedState_Text.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.Debug_AutomatedState_Text.Theme = MetroFramework.MetroThemeStyle.Dark;
+            // 
+            // Debug_OutputTest
+            // 
+            this.Debug_OutputTest.Location = new System.Drawing.Point(296, 35);
+            this.Debug_OutputTest.Name = "Debug_OutputTest";
+            this.Debug_OutputTest.Size = new System.Drawing.Size(113, 23);
+            this.Debug_OutputTest.Style = MetroFramework.MetroColorStyle.Green;
+            this.Debug_OutputTest.TabIndex = 20;
+            this.Debug_OutputTest.Text = "Output Test";
+            this.Debug_OutputTest.Theme = MetroFramework.MetroThemeStyle.Dark;
+            this.Debug_OutputTest.Click += new System.EventHandler(this.Debug_OutputTest_Click);
+            // 
+            // Debug_OutputFailureTest
+            // 
+            this.Debug_OutputFailureTest.Location = new System.Drawing.Point(296, 71);
+            this.Debug_OutputFailureTest.Name = "Debug_OutputFailureTest";
+            this.Debug_OutputFailureTest.Size = new System.Drawing.Size(113, 23);
+            this.Debug_OutputFailureTest.Style = MetroFramework.MetroColorStyle.Green;
+            this.Debug_OutputFailureTest.TabIndex = 21;
+            this.Debug_OutputFailureTest.Text = "Output Failure Test";
+            this.Debug_OutputFailureTest.Theme = MetroFramework.MetroThemeStyle.Dark;
+            this.Debug_OutputFailureTest.Click += new System.EventHandler(this.Debug_OutputFailureTest_Click);
+            // 
+            // Debug_OutputSuccessTest
+            // 
+            this.Debug_OutputSuccessTest.Location = new System.Drawing.Point(297, 106);
+            this.Debug_OutputSuccessTest.Name = "Debug_OutputSuccessTest";
+            this.Debug_OutputSuccessTest.Size = new System.Drawing.Size(113, 23);
+            this.Debug_OutputSuccessTest.Style = MetroFramework.MetroColorStyle.Green;
+            this.Debug_OutputSuccessTest.TabIndex = 22;
+            this.Debug_OutputSuccessTest.Text = "Output Success Test";
+            this.Debug_OutputSuccessTest.Theme = MetroFramework.MetroThemeStyle.Dark;
+            this.Debug_OutputSuccessTest.Click += new System.EventHandler(this.Debug_OutputSuccessTest_Click);
 #endif
             // 
             // Tab_Automated
             // 
             this.Tab_Automated.BackColor = System.Drawing.Color.Transparent;
             this.Tab_Automated.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.Tab_Automated.Controls.Add(this.Automated_TmpDivider);
-            this.Tab_Automated.Controls.Add(this.Automated_Text);
-            this.Tab_Automated.Controls.Add(this.Automated_Retry);
             this.Tab_Automated.Controls.Add(this.Automated_Text_Failure);
+            this.Tab_Automated.Controls.Add(this.Automated_TmpDivider);
+            this.Tab_Automated.Controls.Add(this.Automated_Retry);
+            this.Tab_Automated.Controls.Add(this.Automated_Text);
             this.Tab_Automated.Cursor = System.Windows.Forms.Cursors.Default;
             this.Tab_Automated.HorizontalScrollbarBarColor = true;
             this.Tab_Automated.Location = new System.Drawing.Point(4, 38);
@@ -290,6 +280,37 @@
             this.Tab_Automated.Text = "Automated   ";
             this.Tab_Automated.Theme = MetroFramework.MetroThemeStyle.Dark;
             this.Tab_Automated.VerticalScrollbarBarColor = true;
+            // 
+            // Automated_TmpDivider
+            // 
+            this.Automated_TmpDivider.AutoSize = true;
+            this.Automated_TmpDivider.BackColor = System.Drawing.Color.Transparent;
+            this.Automated_TmpDivider.Location = new System.Drawing.Point(3, 80);
+            this.Automated_TmpDivider.Name = "Automated_TmpDivider";
+            this.Automated_TmpDivider.Size = new System.Drawing.Size(423, 19);
+            this.Automated_TmpDivider.TabIndex = 17;
+            this.Automated_TmpDivider.Text = "_____________________________________________________________________";
+            this.Automated_TmpDivider.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.Automated_TmpDivider.Theme = MetroFramework.MetroThemeStyle.Dark;
+            this.Automated_TmpDivider.Visible = false;
+            // 
+            // Automated_Text
+            // 
+            this.Automated_Text.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.Automated_Text.BackColor = System.Drawing.Color.Transparent;
+            this.Automated_Text.CustomForeColor = true;
+            this.Automated_Text.FontSize = MetroFramework.MetroLabelSize.Tall;
+            this.Automated_Text.FontWeight = MetroFramework.MetroLabelWeight.Bold;
+            this.Automated_Text.ForeColor = System.Drawing.SystemColors.Highlight;
+            this.Automated_Text.Location = new System.Drawing.Point(-1, 0);
+            this.Automated_Text.Name = "Automated_Text";
+            this.Automated_Text.Size = new System.Drawing.Size(431, 179);
+            this.Automated_Text.TabIndex = 14;
+            this.Automated_Text.Text = "Getting Releases from GitHub...";
+            this.Automated_Text.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.Automated_Text.Theme = MetroFramework.MetroThemeStyle.Dark;
             // 
             // Automated_Text_Failure
             // 
@@ -309,50 +330,6 @@
             this.Automated_Text_Failure.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.Automated_Text_Failure.Theme = MetroFramework.MetroThemeStyle.Dark;
             this.Automated_Text_Failure.Visible = false;
-            // 
-            // Automated_TmpDivider
-            // 
-            this.Automated_TmpDivider.AutoSize = true;
-            this.Automated_TmpDivider.BackColor = System.Drawing.Color.Transparent;
-            this.Automated_TmpDivider.Location = new System.Drawing.Point(3, 107);
-            this.Automated_TmpDivider.Name = "Automated_TmpDivider";
-            this.Automated_TmpDivider.Size = new System.Drawing.Size(423, 19);
-            this.Automated_TmpDivider.TabIndex = 17;
-            this.Automated_TmpDivider.Text = "_____________________________________________________________________";
-            this.Automated_TmpDivider.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.Automated_TmpDivider.Theme = MetroFramework.MetroThemeStyle.Dark;
-            this.Automated_TmpDivider.Visible = false;
-            // 
-            // Automated_Retry
-            // 
-            this.Automated_Retry.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.Automated_Retry.Location = new System.Drawing.Point(154, 97);
-            this.Automated_Retry.Name = "Automated_Retry";
-            this.Automated_Retry.Size = new System.Drawing.Size(120, 23);
-            this.Automated_Retry.Style = MetroFramework.MetroColorStyle.Green;
-            this.Automated_Retry.TabIndex = 18;
-            this.Automated_Retry.Text = "RETRY";
-            this.Automated_Retry.Theme = MetroFramework.MetroThemeStyle.Dark;
-            this.Automated_Retry.Visible = false;
-            this.Automated_Retry.Click += new System.EventHandler(this.Automated_Retry_Click);
-            // 
-            // Automated_Text
-            // 
-            this.Automated_Text.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.Automated_Text.BackColor = System.Drawing.Color.Transparent;
-            this.Automated_Text.CustomForeColor = true;
-            this.Automated_Text.FontSize = MetroFramework.MetroLabelSize.Tall;
-            this.Automated_Text.FontWeight = MetroFramework.MetroLabelWeight.Bold;
-            this.Automated_Text.ForeColor = System.Drawing.SystemColors.Highlight;
-            this.Automated_Text.Location = new System.Drawing.Point(-1, 0);
-            this.Automated_Text.Name = "Automated_Text";
-            this.Automated_Text.Size = new System.Drawing.Size(431, 179);
-            this.Automated_Text.TabIndex = 14;
-            this.Automated_Text.Text = "Getting Releases from GitHub...";
-            this.Automated_Text.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.Automated_Text.Theme = MetroFramework.MetroThemeStyle.Dark;
             // 
             // Tab_SelfUpdate
             // 
@@ -822,48 +799,26 @@
             this.ML_Logo.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.ML_Logo.TabIndex = 0;
             this.ML_Logo.TabStop = false;
-#if DEBUG
             // 
-            // Debug_OutputState
+            // Automated_Retry
             // 
-            this.Debug_OutputState.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.Debug_OutputState.FormattingEnabled = true;
-            this.Debug_OutputState.ItemHeight = 23;
-            this.Debug_OutputState.Items.AddRange(new object[] {
-            "Pending",
-            "Failure",
-            "Success"});
-            this.Debug_OutputState.Location = new System.Drawing.Point(108, 111);
-            this.Debug_OutputState.Name = "Debug_OutputState";
-            this.Debug_OutputState.Size = new System.Drawing.Size(131, 29);
-            this.Debug_OutputState.TabIndex = 24;
-            this.Debug_OutputState.SelectedIndexChanged += new System.EventHandler(this.Debug_OutputState_SelectedIndexChanged);
-            // 
-            // Debug_OutputState_Text
-            // 
-            this.Debug_OutputState_Text.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.Debug_OutputState_Text.BackColor = System.Drawing.Color.Transparent;
-            this.Debug_OutputState_Text.CustomForeColor = true;
-            this.Debug_OutputState_Text.FontWeight = MetroFramework.MetroLabelWeight.Bold;
-            this.Debug_OutputState_Text.ForeColor = System.Drawing.SystemColors.Highlight;
-            this.Debug_OutputState_Text.Location = new System.Drawing.Point(13, 107);
-            this.Debug_OutputState_Text.Name = "Debug_OutputState_Text";
-            this.Debug_OutputState_Text.Size = new System.Drawing.Size(132, 33);
-            this.Debug_OutputState_Text.TabIndex = 23;
-            this.Debug_OutputState_Text.Text = "Output State:";
-            this.Debug_OutputState_Text.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.Debug_OutputState_Text.Theme = MetroFramework.MetroThemeStyle.Dark;
-#endif
+            this.Automated_Retry.Location = new System.Drawing.Point(154, 97);
+            this.Automated_Retry.Name = "Automated_Retry";
+            this.Automated_Retry.Size = new System.Drawing.Size(120, 23);
+            this.Automated_Retry.Style = MetroFramework.MetroColorStyle.Green;
+            this.Automated_Retry.TabIndex = 18;
+            this.Automated_Retry.Text = "RETRY";
+            this.Automated_Retry.Theme = MetroFramework.MetroThemeStyle.Dark;
+            this.Automated_Retry.Visible = false;
+            this.Automated_Retry.Click += new System.EventHandler(this.Automated_Retry_Click);
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(481, 441);
-            this.Controls.Add(this.PageManager);
             this.Controls.Add(this.InstallerUpdateNotice);
+            this.Controls.Add(this.PageManager);
             this.Controls.Add(this.Link_Wiki);
             this.Controls.Add(this.InstallerVersion);
             this.Controls.Add(this.Link_GitHub);
@@ -908,7 +863,7 @@
 
         }
 
-#endregion
+        #endregion
 
         internal System.Windows.Forms.PictureBox ML_Logo;
         internal System.Windows.Forms.PictureBox ML_Text;
@@ -958,8 +913,6 @@
         internal MetroFramework.Controls.MetroButton Debug_OutputTest;
         internal MetroFramework.Controls.MetroButton Debug_OutputFailureTest;
         internal MetroFramework.Controls.MetroButton Debug_OutputSuccessTest;
-        internal MetroFramework.Controls.MetroComboBox Debug_OutputState;
-        internal MetroFramework.Controls.MetroLabel Debug_OutputState_Text;
 #endif
     }
 }

@@ -93,9 +93,29 @@ namespace MelonLoader.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap ML_Icon {
+        internal static System.Drawing.Bitmap LL_Logo {
             get {
-                object obj = ResourceManager.GetObject("ML_Icon", resourceCulture);
+                object obj = ResourceManager.GetObject("LL_Logo", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap LL_Text {
+            get {
+                object obj = ResourceManager.GetObject("LL_Text", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ML_Logo {
+            get {
+                object obj = ResourceManager.GetObject("ML_Logo", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

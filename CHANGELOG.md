@@ -1,5 +1,6 @@
 ### Version List:
 
+[v4.0.0](#v400)  
 [v3.0.6](#v306)  
 [v3.0.5](#v305)  
 [v3.0.4](#v304)  
@@ -7,6 +8,26 @@
 [v3.0.2](#v302)  
 [v3.0.1](#v301)  
 [v3.0.0](#v300)  
+
+---
+
+### v4.0.0:
+
+1. Rewrote Installer Base Functionality.
+2. Rewrote GitHub Contact System.
+3. Rewrote Theme Handling System.
+4. Rewrote WebClient Handling.
+5. Rewrote Form Ui and Handling.
+6. Fixed Issue with Drop Down Selections not Coloring properly.
+7. Fixed Issue with Release Build failing the Version Comparison for Self-Update causing Auto-Downgrading.
+8. Debug Build now properly shows All Tabs.
+9. Debug Build now properly shows the GitHub Contact Result for Self-Update.
+10. Added new Lemon Theme.
+11. Added new DarkLemon Theme.
+12. Added Debug Tab to Debug Build for Testing.
+13. Made Self-Update Tab Hidden on Debug Build.
+14. Added Drop Down Selection for forcing the State of the Automated Tab.
+15. Added Output Tests to Debug Tab.
 
 ---
 
