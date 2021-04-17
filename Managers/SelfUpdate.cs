@@ -1,10 +1,13 @@
 ﻿using System;
+using System.Linq;
+using System.Threading;
+
+#if !DEBUG
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Security.Cryptography;
 using System.Text.RegularExpressions;
-using System.Threading;
+#endif
 
 namespace MelonLoader.Managers
 {
