@@ -59,18 +59,20 @@ namespace MelonLoader.Managers
                     });
                     return;
                 }
+
                 FormHandler.Invoke(() =>
                 {
                     FormHandler.ShowInstallerUpdateNotice();
+                    if (FormHandler.IsClosing)
+                        return;
 #if DEBUG
-                    if (!FormHandler.IsClosing)
-                        FormHandler.GetReleases();
-#else
-                    FormHandler.SetStage(FormHandler.StageEnum.Output);
+                    FormHandler.GetReleases();
 #endif
                 });
+                if (FormHandler.IsClosing)
+                    return;
 #if !DEBUG
-                if (!FormHandler.IsClosing)
+                if (Config.AutoUpdateInstaller)
                     DownloadUpdate();
 #endif
             }).Start();
@@ -100,6 +102,11 @@ namespace MelonLoader.Managers
 #if !DEBUG
         private static void DownloadUpdate()
         {
+            FormHandler.Invoke(() =>
+            {
+                FormHandler.SetStage(FormHandler.StageEnum.Output);
+                FormHandler.SetOutputCurrentOperation("Downloading Installer Update...", ThemeHandler.GetOutputOperationColor());
+            });
             string temp_path = TempFileCache.CreateFile();
             bool was_download_successful = WebClientInterface.DownloadFile(UpdateAssetData.Download, temp_path, (percentage) =>
             {
@@ -113,7 +120,7 @@ namespace MelonLoader.Managers
             {
                 TempFileCache.ClearCache();
                 if (!FormHandler.IsClosing)
-                    Failure("TODO");
+                    DownloadFailed("TODO");
                 return;
             }
             string download_sha512 = WebClientInterface.DownloadString(UpdateAssetData.SHA512);
@@ -121,7 +128,7 @@ namespace MelonLoader.Managers
             {
                 TempFileCache.ClearCache();
                 if (!FormHandler.IsClosing)
-                    Failure("TODO");
+                    DownloadFailed("TODO");
                 return;
             }
             SHA512Managed sha512 = new SHA512Managed();
@@ -131,16 +138,16 @@ namespace MelonLoader.Managers
             {
                 TempFileCache.ClearCache();
                 if (!FormHandler.IsClosing)
-                    Failure("TODO");
+                    DownloadFailed("TODO");
                 return;
             }
             string file_hash = BitConverter.ToString(checksum).Replace("-", string.Empty);
             if (string.IsNullOrEmpty(file_hash)
-                || file_hash.Equals(download_sha512))
+                || !file_hash.Equals(download_sha512))
             {
                 TempFileCache.ClearCache();
                 if (!FormHandler.IsClosing)
-                    Failure("TODO");
+                    DownloadFailed("TODO");
                 return;
             }
             string exe_path = Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName);
@@ -153,11 +160,12 @@ namespace MelonLoader.Managers
         }
 #endif
 
-        private static void Failure(string reason)
+        private static void DownloadFailed(string reason)
         {
             FormHandler.Invoke(() => FormHandler.SetStage(FormHandler.StageEnum.Output_Failure));
 
             // Handle Failure
+            FormHandler.SpawnMessageBox(reason, System.Windows.Forms.MessageBoxIcon.Error, System.Windows.Forms.MessageBoxButtons.OK);
 
             FormHandler.Invoke(FormHandler.GetReleases);
         }

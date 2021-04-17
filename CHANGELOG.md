@@ -30,6 +30,7 @@
 15. Added Output Tests to Debug Tab.
 16. Fixed Issue with Divider not Offsetting for Automated and Manual Zip Tabs.
 17. Outfitted Automated Tab with Buttons.
+18. Fixed Issue with Self-Update Download SHA512 Hash Verification.
 
 ---
 
