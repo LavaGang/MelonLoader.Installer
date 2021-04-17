@@ -143,6 +143,8 @@ namespace MelonLoader.Managers
             FormHandler.mainForm.Automated_Text_Failure.Theme = pallet.ThemeStyle;
             FormHandler.mainForm.Automated_Retry.Theme = pallet.ThemeStyle;
             FormHandler.mainForm.Automated_Retry.Style = pallet.ColorStyle;
+            FormHandler.mainForm.Automated_Install.Theme = pallet.ThemeStyle;
+            FormHandler.mainForm.Automated_Install.Style = pallet.ColorStyle;
 
             // Settings
             FormHandler.mainForm.Settings_Theme_Text.Theme = pallet.ThemeStyle;

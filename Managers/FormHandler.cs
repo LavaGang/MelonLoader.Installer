@@ -154,6 +154,8 @@ namespace MelonLoader.Managers
                     mainForm.Automated_Text.Visible = true;
                     mainForm.Automated_Text_Failure.Visible = false;
                     mainForm.Automated_Retry.Visible = false;
+                    mainForm.Automated_Install.Visible = false;
+                    mainForm.Automated_Uninstall.Visible = false;
 #if DEBUG
                     mainForm.Debug_AutomatedState.SelectedIndex = 0;
                     goto default;
@@ -168,6 +170,8 @@ namespace MelonLoader.Managers
                     mainForm.Automated_Text.Visible = false;
                     mainForm.Automated_Text_Failure.Visible = true;
                     mainForm.Automated_Retry.Visible = true;
+                    mainForm.Automated_Install.Visible = false;
+                    mainForm.Automated_Uninstall.Visible = false;
 #if DEBUG
                     mainForm.Debug_AutomatedState.SelectedIndex = 1;
 #endif
@@ -180,6 +184,8 @@ namespace MelonLoader.Managers
                     mainForm.Automated_Text.Visible = false;
                     mainForm.Automated_Text_Failure.Visible = false;
                     mainForm.Automated_Retry.Visible = false;
+                    mainForm.Automated_Install.Visible = true;
+                    mainForm.Automated_Uninstall.Visible = true;
                     // Show Automated Controls
 #if DEBUG
                     mainForm.Debug_AutomatedState.SelectedIndex = 2;

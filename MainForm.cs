@@ -9,24 +9,6 @@ namespace MelonLoader
 {
     internal partial class MainForm : MetroFramework.Forms.MetroForm
     {
-        internal MainForm() => InitializeComponent();
-        private void MainForm_Load(object sender, EventArgs e) => FormHandler.OnLoad();
-        private void MainForm_FormClosing(object sender, FormClosingEventArgs e) => FormHandler.OnClose();
-        private void Link_Discord_Click(object sender, EventArgs e) => Process.Start(URLs.ExternalLinks.Discord);
-        private void Link_Twitter_Click(object sender, EventArgs e) => Process.Start(URLs.ExternalLinks.Twitter);
-        private void Link_GitHub_Click(object sender, EventArgs e) => Process.Start(URLs.ExternalLinks.GitHub);
-        private void Link_Wiki_Click(object sender, EventArgs e) => Process.Start(URLs.ExternalLinks.Wiki);
-        private void InstallerVersion_Click(object sender, EventArgs e) => Process.Start(URLs.ExternalLinks.Installer);
-        private void InstallerUpdateNotice_Click(object sender, EventArgs e) => Process.Start($"{URLs.ExternalLinks.Installer}/releases/latest");
-
-        private void PageManager_SelectedIndexChanged(object sender, EventArgs e) => FormHandler.OnTabChange(PageManager.SelectedTab);
-        private void Settings_Theme_Selection_SelectedIndexChanged(object sender, EventArgs e) { Config.Theme = Settings_Theme_Selection.SelectedIndex; ThemeHandler.OnThemeChange(); }
-        private void CheckBox_MouseEnter(object sender, EventArgs e) => ThemeHandler.OnCheckBoxMouseEnter((MetroCheckBox)sender);
-        private void CheckBox_MouseEnter(object sender, MouseEventArgs e) => ThemeHandler.OnCheckBoxMouseEnter((MetroCheckBox)sender);
-        private void CheckBox_MouseLeave(object sender, EventArgs e) => ThemeHandler.OnCheckBoxMouseLeave((MetroCheckBox)sender);
-        private void CheckBox_MouseLeave(object sender, MouseEventArgs e) => ThemeHandler.OnCheckBoxMouseLeave((MetroCheckBox)sender);
-        private void Automated_Retry_Click(object sender, EventArgs e) => FormHandler.GetReleases();
-
 #if DEBUG
         private void Debug_AutomatedState_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -116,6 +98,30 @@ namespace MelonLoader
                     });
             }).Start();
         }
+#else
+        private void Debug_AutomatedState_SelectedIndexChanged(object sender, EventArgs e) { }
+        private void Debug_OutputState_SelectedIndexChanged(object sender, EventArgs e) { }
+        private void Debug_OutputTest_Click(object sender, EventArgs e) { }
+        private void Debug_OutputFailureTest_Click(object sender, EventArgs e) { }
+        private void Debug_OutputSuccessTest_Click(object sender, EventArgs e) { }
 #endif
+
+        internal MainForm() => InitializeComponent();
+        private void MainForm_Load(object sender, EventArgs e) => FormHandler.OnLoad();
+        private void MainForm_FormClosing(object sender, FormClosingEventArgs e) => FormHandler.OnClose();
+        private void Link_Discord_Click(object sender, EventArgs e) => Process.Start(URLs.ExternalLinks.Discord);
+        private void Link_Twitter_Click(object sender, EventArgs e) => Process.Start(URLs.ExternalLinks.Twitter);
+        private void Link_GitHub_Click(object sender, EventArgs e) => Process.Start(URLs.ExternalLinks.GitHub);
+        private void Link_Wiki_Click(object sender, EventArgs e) => Process.Start(URLs.ExternalLinks.Wiki);
+        private void InstallerVersion_Click(object sender, EventArgs e) => Process.Start(URLs.ExternalLinks.Installer);
+        private void InstallerUpdateNotice_Click(object sender, EventArgs e) => Process.Start($"{URLs.ExternalLinks.Installer}/releases/latest");
+
+        private void PageManager_SelectedIndexChanged(object sender, EventArgs e) => FormHandler.OnTabChange(PageManager.SelectedTab);
+        private void Settings_Theme_Selection_SelectedIndexChanged(object sender, EventArgs e) { Config.Theme = Settings_Theme_Selection.SelectedIndex; ThemeHandler.OnThemeChange(); }
+        private void CheckBox_MouseEnter(object sender, EventArgs e) => ThemeHandler.OnCheckBoxMouseEnter((MetroCheckBox)sender);
+        private void CheckBox_MouseEnter(object sender, MouseEventArgs e) => ThemeHandler.OnCheckBoxMouseEnter((MetroCheckBox)sender);
+        private void CheckBox_MouseLeave(object sender, EventArgs e) => ThemeHandler.OnCheckBoxMouseLeave((MetroCheckBox)sender);
+        private void CheckBox_MouseLeave(object sender, MouseEventArgs e) => ThemeHandler.OnCheckBoxMouseLeave((MetroCheckBox)sender);
+        private void Automated_Retry_Click(object sender, EventArgs e) => FormHandler.GetReleases();
     }
 }
