@@ -10,10 +10,10 @@ namespace MelonLoader.Managers
         {
             Form.mainForm.PageManager.Controls.Clear();
             Form.mainForm.PageManager.Controls.Add(Form.mainForm.Tab_Debug);
-            //Form.mainForm.PageManager.Controls.Add(Form.mainForm.Tab_Automated);
-            //Form.mainForm.PageManager.Controls.Add(Form.mainForm.Tab_ManualZip);
-            //Form.mainForm.PageManager.Controls.Add(Form.mainForm.Tab_Settings);
-            //Form.mainForm.PageManager.Controls.Add(Form.mainForm.Tab_Output);
+            Form.mainForm.PageManager.Controls.Add(Form.mainForm.Tab_Automated);
+            Form.mainForm.PageManager.Controls.Add(Form.mainForm.Tab_ManualZip);
+            Form.mainForm.PageManager.Controls.Add(Form.mainForm.Tab_Settings);
+            Form.mainForm.PageManager.Controls.Add(Form.mainForm.Tab_Output);
             Form.mainForm.Debug_AutomatedState.SelectedIndex = 0;
             Form.mainForm.Debug_OutputState.SelectedIndex = 0;
         }
@@ -28,10 +28,12 @@ namespace MelonLoader.Managers
                     break;
 
                 case 1:
+                    Form.SetStage(Form.StageEnum.Main, false);
                     Form.SetStage(Form.StageEnum.Automated_Failure);
                     break;
 
                 case 2:
+                    Form.SetStage(Form.StageEnum.Main, false);
                     Form.SetStage(Form.StageEnum.Automated_Success);
                     break;
             }

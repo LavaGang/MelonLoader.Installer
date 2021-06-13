@@ -83,6 +83,7 @@
     <Compile Include="Libs\LightJson\Serialization\TextScanner.cs" />
     <Compile Include="Managers\Debug.cs" />
     <Compile Include="Interfaces\DisposableFile.cs" />
+    <Compile Include="Interfaces\UnityGame.cs" />
     <Compile Include="URLs\ExternalLinks.cs" />
     <Compile Include="URLs\Repositories.cs" />
     <Compile Include="Program.cs" />

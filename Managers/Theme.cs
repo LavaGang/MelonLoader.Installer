@@ -147,6 +147,8 @@ namespace MelonLoader.Managers
             Form.mainForm.Settings_Theme_Text.Theme = pallet.ThemeStyle;
             Form.mainForm.Settings_Theme_Selection.Theme = pallet.ThemeStyle;
             Form.mainForm.Settings_Theme_Selection.Style = pallet.ColorStyle;
+            Form.mainForm.Settings_RefreshReleases.Theme = pallet.ThemeStyle;
+            Form.mainForm.Settings_RefreshReleases.Style = pallet.ColorStyle;
 
             Form.mainForm.Settings_AutoUpdateInstaller.Theme = pallet.ThemeStyle;
             Form.mainForm.Settings_AutoUpdateInstaller.Style = pallet.ColorStyle;

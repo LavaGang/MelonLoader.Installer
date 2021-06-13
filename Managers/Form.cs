@@ -50,8 +50,8 @@ namespace MelonLoader.Managers
 #if DEBUG
             SetStage(StageEnum.Debug);
 #endif
-            //SetStage(StageEnum.SelfUpdate);
-            //SelfUpdate.Check_Repo();
+            SetStage(StageEnum.SelfUpdate);
+            SelfUpdate.Check_Repo();
         }
 
         internal static void OnClose()
@@ -119,8 +119,11 @@ namespace MelonLoader.Managers
                 Debug.RunOutputTest(50, 4, testsuccess: true);
 #endif
 
-            if (button == mainForm.Automated_Retry)
+            if ((button == mainForm.Automated_Retry)
+                || (button == mainForm.Settings_RefreshReleases))
                 GetReleases();
+            else if (button == mainForm.Automated_UnityGame_Select)
+                Interfaces.UnityGame.OpenSelectionPrompt();
         }
 
         internal static void GetReleases()
@@ -160,7 +163,11 @@ namespace MelonLoader.Managers
             // SetStage
         }
 
-        internal static void SetStage(StageEnum stage)
+        internal static void SetStage(StageEnum stage
+#if DEBUG
+            , bool set_debug_index = true
+#endif
+            )
         {
             switch (stage)
             {
@@ -171,6 +178,7 @@ namespace MelonLoader.Managers
 #endif
 
                 case StageEnum.Main:
+                    mainForm.Settings_RefreshReleases.Enabled = false;
                     mainForm.Automated_Text.Visible = true;
                     mainForm.Automated_Text_Failure.Visible = false;
                     mainForm.Automated_Retry.Visible = false;
@@ -178,37 +186,39 @@ namespace MelonLoader.Managers
                     mainForm.Automated_Uninstall.Visible = false;
                     mainForm.Automated_UnityGame_Text.Visible = false;
                     mainForm.Automated_UnityGame_Select.Visible = false;
+                    mainForm.Automated_Divider.Visible = false;
 #if DEBUG
-                    mainForm.Debug_AutomatedState.SelectedIndex = 0;
+                    if (set_debug_index)
+                        mainForm.Debug_AutomatedState.SelectedIndex = 0;
                     goto default;
 #else
                     goto main;
 #endif
 
                 case StageEnum.Automated_Failure:
+                    mainForm.Settings_RefreshReleases.Enabled = true;
                     mainForm.Automated_Text.Visible = false;
                     mainForm.Automated_Text_Failure.Visible = true;
                     mainForm.Automated_Retry.Visible = true;
-                    mainForm.Automated_Install.Visible = false;
-                    mainForm.Automated_Uninstall.Visible = false;
-                    mainForm.Automated_UnityGame_Text.Visible = false;
-                    mainForm.Automated_UnityGame_Select.Visible = false;
 #if DEBUG
-                    mainForm.Debug_AutomatedState.SelectedIndex = 1;
+                    if (set_debug_index)
+                        mainForm.Debug_AutomatedState.SelectedIndex = 1;
 #endif
                     goto default;
 
-                case StageEnum.Automated_Success:   
+                case StageEnum.Automated_Success:
+                    mainForm.Settings_RefreshReleases.Enabled = true;
                     mainForm.Automated_Text.Visible = false;
                     mainForm.Automated_Text_Failure.Visible = false;
                     mainForm.Automated_Retry.Visible = false;
                     mainForm.Automated_Install.Visible = true;
                     mainForm.Automated_Uninstall.Visible = true;
-                    //mainForm.Automated_UnityGame_Text.Visible = true;
-                    //mainForm.Automated_UnityGame_Select.Visible = true;
-                    //mainForm.Automated_UnityGame_FilePath.Visible = true;
+                    mainForm.Automated_UnityGame_Text.Visible = true;
+                    mainForm.Automated_UnityGame_Select.Visible = true;
+                    mainForm.Automated_Divider.Visible = true;
 #if DEBUG
-                    mainForm.Debug_AutomatedState.SelectedIndex = 2;
+                    if (set_debug_index)
+                        mainForm.Debug_AutomatedState.SelectedIndex = 2;
 #endif
                     goto default;
 
@@ -218,7 +228,8 @@ namespace MelonLoader.Managers
                     SetOutputCurrentPercentage(0);
                     SetOutputTotalPercentage(0);
 #if DEBUG
-                    mainForm.Debug_OutputState.SelectedIndex = 0;
+                    if (set_debug_index)
+                        mainForm.Debug_OutputState.SelectedIndex = 0;
 #endif
                     goto output;
 
@@ -226,7 +237,8 @@ namespace MelonLoader.Managers
                     SetOutputCurrentOperation("ERROR!", Color.Red);
                     SetOutputProgressBarColor(MetroFramework.MetroColorStyle.Red);
 #if DEBUG
-                    mainForm.Debug_OutputState.SelectedIndex = 1;
+                    if (set_debug_index)
+                        mainForm.Debug_OutputState.SelectedIndex = 1;
 #endif
                     goto default;
 
@@ -236,7 +248,8 @@ namespace MelonLoader.Managers
                     SetOutputCurrentPercentage(100);
                     SetOutputTotalPercentage(100);
 #if DEBUG
-                    mainForm.Debug_OutputState.SelectedIndex = 2;
+                    if (set_debug_index)
+                        mainForm.Debug_OutputState.SelectedIndex = 2;
 #endif
                     goto default;
 

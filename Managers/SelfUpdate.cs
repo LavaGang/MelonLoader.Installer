@@ -39,8 +39,6 @@ namespace MelonLoader.Managers
 
         internal static void Check_Repo()
         {
-            Program.CreateMessageBox("2", System.Windows.Forms.MessageBoxIcon.Information, System.Windows.Forms.MessageBoxButtons.OK, true);
-            /*
             new Thread(() =>
             {
                 if (!Check_UpdateAvailable())
@@ -69,7 +67,6 @@ namespace MelonLoader.Managers
                     DownloadUpdate();
 #endif
             }).Start();
-            */
         }
 
         private static bool Check_UpdateAvailable()
