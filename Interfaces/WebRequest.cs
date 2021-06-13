@@ -2,13 +2,13 @@
 using System.IO;
 using System.Net;
 
-namespace MelonLoader.Managers
+namespace MelonLoader.Interfaces
 {
-    internal static class WebClientInterface
+    internal static class WebRequest
     {
         private static WebClient webClient = new WebClient();
         private static Action<int> DownloadProgressCallback;
-        static WebClientInterface()
+        static WebRequest()
         {
             SetUserAgent("request");
             webClient.DownloadProgressChanged +=
@@ -22,7 +22,7 @@ namespace MelonLoader.Managers
         {
             string response = null;
             try { response = webClient.DownloadString(url); } catch (Exception ex) { HandleException(ex); response = null; }
-            if (FormHandler.IsClosing
+            if (Managers.Form.IsClosing
                 || string.IsNullOrEmpty(response))
                 response = null;
             return response;
@@ -36,7 +36,7 @@ namespace MelonLoader.Managers
             {
                 webClient.DownloadFileAsync(new Uri(url), filepath);
                 while (webClient.IsBusy) { }
-                was_successful = !FormHandler.IsClosing && File.Exists(filepath);
+                was_successful = !Managers.Form.IsClosing && File.Exists(filepath);
             }
             catch (Exception ex) { HandleException(ex, filepath); was_successful = false; }
             DownloadProgressCallback = null;

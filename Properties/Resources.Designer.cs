@@ -93,6 +93,26 @@ namespace MelonLoader.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap LavaGang_Dark {
+            get {
+                object obj = ResourceManager.GetObject("LavaGang_Dark", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap LavaGang_Light {
+            get {
+                object obj = ResourceManager.GetObject("LavaGang_Light", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap LL_Logo {
             get {
                 object obj = ResourceManager.GetObject("LL_Logo", resourceCulture);

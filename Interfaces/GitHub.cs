@@ -3,22 +3,22 @@ using System.IO;
 using System.Linq;
 using MelonLoader.LightJson;
 
-namespace MelonLoader.Managers
+namespace MelonLoader.Interfaces
 {
-    internal class GitHubAPI
+    internal class GitHub
     {
         internal List<ReleaseData> ReleasesTbl = new List<ReleaseData>();
         private string API_URL = null;
-        internal GitHubAPI(string url) => API_URL = url;
+        internal GitHub(string url) => API_URL = url;
 
         internal void Refresh(bool is_installer = false)
         {
             ReleasesTbl.Clear();
             if (is_installer)
-                WebClientInterface.SetUserAgent("request");
+                WebRequest.SetUserAgent("request");
             else
-                WebClientInterface.SetUserAgent("Unity web player");
-            string response = WebClientInterface.DownloadString(API_URL);
+                WebRequest.SetUserAgent("Unity web player");
+            string response = WebRequest.DownloadString(API_URL);
             if (string.IsNullOrEmpty(response))
                 return;
             JsonValue responseval = JsonValue.Parse(response);
@@ -44,15 +44,17 @@ namespace MelonLoader.Managers
                 if (string.IsNullOrEmpty(releaseVersion))
                     continue;
                 bool has_windows_x86 = (!releaseVersion.StartsWith("v0.2") && !releaseVersion.StartsWith("v0.1"));
-                bool has_android_quest = (has_windows_x86 && !releaseVersion.Equals("v0.3.0"));
+                //bool has_android_quest = (has_windows_x86 && !releaseVersion.StartsWith("v0.3"));
                 ReleaseData releaseData = new ReleaseData()
                 {
                     Version = releaseVersion,
                     IsPreRelease = release["prerelease"].AsBoolean,
                     Installer = GetAssetDataWithFileName(assets, "MelonLoader.Installer.exe", is_installer),
-                    Windows_x86 = GetAssetDataWithFileName(assets, has_android_quest ? "MelonLoader.Windows.x86.zip" : "MelonLoader.x86.zip", !is_installer && has_windows_x86),
-                    Windows_x64 = GetAssetDataWithFileName(assets, has_android_quest ? "MelonLoader.Windows.x64.zip" : "MelonLoader.x64.zip", !is_installer),
-                    Android_Quest = GetAssetDataWithFileName(assets, "MelonLoader.Android_Quest.zip", !is_installer && has_android_quest)
+                    Windows_x86 = GetAssetDataWithFileName(assets, "MelonLoader.x86.zip", !is_installer && has_windows_x86),
+                    Windows_x64 = GetAssetDataWithFileName(assets, "MelonLoader.x64.zip", !is_installer),
+                    //Windows_x86 = GetAssetDataWithFileName(assets, has_android_quest ? "MelonLoader.Windows.x86.zip" : "MelonLoader.x86.zip", !is_installer && has_windows_x86),
+                    //Windows_x64 = GetAssetDataWithFileName(assets, has_android_quest ? "MelonLoader.Windows.x64.zip" : "MelonLoader.x64.zip", !is_installer),
+                    //Android_Quest = GetAssetDataWithFileName(assets, "MelonLoader.Android_Quest.zip", !is_installer && has_android_quest)
                 };
                 ReleasesTbl.Add(releaseData);
             }
@@ -104,7 +106,7 @@ namespace MelonLoader.Managers
             internal AssetData Installer;
             internal AssetData Windows_x86;
             internal AssetData Windows_x64;
-            internal AssetData Android_Quest;
+            //internal AssetData Android_Quest;
         }
     }
 }

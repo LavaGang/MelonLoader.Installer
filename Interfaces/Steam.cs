@@ -1,22 +1,32 @@
 ﻿using Microsoft.Win32;
 using System;
 using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
 
-namespace MelonLoader.Managers
+namespace MelonLoader.Interfaces
 {
-    internal static class SteamHandler
+    internal static class Steam
     {
+        internal static bool IsSteamURL(string url)
+            => (!string.IsNullOrEmpty(url) && url.StartsWith("steam://rungameid/"));
+
+        internal static string GetAppIdFromURL(string url)
+            => url.Substring(18);
+
         internal static string GetFilePathFromAppId(string appid)
         {
             if (string.IsNullOrEmpty(appid))
                 return null;
+
             string steaminstallpath = GetSteamInstallPath();
             if (string.IsNullOrEmpty(steaminstallpath) || !Directory.Exists(steaminstallpath))
                 return null;
+
             string steamappspath = Path.Combine(steaminstallpath, "steamapps");
             if (!Directory.Exists(steamappspath))
                 return null;
+
             string appmanifestfilename = ("appmanifest_" + appid + ".acf");
             string appmanifestpath = Path.Combine(steamappspath, appmanifestfilename);
             string installdir = ReadAppManifestInstallDir(appmanifestpath);
@@ -26,8 +36,10 @@ namespace MelonLoader.Managers
                 if (string.IsNullOrEmpty(installdir))
                     return null;
             }
+
             if (!ScanForExe(steamappspath, installdir, out string filepath))
                 return null;
+
             return filepath;
         }
 
@@ -35,15 +47,18 @@ namespace MelonLoader.Managers
         {
             if (!File.Exists(appmanifestpath))
                 return null;
+
             string[] file_lines = File.ReadAllLines(appmanifestpath);
             if (file_lines.Length <= 0)
                 return null;
+
             string output = null;
             foreach (string line in file_lines)
             {
                 Match match = new Regex(@"""installdir""\s+""(.+)""").Match(line);
                 if (!match.Success)
                     continue;
+
                 output = match.Groups[1].Value;
                 break;
             }
@@ -64,12 +79,15 @@ namespace MelonLoader.Managers
                 Match match = new Regex(@"""\d+""\s+""(.+)""").Match(line);
                 if (!match.Success)
                     continue;
+
                 string steamappspath2 = Path.Combine(match.Groups[1].Value.Replace(":\\\\", ":\\"), "steamapps");
                 if (!Directory.Exists(steamappspath2))
                     continue;
+
                 string installdir = ReadAppManifestInstallDir(Path.Combine(steamappspath2, appmanifestfilename));
                 if (string.IsNullOrEmpty(installdir))
                     continue;
+
                 steamappspath = steamappspath2;
                 output = installdir;
             }
@@ -82,34 +100,34 @@ namespace MelonLoader.Managers
             string installpath = Path.Combine(steamappspath, "common", installdir);
             if (!Directory.Exists(installpath))
                 return false;
-            string newfilepath = Path.Combine(installpath, (installdir + ".exe"));
-            if (File.Exists(newfilepath))
+
+            string[] potential_directories = Directory.GetDirectories(installpath, "*_Data");
+            if (potential_directories.Length <= 0)
             {
-                filepath = newfilepath;
-                return true;
+                potential_directories = Directory.GetDirectories(Path.Combine(installpath, installdir), "*_Data");
+                if (potential_directories.Length <= 0)
+                    return false;
             }
-            newfilepath = Path.Combine(installpath, (installdir.Replace(" ", "") + ".exe"));
-            if (File.Exists(newfilepath))
+
+            string data_directory = potential_directories.First();
+            string exe_name = data_directory.Substring(0, data_directory.Length - 5);
+            string exe_path = Path.Combine(installpath, $"{exe_name}.exe");
+            if (!File.Exists(exe_path))
             {
-                filepath = newfilepath;
-                return true;
+                exe_path = Path.Combine(Path.Combine(installpath, installdir), $"{exe_name}.exe");
+                if (!File.Exists(exe_path))
+                    return false;
             }
-            newfilepath = Path.Combine(installpath, installdir, (installdir + ".exe"));
-            if (File.Exists(newfilepath))
-            {
-                filepath = newfilepath;
-                return true;
-            }
-            newfilepath = Path.Combine(installpath, installdir, (installdir.Replace(" ", "") + ".exe"));
-            if (File.Exists(newfilepath))
-            {
-                filepath = newfilepath;
-                return true;
-            }
-            // Improve Exe Scanning
-            return false;
+
+            filepath = exe_path;
+            return true;
         }
 
-        private static string GetSteamInstallPath() => Registry.LocalMachine.OpenSubKey(!Environment.Is64BitOperatingSystem ? "SOFTWARE\\Valve\\Steam" : "SOFTWARE\\Wow6432Node\\Valve\\Steam")?.GetValue("InstallPath")?.ToString();
+        private static string GetSteamInstallPath()
+            => Registry.LocalMachine.OpenSubKey(
+                Environment.Is64BitOperatingSystem 
+                ? "SOFTWARE\\Wow6432Node\\Valve\\Steam"
+                : "SOFTWARE\\Valve\\Steam"
+            )?.GetValue("InstallPath")?.ToString();
     }
 }

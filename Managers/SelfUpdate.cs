@@ -5,27 +5,16 @@ using System.Threading;
 #if !DEBUG
 using System.Diagnostics;
 using System.IO;
-using System.Security.Cryptography;
-using System.Text.RegularExpressions;
 #endif
 
 namespace MelonLoader.Managers
 {
     internal static class SelfUpdate
     {
-        internal static GitHubAPI API = new GitHubAPI(URLs.Repositories.Installer);
-        internal static GitHubAPI.ReleaseData.AssetData UpdateAssetData = null;
+        internal static Interfaces.GitHub API = new Interfaces.GitHub(URLs.Repositories.Installer);
+        internal static Interfaces.GitHub.ReleaseData.AssetData UpdateAssetData = null;
 
 #if !DEBUG
-        private static void Relaunch(string exepath)
-        {
-            ProcessStartInfo procinfo = new ProcessStartInfo(exepath);
-            if ((Program.Arguments != null) && (Program.Arguments.Length > 0))
-                procinfo.Arguments = string.Join(" ", Program.Arguments.Where(s => !string.IsNullOrEmpty(s)).Select(it => ("\"" + Regex.Replace(it, @"(\\+)$", @"$1$1") + "\""))); ;
-            Process.Start(procinfo);
-            Program.EndItAll();
-        }
-
         internal static bool Check_FileName()
         {
             string exe_fullpath = Process.GetCurrentProcess().MainModule.FileName;
@@ -43,42 +32,44 @@ namespace MelonLoader.Managers
             if (File.Exists(new_exe_path))
                 File.Delete(new_exe_path);
             File.Copy(exe_fullpath, new_exe_path);
-            Relaunch(new_exe_path);
+            Program.Relaunch(new_exe_path);
             return true;
         }
 #endif
 
         internal static void Check_Repo()
         {
+            Program.CreateMessageBox("2", System.Windows.Forms.MessageBoxIcon.Information, System.Windows.Forms.MessageBoxButtons.OK, true);
+            /*
             new Thread(() =>
             {
                 if (!Check_UpdateAvailable())
                 {
-                    TempFileCache.ClearCache();
-                    FormHandler.Invoke(() =>
+                    Form.Invoke(() =>
                     {
-                        if (!FormHandler.IsClosing)
-                            FormHandler.GetReleases();
+                        if (!Form.IsClosing)
+                            Form.GetReleases();
                     });
                     return;
                 }
 
-                FormHandler.Invoke(() =>
+                Form.Invoke(() =>
                 {
-                    FormHandler.ShowInstallerUpdateNotice();
-                    if (FormHandler.IsClosing)
+                    Form.mainForm.InstallerUpdateNotice.Visible = true;
+                    if (Form.IsClosing)
                         return;
 #if DEBUG
-                    FormHandler.GetReleases();
+                    Form.GetReleases();
 #endif
                 });
-                if (FormHandler.IsClosing)
+                if (Form.IsClosing)
                     return;
 #if !DEBUG
-                if (Config.AutoUpdateInstaller)
+                if (Config.AutoUpdate)
                     DownloadUpdate();
 #endif
             }).Start();
+            */
         }
 
         private static bool Check_UpdateAvailable()
@@ -86,7 +77,7 @@ namespace MelonLoader.Managers
             API.Refresh(true);
             if (API.ReleasesTbl.Count <= 0)
                 return false;
-            GitHubAPI.ReleaseData releasedata = API.ReleasesTbl.FirstOrDefault(x => 
+            Interfaces.GitHub.ReleaseData releasedata = API.ReleasesTbl.FirstOrDefault(x => 
                 !x.IsPreRelease
                 && (x.Installer != null) 
                 && !string.IsNullOrEmpty(x.Installer.Download) 
@@ -95,7 +86,7 @@ namespace MelonLoader.Managers
                 return false;
             UpdateAssetData = releasedata.Installer;
 #if DEBUG
-            FormHandler.mainForm.Debug_LatestInstallerRelease.Text = $"v{releasedata.Version}";
+            Form.mainForm.Debug_LatestInstallerRelease.Text = $"v{releasedata.Version}";
 #endif
             Version currentVersion = new Version(BuildInfo.Version);
             Version releaseVersion = new Version(releasedata.Version.Replace("v", ""));
@@ -105,72 +96,64 @@ namespace MelonLoader.Managers
 #if !DEBUG
         private static void DownloadUpdate()
         {
-            FormHandler.Invoke(() =>
+            Form.Invoke(() =>
             {
-                FormHandler.SetStage(FormHandler.StageEnum.Output);
-                FormHandler.SetOutputCurrentOperation("Downloading Installer Update...", ThemeHandler.GetOutputOperationColor());
+                Form.SetStage(Form.StageEnum.Output);
+                Form.SetOutputCurrentOperation("Downloading Installer Update...", Theme.GetOutputOperationColor());
             });
-            string temp_path = TempFileCache.CreateFile();
-            bool was_download_successful = WebClientInterface.DownloadFile(UpdateAssetData.Download, temp_path, (percentage) =>
-            {
-                FormHandler.Invoke(() =>
-                {
-                    FormHandler.SetOutputCurrentPercentage(percentage);
-                    FormHandler.SetOutputTotalPercentage(percentage);
-                });
-            });
-            if (!was_download_successful)
-            {
-                TempFileCache.ClearCache();
-                if (!FormHandler.IsClosing)
-                    DownloadFailed("TODO");
-                return;
-            }
-            string download_sha512 = WebClientInterface.DownloadString(UpdateAssetData.SHA512);
-            if (string.IsNullOrEmpty(download_sha512))
-            {
-                TempFileCache.ClearCache();
-                if (!FormHandler.IsClosing)
-                    DownloadFailed("TODO");
-                return;
-            }
-            SHA512Managed sha512 = new SHA512Managed();
-            byte[] checksum = sha512.ComputeHash(File.ReadAllBytes(temp_path));
-            if ((checksum == null)
-                || (checksum.Length <= 0))
-            {
-                TempFileCache.ClearCache();
-                if (!FormHandler.IsClosing)
-                    DownloadFailed("TODO");
-                return;
-            }
-            string file_hash = BitConverter.ToString(checksum).Replace("-", string.Empty);
-            if (string.IsNullOrEmpty(file_hash)
-                || !file_hash.Equals(download_sha512))
-            {
-                TempFileCache.ClearCache();
-                if (!FormHandler.IsClosing)
-                    DownloadFailed("TODO");
-                return;
-            }
+
             string exe_path = Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName);
-            string tmp_file_path = Path.Combine(exe_path, (Path.GetFileNameWithoutExtension(UpdateAssetData.Download) + ".tmp.exe"));
-            if (File.Exists(tmp_file_path))
-                File.Delete(tmp_file_path);
-            File.Move(temp_path, tmp_file_path);
-            FormHandler.Invoke(() => FormHandler.SetStage(FormHandler.StageEnum.Output_Success));
-            Relaunch(tmp_file_path);
+            string temp_path = Path.Combine(exe_path, (Path.GetFileNameWithoutExtension(UpdateAssetData.Download) + ".tmp.exe"));
+            
+            Interfaces.DisposableFile disposableFile = new Interfaces.DisposableFile(temp_path);
+            try
+            {
+                if (!disposableFile.Download(UpdateAssetData.Download, (percentage) =>
+                {
+                    Form.Invoke(() =>
+                    {
+                        Form.SetOutputCurrentPercentage(percentage);
+                        Form.SetOutputTotalPercentage(percentage);
+                    });
+                }))
+                {
+                    disposableFile.Dispose();
+                    DownloadFailed("TODO");
+                    return;
+                }
+
+                if (!disposableFile.SHA512HashCheckFromURL(UpdateAssetData.SHA512))
+                {
+                    disposableFile.Dispose();
+                    DownloadFailed("TODO");
+                    return;
+                }
+            }
+            catch (Exception ex)
+            {
+                disposableFile.Dispose();
+                DownloadFailed(ex.ToString());
+                return;
+            }
+            if (Form.IsClosing)
+                return;
+            Form.Invoke(() => Form.SetStage(Form.StageEnum.Output_Success));
+            disposableFile.ShouldDisposeFileData = false;
+            Program.Relaunch(temp_path);
         }
 #endif
 
         private static void DownloadFailed(string reason)
         {
-            FormHandler.Invoke(() => FormHandler.SetStage(FormHandler.StageEnum.Output_Failure));
+            if (Form.IsClosing)
+                return;
+
+            Form.Invoke(() => Form.SetStage(Form.StageEnum.Output_Failure));
 
             // Handle Failure
-            FormHandler.SpawnMessageBox(reason, System.Windows.Forms.MessageBoxIcon.Error, System.Windows.Forms.MessageBoxButtons.OK);
+            Program.CreateMessageBox(reason, System.Windows.Forms.MessageBoxIcon.Error, System.Windows.Forms.MessageBoxButtons.OK);
 
-            FormHandler.Invoke(FormHandler.GetReleases);
+            Form.Invoke(Form.GetReleases);
         }
     }
 }

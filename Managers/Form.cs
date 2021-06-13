@@ -1,17 +1,18 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
+using MetroFramework.Controls;
 
 namespace MelonLoader.Managers
 {
-    internal static class FormHandler
+    internal static class Form
     {
         internal static MainForm mainForm;
         internal static bool IsClosing = false;
-        internal static GitHubAPI ReleasesAPI = new GitHubAPI(URLs.Repositories.MelonLoader);
-        internal static bool ShowDividerOnAutomated = false;
+        internal static Interfaces.GitHub ReleasesAPI = new Interfaces.GitHub(URLs.Repositories.MelonLoader);
 
         internal enum StageEnum
         {
@@ -28,72 +29,98 @@ namespace MelonLoader.Managers
             Output_Failure,
         }
 
+        internal static void Run()
+            => Application.Run(mainForm = new MainForm());
+
         internal static void Invoke(Action act) => mainForm.Invoke(act);
-        internal static void ShowInstallerUpdateNotice() => mainForm.InstallerUpdateNotice.Visible = true;
         internal static void SetOutputCurrentPercentage(int percentage) => mainForm.Output_Current_Progress_Text.Text = (mainForm.Output_Current_Progress_Display.Value = percentage).ToString();
         internal static void SetOutputTotalPercentage(int percentage) => mainForm.Output_Total_Progress_Text.Text = (mainForm.Output_Total_Progress_Display.Value = percentage).ToString();
         internal static void SetOutputCurrentOperation(string text, Color color) { mainForm.Output_Current_Operation.Text = text; mainForm.Output_Current_Operation.ForeColor = color; }
         internal static void SetOutputProgressBarColor(MetroFramework.MetroColorStyle color) => mainForm.Output_Current_Progress_Display.Style = mainForm.Output_Total_Progress_Display.Style = color;
 
-        internal static void Run()
+        internal static void OnLoad()
         {
-            mainForm = new MainForm();
-            Application.Run(mainForm);
+            mainForm.InstallerVersion.Text = $"Installer v{BuildInfo.Version}";
+            mainForm.Settings_Theme_Selection.SelectedIndex = Config.Theme;
+            mainForm.Settings_AutoUpdateInstaller.Checked = Config.AutoUpdate;
+            mainForm.Settings_CloseAfterCompletion.Checked = Config.CloseAfterCompletion;
+            mainForm.Settings_ShowALPHAPreReleases.Checked = Config.ShowALPHAPreReleases;
+            mainForm.Settings_RememberLastSelectedGame.Checked = Config.RememberLastSelectedGame;
+            mainForm.Settings_HighlightLogFileLocation.Checked = Config.HighlightLogFileLocation;
+#if DEBUG
+            SetStage(StageEnum.Debug);
+#endif
+            //SetStage(StageEnum.SelfUpdate);
+            //SelfUpdate.Check_Repo();
         }
 
         internal static void OnClose()
         {
             IsClosing = true;
-            WebClientInterface.CancelAsync();
+            Interfaces.WebRequest.CancelAsync();
             Thread.Sleep(100);
-            TempFileCache.ClearCache();
             Config.Save();
+            Interfaces.DisposableFile.Cleanup();
         }
 
-        internal static void OnTabChange(TabPage page)
+        internal static void OnLinkClick(object linkObject)
         {
-            mainForm.Divider.Visible = (page == mainForm.Tab_Automated)
-            ? ShowDividerOnAutomated
-            : ((page != mainForm.Tab_SelfUpdate)
-                && (page != mainForm.Tab_Settings)
+            if (linkObject == mainForm.Link_Discord)
+                Process.Start(URLs.ExternalLinks.Discord);
+            else if (linkObject == mainForm.Link_GitHub)
+                Process.Start(URLs.ExternalLinks.GitHub);
+            else if (linkObject == mainForm.Link_Twitter)
+                Process.Start(URLs.ExternalLinks.Twitter);
+            else if (linkObject == mainForm.Link_Wiki)
+                Process.Start(URLs.ExternalLinks.Wiki);
+            else if (linkObject == mainForm.InstallerVersion)
+                Process.Start(URLs.ExternalLinks.Installer);
+            else if (linkObject == mainForm.InstallerUpdateNotice)
+                Process.Start($"{URLs.ExternalLinks.Installer}/releases/latest");
+            else if (linkObject == mainForm.LavaGangLogo)
+                Process.Start(URLs.ExternalLinks.LavaGang);
+        }
+
+        internal static void OnComboBoxSelectedIndexChange(MetroComboBox comboBox)
+        {
 #if DEBUG
-                && (page != mainForm.Tab_Debug)
+            if (comboBox == mainForm.Debug_AutomatedState)
+                Debug.SetAutomatedState(comboBox.SelectedIndex);
+            else if (comboBox == mainForm.Debug_OutputState)
+                Debug.SetOutputState(comboBox.SelectedIndex);
 #endif
-            );
-            mainForm.Divider.Location = new Point(29,
-                ((page == mainForm.Tab_Automated)
-                    || (page == mainForm.Tab_ManualZip))
-                        ? 347
-                        : 320);
+
+            if (comboBox == mainForm.Settings_Theme_Selection)
+                Config.Theme = comboBox.SelectedIndex;
         }
 
-        internal static void OnLoad()
+        internal static void OnCheckBoxCheckedChange(MetroCheckBox checkBox)
         {
-            mainForm.InstallerVersion.Text = $"Installer v{BuildInfo.Version}";
-            mainForm.Settings_Theme_Selection.SelectedIndex = Config.Theme;
-            mainForm.Settings_AutoUpdateInstaller.Checked = Config.AutoUpdateInstaller;
-            mainForm.Settings_CloseAfterCompletion.Checked = Config.CloseAfterCompletion;
-            mainForm.Settings_ShowAlphaPreReleases.Checked = Config.ShowAlphaPreReleases;
-            mainForm.Settings_RememberLastSelectedGame.Checked = Config.RememberLastSelectedGame;
-            mainForm.Settings_HighlightLogFileLocation.Checked = Config.HighlightLogFileLocation;
-            mainForm.Divider.BringToFront();
+            if (checkBox == mainForm.Settings_AutoUpdateInstaller)
+                Config.AutoUpdate = checkBox.Checked;
+            else if (checkBox == mainForm.Settings_CloseAfterCompletion)
+                Config.CloseAfterCompletion = checkBox.Checked;
+            else if (checkBox == mainForm.Settings_HighlightLogFileLocation)
+                Config.HighlightLogFileLocation = checkBox.Checked;
+            else if (checkBox == mainForm.Settings_RememberLastSelectedGame)
+                Config.RememberLastSelectedGame = checkBox.Checked;
+            else if (checkBox == mainForm.Settings_ShowALPHAPreReleases)
+                Config.ShowALPHAPreReleases = checkBox.Checked;
+        }
+
+        internal static void OnButtonClick(MetroButton button)
+        {
 #if DEBUG
-            SetStage(StageEnum.Debug);
+            if (button == mainForm.Debug_OutputTest)
+                Debug.RunOutputTest(50, 4);
+            else if (button == mainForm.Debug_OutputFailureTest)
+                Debug.RunOutputTest(50, 4, 3);
+            else if (button == mainForm.Debug_OutputSuccessTest)
+                Debug.RunOutputTest(50, 4, testsuccess: true);
 #endif
-            SetStage(StageEnum.SelfUpdate);
-            SelfUpdate.Check_Repo();
-        }
 
-        internal static void SpawnMessageBox(string text, MessageBoxIcon icon, MessageBoxButtons buttons, bool new_thread = false)
-        {
-            if (IsClosing)
-                return;
-            if (new_thread)
-            {
-                new Thread(() => MessageBox.Show(text, $"MelonLoader {mainForm.InstallerVersion.Text}", buttons, icon)).Start();
-                return;
-            }
-            MessageBox.Show(text, $"MelonLoader {mainForm.InstallerVersion.Text}", buttons, icon);
+            if (button == mainForm.Automated_Retry)
+                GetReleases();
         }
 
         internal static void GetReleases()
@@ -109,14 +136,6 @@ namespace MelonLoader.Managers
                         SetStage(StageEnum.Automated_Failure);
                         return;
                     }
-
-                    GitHubAPI.ReleaseData[] releaseData = ReleasesAPI.ReleasesTbl.Where(x => Config.ShowAlphaPreReleases ? true : !x.IsPreRelease).ToArray();
-                    if (releaseData.Length <= 0)
-                    {
-                        SetStage(StageEnum.Automated_Failure);
-                        return;
-                    }
-
                     SetStage(StageEnum.Automated_Success);
                     UpdateReleasesList();
                 });
@@ -125,6 +144,15 @@ namespace MelonLoader.Managers
 
         internal static void UpdateReleasesList()
         {
+            /*
+            Interfaces.GitHub.ReleaseData[] releaseData = ReleasesAPI.ReleasesTbl.Where(x => Config.ShowALPHAPreReleases ? true : !x.IsPreRelease).ToArray();
+            if (releaseData.Length <= 0)
+            {
+                SetStage(StageEnum.Automated_Failure);
+                return;
+            }
+            */
+
             // Cache Selected Release
             // Clear Current Releases List
             // Add Releases to List
@@ -138,24 +166,18 @@ namespace MelonLoader.Managers
             {
 #if DEBUG
                 case StageEnum.Debug:
-                    mainForm.PageManager.Controls.Clear();
-                    mainForm.PageManager.Controls.Add(mainForm.Tab_Debug);
-                    mainForm.PageManager.Controls.Add(mainForm.Tab_Automated);
-                    mainForm.PageManager.Controls.Add(mainForm.Tab_ManualZip);
-                    mainForm.PageManager.Controls.Add(mainForm.Tab_Settings);
-                    mainForm.PageManager.Controls.Add(mainForm.Tab_Output);
-                    mainForm.Debug_AutomatedState.SelectedIndex = 0;
-                    mainForm.Debug_OutputState.SelectedIndex = 0;
+                    Debug.SetFormStage();
                     goto select;
 #endif
 
                 case StageEnum.Main:
-                    ShowDividerOnAutomated = false;
                     mainForm.Automated_Text.Visible = true;
                     mainForm.Automated_Text_Failure.Visible = false;
                     mainForm.Automated_Retry.Visible = false;
                     mainForm.Automated_Install.Visible = false;
                     mainForm.Automated_Uninstall.Visible = false;
+                    mainForm.Automated_UnityGame_Text.Visible = false;
+                    mainForm.Automated_UnityGame_Select.Visible = false;
 #if DEBUG
                     mainForm.Debug_AutomatedState.SelectedIndex = 0;
                     goto default;
@@ -164,37 +186,35 @@ namespace MelonLoader.Managers
 #endif
 
                 case StageEnum.Automated_Failure:
-                    ShowDividerOnAutomated = false;
-                    if (mainForm.PageManager.SelectedTab == mainForm.Tab_Automated)
-                        mainForm.Divider.Visible = true;
                     mainForm.Automated_Text.Visible = false;
                     mainForm.Automated_Text_Failure.Visible = true;
                     mainForm.Automated_Retry.Visible = true;
                     mainForm.Automated_Install.Visible = false;
                     mainForm.Automated_Uninstall.Visible = false;
+                    mainForm.Automated_UnityGame_Text.Visible = false;
+                    mainForm.Automated_UnityGame_Select.Visible = false;
 #if DEBUG
                     mainForm.Debug_AutomatedState.SelectedIndex = 1;
 #endif
                     goto default;
 
-                case StageEnum.Automated_Success:
-                    ShowDividerOnAutomated = true;
-                    if (mainForm.PageManager.SelectedTab == mainForm.Tab_Automated)
-                        mainForm.Divider.Visible = true;
+                case StageEnum.Automated_Success:   
                     mainForm.Automated_Text.Visible = false;
                     mainForm.Automated_Text_Failure.Visible = false;
                     mainForm.Automated_Retry.Visible = false;
                     mainForm.Automated_Install.Visible = true;
                     mainForm.Automated_Uninstall.Visible = true;
-                    // Show Automated Controls
+                    //mainForm.Automated_UnityGame_Text.Visible = true;
+                    //mainForm.Automated_UnityGame_Select.Visible = true;
+                    //mainForm.Automated_UnityGame_FilePath.Visible = true;
 #if DEBUG
                     mainForm.Debug_AutomatedState.SelectedIndex = 2;
 #endif
                     goto default;
 
                 case StageEnum.Output:
-                    SetOutputCurrentOperation("Current Operation", ThemeHandler.GetOutputOperationColor());
-                    SetOutputProgressBarColor(ThemeHandler.GetOutputProgressBarColor());
+                    SetOutputCurrentOperation("Current Operation", Theme.GetOutputOperationColor());
+                    SetOutputProgressBarColor(Theme.GetOutputProgressBarColor());
                     SetOutputCurrentPercentage(0);
                     SetOutputTotalPercentage(0);
 #if DEBUG
@@ -221,7 +241,6 @@ namespace MelonLoader.Managers
                     goto default;
 
                 case StageEnum.SelfUpdate:
-                    mainForm.Divider.Visible = false;
 #if DEBUG
                     goto default;
 #else
@@ -249,7 +268,6 @@ namespace MelonLoader.Managers
                 default:
                     break;
             }
-            OnTabChange(mainForm.PageManager.SelectedTab);
         }
     }
 }
