@@ -2,6 +2,8 @@
 
 - This is the Official Dedicated Installer for [MelonLoader](https://github.com/LavaGang/MelonLoader)
 - All Installer Settings get saved to "%appdata%/MelonLoader.Installer.cfg"
+<br></br>
+- [The Official Wiki](https://melonwiki.xyz)
 - [Launch Options](#launch-options)
 
 | Guides: |
