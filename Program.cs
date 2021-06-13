@@ -29,10 +29,19 @@ namespace MelonLoader
         private static int Main(string[] args)
         {
             Arguments = args;
+
+            if (!Managers.Config.AutoUpdateFirstLaunchCheck)
+            {
+                DialogResult result = CreateMessageBoxInternal("Would you like the Installer to Auto-Update itself for you upon Launch?", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                Managers.Config.AutoUpdate = result == DialogResult.Yes;
+                Managers.Config.AutoUpdateFirstLaunchCheck = true;
+            }
+
 #if !DEBUG
             if (Managers.SelfUpdate.Check_FileName())
                 return 0;
 #endif
+
             Managers.Form.Run();
             return 0;
         }
@@ -46,18 +55,18 @@ namespace MelonLoader
             Process.GetCurrentProcess().Kill();
         }
 
-        private static void InternalCreateMessageBox(string text, MessageBoxButtons buttons, MessageBoxIcon icon)
-            => MessageBox.Show(text, $"MelonLoader {Managers.Form.mainForm.InstallerVersion.Text}", buttons, icon);
+        internal static DialogResult CreateMessageBoxInternal(string text, MessageBoxButtons buttons, MessageBoxIcon icon)
+            => MessageBox.Show(text, $"MelonLoader Installer v{BuildInfo.Version}", buttons, icon);
         internal static void CreateMessageBox(string text, MessageBoxIcon icon, MessageBoxButtons buttons, bool new_thread = false)
         {
             if (Managers.Form.IsClosing)
                 return;
             if (new_thread)
             {
-                new Thread(() => InternalCreateMessageBox(text, buttons, icon)).Start();
+                new Thread(() => CreateMessageBoxInternal(text, buttons, icon)).Start();
                 return;
             }
-            InternalCreateMessageBox(text, buttons, icon);
+            CreateMessageBoxInternal(text, buttons, icon);
         }
 
         private static void UnhandledExceptionHandler(object sender, UnhandledExceptionEventArgs e) => MessageBox.Show((e.ExceptionObject as Exception).ToString());

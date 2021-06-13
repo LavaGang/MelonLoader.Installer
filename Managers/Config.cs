@@ -11,6 +11,7 @@ namespace MelonLoader.Managers
 
         internal static int Theme { get => Values.Theme; set { Values.Theme = value; Save(); Managers.Theme.OnThemeChange(); } }
         internal static bool AutoUpdate { get => Values.AutoUpdate; set { Values.AutoUpdate = value; Save(); } }
+        internal static bool AutoUpdateFirstLaunchCheck { get => Values.AutoUpdateFirstLaunchCheck; set { Values.AutoUpdateFirstLaunchCheck = value; Save(); } }
         internal static bool CloseAfterCompletion { get => Values.CloseAfterCompletion; set { Values.CloseAfterCompletion = value; Save(); } }
         internal static bool ShowALPHAPreReleases { get => Values.ShowALPHAPreReleases; set { Values.ShowALPHAPreReleases = value; Save(); } }
         internal static bool RememberLastSelectedGame { get => Values.RememberLastSelectedGame; set { Values.RememberLastSelectedGame = value; Save(); } }
@@ -39,6 +40,7 @@ namespace MelonLoader.Managers
         {
             internal int Theme = 0;
             internal bool AutoUpdate = true;
+            internal bool AutoUpdateFirstLaunchCheck = false;
             internal bool CloseAfterCompletion = true;
             internal bool ShowALPHAPreReleases = false;
             internal bool RememberLastSelectedGame = false;

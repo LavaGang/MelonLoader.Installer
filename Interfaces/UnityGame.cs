@@ -21,7 +21,7 @@ namespace MelonLoader.Interfaces
 
         }
 
-        internal static void SelectFile(string filepath)
+        private static void SelectFile(string filepath)
         {
 
         }

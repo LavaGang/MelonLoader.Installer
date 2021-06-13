@@ -135,7 +135,7 @@
             this.PageManager.ItemSize = new System.Drawing.Size(141, 34);
             this.PageManager.Location = new System.Drawing.Point(21, 203);
             this.PageManager.Name = "PageManager";
-            this.PageManager.SelectedIndex = 2;
+            this.PageManager.SelectedIndex = 1;
             this.PageManager.Size = new System.Drawing.Size(439, 222);
             this.PageManager.SizeMode = System.Windows.Forms.TabSizeMode.Fixed;
             this.PageManager.Style = MetroFramework.MetroColorStyle.Red;
@@ -467,8 +467,8 @@
             // 
             this.Tab_Automated.BackColor = System.Drawing.Color.Transparent;
             this.Tab_Automated.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.Tab_Automated.Controls.Add(this.Automated_Retry);
             this.Tab_Automated.Controls.Add(this.Automated_UnityGame_Select);
+            this.Tab_Automated.Controls.Add(this.Automated_Retry);
             this.Tab_Automated.Controls.Add(this.Automated_UnityGame_Text);
             this.Tab_Automated.Controls.Add(this.Automated_Uninstall);
             this.Tab_Automated.Controls.Add(this.Automated_Install);
@@ -487,7 +487,7 @@
             // 
             // Automated_UnityGame_Select
             // 
-            this.Automated_UnityGame_Select.Location = new System.Drawing.Point(95, 11);
+            this.Automated_UnityGame_Select.Location = new System.Drawing.Point(97, 11);
             this.Automated_UnityGame_Select.Name = "Automated_UnityGame_Select";
             this.Automated_UnityGame_Select.Size = new System.Drawing.Size(60, 20);
             this.Automated_UnityGame_Select.Style = MetroFramework.MetroColorStyle.Green;

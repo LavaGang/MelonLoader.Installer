@@ -17,6 +17,8 @@ namespace MelonLoader.Managers
 #if !DEBUG
         internal static bool Check_FileName()
         {
+            if (!Config.AutoUpdate)
+                return false;
             string exe_fullpath = Process.GetCurrentProcess().MainModule.FileName;
             string exe_path = Path.GetDirectoryName(exe_fullpath);
             string exe_name = Path.GetFileNameWithoutExtension(exe_fullpath);
