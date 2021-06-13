@@ -182,11 +182,11 @@ namespace MelonLoader.Managers
                     mainForm.Automated_Text.Visible = true;
                     mainForm.Automated_Text_Failure.Visible = false;
                     mainForm.Automated_Retry.Visible = false;
+                    mainForm.Automated_Divider.Visible = false;
                     mainForm.Automated_Install.Visible = false;
                     mainForm.Automated_Uninstall.Visible = false;
                     mainForm.Automated_UnityGame_Text.Visible = false;
                     mainForm.Automated_UnityGame_Select.Visible = false;
-                    mainForm.Automated_Divider.Visible = false;
 #if DEBUG
                     if (set_debug_index)
                         mainForm.Debug_AutomatedState.SelectedIndex = 0;
@@ -211,11 +211,11 @@ namespace MelonLoader.Managers
                     mainForm.Automated_Text.Visible = false;
                     mainForm.Automated_Text_Failure.Visible = false;
                     mainForm.Automated_Retry.Visible = false;
+                    mainForm.Automated_Divider.Visible = true;
                     mainForm.Automated_Install.Visible = true;
                     mainForm.Automated_Uninstall.Visible = true;
                     mainForm.Automated_UnityGame_Text.Visible = true;
                     mainForm.Automated_UnityGame_Select.Visible = true;
-                    mainForm.Automated_Divider.Visible = true;
 #if DEBUG
                     if (set_debug_index)
                         mainForm.Debug_AutomatedState.SelectedIndex = 2;
