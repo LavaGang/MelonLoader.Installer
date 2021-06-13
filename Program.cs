@@ -29,13 +29,7 @@ namespace MelonLoader
         private static int Main(string[] args)
         {
             Arguments = args;
-
-            if (!Managers.Config.AutoUpdateFirstLaunchCheck)
-            {
-                DialogResult result = CreateMessageBoxInternal("Would you like the Installer to Auto-Update itself for you upon Launch?", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-                Managers.Config.AutoUpdate = result == DialogResult.Yes;
-                Managers.Config.AutoUpdateFirstLaunchCheck = true;
-            }
+            AutoUpdateConfirmation();
 
 #if !DEBUG
             if (Managers.SelfUpdate.Check_FileName())
@@ -44,6 +38,15 @@ namespace MelonLoader
 
             Managers.Form.Run();
             return 0;
+        }
+
+        private static void AutoUpdateConfirmation()
+        {
+            if (Managers.Config.AutoUpdateFirstLaunchCheck)
+                return;
+            DialogResult result = CreateMessageBoxInternal("Would you like the Installer to Auto-Update itself for you upon Launch?", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            Managers.Config.AutoUpdate = result == DialogResult.Yes;
+            Managers.Config.AutoUpdateFirstLaunchCheck = true;
         }
 
         internal static void Relaunch(string new_exe_path)
