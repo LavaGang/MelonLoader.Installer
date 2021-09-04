@@ -43,8 +43,6 @@
             this.Debug_LatestInstallerRelease = new MetroFramework.Controls.MetroLabel();
             this.Debug_LatestInstallerRelease_Text = new MetroFramework.Controls.MetroLabel();
             this.Debug_AutomatedState_Text = new MetroFramework.Controls.MetroLabel();
-            this.Tab_ManualZip = new MetroFramework.Controls.MetroTabPage();
-            this.ManualZip_Divider = new MetroFramework.Controls.MetroLabel();
             this.Tab_Settings = new MetroFramework.Controls.MetroTabPage();
             this.Settings_RefreshReleases = new MetroFramework.Controls.MetroButton();
             this.Settings_AutoUpdateInstaller = new MetroFramework.Controls.MetroCheckBox();
@@ -54,6 +52,8 @@
             this.Settings_Theme_Text = new MetroFramework.Controls.MetroLabel();
             this.Settings_RememberLastSelectedGame = new MetroFramework.Controls.MetroCheckBox();
             this.Settings_ShowALPHAPreReleases = new MetroFramework.Controls.MetroCheckBox();
+            this.Tab_ManualZip = new MetroFramework.Controls.MetroTabPage();
+            this.ManualZip_Divider = new MetroFramework.Controls.MetroLabel();
             this.Tab_Automated = new MetroFramework.Controls.MetroTabPage();
             this.Automated_UnityGame_Select = new MetroFramework.Controls.MetroButton();
             this.Automated_Retry = new MetroFramework.Controls.MetroButton();
@@ -87,8 +87,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.ThemeManager)).BeginInit();
             this.PageManager.SuspendLayout();
             this.Tab_Debug.SuspendLayout();
-            this.Tab_ManualZip.SuspendLayout();
             this.Tab_Settings.SuspendLayout();
+            this.Tab_ManualZip.SuspendLayout();
             this.Tab_Automated.SuspendLayout();
             this.Tab_SelfUpdate.SuspendLayout();
             this.Tab_Output.SuspendLayout();
@@ -125,9 +125,9 @@
             // 
             this.PageManager.Appearance = System.Windows.Forms.TabAppearance.Buttons;
             this.PageManager.Controls.Add(this.Tab_Debug);
+            this.PageManager.Controls.Add(this.Tab_Automated);
             this.PageManager.Controls.Add(this.Tab_Settings);
             this.PageManager.Controls.Add(this.Tab_ManualZip);
-            this.PageManager.Controls.Add(this.Tab_Automated);
             this.PageManager.Controls.Add(this.Tab_SelfUpdate);
             this.PageManager.Controls.Add(this.Tab_Output);
             this.PageManager.Cursor = System.Windows.Forms.Cursors.Hand;
@@ -300,33 +300,6 @@
             this.Debug_AutomatedState_Text.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.Debug_AutomatedState_Text.Theme = MetroFramework.MetroThemeStyle.Dark;
             // 
-            // Tab_ManualZip
-            // 
-            this.Tab_ManualZip.BackColor = System.Drawing.Color.Transparent;
-            this.Tab_ManualZip.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.Tab_ManualZip.Controls.Add(this.ManualZip_Divider);
-            this.Tab_ManualZip.Cursor = System.Windows.Forms.Cursors.Default;
-            this.Tab_ManualZip.HorizontalScrollbarBarColor = true;
-            this.Tab_ManualZip.Location = new System.Drawing.Point(4, 38);
-            this.Tab_ManualZip.Name = "Tab_ManualZip";
-            this.Tab_ManualZip.Size = new System.Drawing.Size(431, 180);
-            this.Tab_ManualZip.TabIndex = 8;
-            this.Tab_ManualZip.Text = "Manual Zip   ";
-            this.Tab_ManualZip.Theme = MetroFramework.MetroThemeStyle.Dark;
-            this.Tab_ManualZip.VerticalScrollbarBarColor = true;
-            // 
-            // ManualZip_Divider
-            // 
-            this.ManualZip_Divider.AutoSize = true;
-            this.ManualZip_Divider.BackColor = System.Drawing.Color.Transparent;
-            this.ManualZip_Divider.Location = new System.Drawing.Point(3, 107);
-            this.ManualZip_Divider.Name = "ManualZip_Divider";
-            this.ManualZip_Divider.Size = new System.Drawing.Size(423, 19);
-            this.ManualZip_Divider.TabIndex = 18;
-            this.ManualZip_Divider.Text = "_____________________________________________________________________";
-            this.ManualZip_Divider.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.ManualZip_Divider.Theme = MetroFramework.MetroThemeStyle.Dark;
-            // 
             // Tab_Settings
             // 
             this.Tab_Settings.BackColor = System.Drawing.Color.Transparent;
@@ -489,6 +462,33 @@
             this.Settings_ShowALPHAPreReleases.MouseEnter += new System.EventHandler(this.CheckBox_MouseEnter);
             this.Settings_ShowALPHAPreReleases.MouseLeave += new System.EventHandler(this.CheckBox_MouseLeave);
             this.Settings_ShowALPHAPreReleases.MouseUp += new System.Windows.Forms.MouseEventHandler(this.CheckBox_MouseEnter);
+            // 
+            // Tab_ManualZip
+            // 
+            this.Tab_ManualZip.BackColor = System.Drawing.Color.Transparent;
+            this.Tab_ManualZip.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.Tab_ManualZip.Controls.Add(this.ManualZip_Divider);
+            this.Tab_ManualZip.Cursor = System.Windows.Forms.Cursors.Default;
+            this.Tab_ManualZip.HorizontalScrollbarBarColor = true;
+            this.Tab_ManualZip.Location = new System.Drawing.Point(4, 38);
+            this.Tab_ManualZip.Name = "Tab_ManualZip";
+            this.Tab_ManualZip.Size = new System.Drawing.Size(431, 180);
+            this.Tab_ManualZip.TabIndex = 8;
+            this.Tab_ManualZip.Text = "Manual Zip   ";
+            this.Tab_ManualZip.Theme = MetroFramework.MetroThemeStyle.Dark;
+            this.Tab_ManualZip.VerticalScrollbarBarColor = true;
+            // 
+            // ManualZip_Divider
+            // 
+            this.ManualZip_Divider.AutoSize = true;
+            this.ManualZip_Divider.BackColor = System.Drawing.Color.Transparent;
+            this.ManualZip_Divider.Location = new System.Drawing.Point(3, 107);
+            this.ManualZip_Divider.Name = "ManualZip_Divider";
+            this.ManualZip_Divider.Size = new System.Drawing.Size(423, 19);
+            this.ManualZip_Divider.TabIndex = 18;
+            this.ManualZip_Divider.Text = "_____________________________________________________________________";
+            this.ManualZip_Divider.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.ManualZip_Divider.Theme = MetroFramework.MetroThemeStyle.Dark;
             // 
             // Tab_Automated
             // 
@@ -860,7 +860,6 @@
             this.Link_Wiki.Location = new System.Drawing.Point(97, 14);
             this.Link_Wiki.Name = "Link_Wiki";
             this.Link_Wiki.Size = new System.Drawing.Size(25, 25);
-            this.Link_Wiki.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.Link_Wiki.TabIndex = 9;
             this.Link_Wiki.TabStop = false;
             this.Link_Wiki.Click += new System.EventHandler(this.Link_Click);
@@ -873,7 +872,6 @@
             this.Link_GitHub.Location = new System.Drawing.Point(67, 14);
             this.Link_GitHub.Name = "Link_GitHub";
             this.Link_GitHub.Size = new System.Drawing.Size(25, 25);
-            this.Link_GitHub.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.Link_GitHub.TabIndex = 7;
             this.Link_GitHub.TabStop = false;
             this.Link_GitHub.Click += new System.EventHandler(this.Link_Click);
@@ -886,7 +884,6 @@
             this.Link_Twitter.Location = new System.Drawing.Point(37, 14);
             this.Link_Twitter.Name = "Link_Twitter";
             this.Link_Twitter.Size = new System.Drawing.Size(25, 25);
-            this.Link_Twitter.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.Link_Twitter.TabIndex = 6;
             this.Link_Twitter.TabStop = false;
             this.Link_Twitter.Click += new System.EventHandler(this.Link_Click);
@@ -896,10 +893,9 @@
             this.Link_Discord.BackColor = System.Drawing.Color.Transparent;
             this.Link_Discord.Cursor = System.Windows.Forms.Cursors.Hand;
             this.Link_Discord.Image = global::MelonLoader.Properties.Resources.Discord;
-            this.Link_Discord.Location = new System.Drawing.Point(7, 14);
+            this.Link_Discord.Location = new System.Drawing.Point(9, 14);
             this.Link_Discord.Name = "Link_Discord";
-            this.Link_Discord.Size = new System.Drawing.Size(25, 25);
-            this.Link_Discord.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.Link_Discord.Size = new System.Drawing.Size(22, 25);
             this.Link_Discord.TabIndex = 5;
             this.Link_Discord.TabStop = false;
             this.Link_Discord.Click += new System.EventHandler(this.Link_Click);
@@ -910,8 +906,7 @@
             this.ML_Text.Image = global::MelonLoader.Properties.Resources.ML_Text;
             this.ML_Text.Location = new System.Drawing.Point(23, 134);
             this.ML_Text.Name = "ML_Text";
-            this.ML_Text.Size = new System.Drawing.Size(437, 63);
-            this.ML_Text.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.ML_Text.Size = new System.Drawing.Size(437, 64);
             this.ML_Text.TabIndex = 1;
             this.ML_Text.TabStop = false;
             // 
@@ -919,10 +914,9 @@
             // 
             this.ML_Logo.BackColor = System.Drawing.Color.Transparent;
             this.ML_Logo.Image = global::MelonLoader.Properties.Resources.ML_Logo;
-            this.ML_Logo.Location = new System.Drawing.Point(184, 20);
+            this.ML_Logo.Location = new System.Drawing.Point(174, 20);
             this.ML_Logo.Name = "ML_Logo";
-            this.ML_Logo.Size = new System.Drawing.Size(120, 109);
-            this.ML_Logo.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.ML_Logo.Size = new System.Drawing.Size(133, 109);
             this.ML_Logo.TabIndex = 0;
             this.ML_Logo.TabStop = false;
             // 
@@ -955,10 +949,10 @@
             ((System.ComponentModel.ISupportInitialize)(this.ThemeManager)).EndInit();
             this.PageManager.ResumeLayout(false);
             this.Tab_Debug.ResumeLayout(false);
-            this.Tab_ManualZip.ResumeLayout(false);
-            this.Tab_ManualZip.PerformLayout();
             this.Tab_Settings.ResumeLayout(false);
             this.Tab_Settings.PerformLayout();
+            this.Tab_ManualZip.ResumeLayout(false);
+            this.Tab_ManualZip.PerformLayout();
             this.Tab_Automated.ResumeLayout(false);
             this.Tab_Automated.PerformLayout();
             this.Tab_SelfUpdate.ResumeLayout(false);
