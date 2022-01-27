@@ -28,7 +28,11 @@ namespace MelonLoader
                 JsonArray assets = release["assets"].AsJsonArray;
                 if (assets.Count <= 0)
                     continue;
+
                 string version = release["tag_name"].AsString;
+                if (version.StartsWith("v0.2") || version.StartsWith("v0.1"))
+                    continue;
+
                 if (!release["prerelease"].AsBoolean)
                     Official.Add(version);
                 All.Add(version);
