@@ -184,10 +184,14 @@ namespace MelonLoader
             string folder_path = Path.Combine(dirpath, "MelonLoader");
             string legacy_file_path = Path.Combine(folder_path, "MelonLoader.ModHandler.dll");
             string file_path = Path.Combine(folder_path, "MelonLoader.dll");
-            if (!File.Exists(legacy_file_path) && !File.Exists(file_path))
+            string new_file_path = Path.Combine(folder_path, "net35", "MelonLoader.dll");
+            if (!File.Exists(legacy_file_path) && !(File.Exists(file_path) || File.Exists(new_file_path)) )
                 return;
+
+            string actual_file = File.Exists(legacy_file_path) ? legacy_file_path : ( File.Exists(new_file_path) ? new_file_path : file_path );
+
             string fileversion = null;
-            FileVersionInfo fileVersionInfo = FileVersionInfo.GetVersionInfo((File.Exists(legacy_file_path) ? legacy_file_path : file_path));
+            FileVersionInfo fileVersionInfo = FileVersionInfo.GetVersionInfo(actual_file);
             if (fileVersionInfo != null)
             {
                 fileversion = fileVersionInfo.ProductVersion;

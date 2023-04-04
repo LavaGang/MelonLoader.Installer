@@ -346,6 +346,7 @@ namespace MelonLoader
                         }
                     });
                 }
+
                 string proxy_path = null;
                 if (GetExistingProxyPath(destination, out proxy_path))
                 {
@@ -374,6 +375,23 @@ namespace MelonLoader
                         if (result == DialogResult.Retry) recurse.Invoke(); else throw ex;
                     }
                 });
+
+                string dobby_path = Path.Combine(destination, "dobby.dll");
+                if (File.Exists(dobby_path))
+                {
+                    ThreadHandler.RecursiveFuncRun(delegate (ThreadHandler.RecursiveFuncRecurse recurse)
+                    {
+                        try { File.Delete(dobby_path); }
+                        catch (Exception ex)
+                        {
+                            if (!ex.GetType().IsAssignableFrom(typeof(UnauthorizedAccessException))
+                                && !ex.GetType().IsAssignableFrom(typeof(IOException)))
+                                throw ex;
+                            DialogResult result = MessageBox.Show($"Unable to remove dobby.dll! Make sure the Unity Game is not running or try running the Installer as Administrator.", BuildInfo.Name, MessageBoxButtons.RetryCancel, MessageBoxIcon.Error);
+                            if (result == DialogResult.Retry) recurse.Invoke(); else throw ex;
+                        }
+                    });
+                }
             }
             catch (Exception ex)
             {
