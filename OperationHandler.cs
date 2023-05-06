@@ -443,7 +443,7 @@ namespace MelonLoader
             string newfilepath = Path.Combine(userdatapath, "modprefs.ini");
             if (File.Exists(newfilepath))
                 File.Delete(newfilepath);
-            IniFile iniFile = new IniFile(newfilepath);
+            IniFile iniFile = new(newfilepath);
             foreach (KeyValuePair<string, object> keypair in model)
             {
                 string category_name = keypair.Key;
