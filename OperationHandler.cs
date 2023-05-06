@@ -104,7 +104,7 @@ namespace MelonLoader
                         }
                     });
                 }
-                if (GetExistingProxyPath(destination, out global::System.String proxy_path))
+                if (GetExistingProxyPath(destination, out String proxy_path))
                 {
                     ThreadHandler.RecursiveFuncRun(delegate (ThreadHandler.RecursiveFuncRecurse recurse)
                     {
@@ -230,7 +230,7 @@ namespace MelonLoader
                         }
                     });
                 }
-                if (GetExistingProxyPath(destination, out global::System.String proxy_path))
+                if (GetExistingProxyPath(destination, out String proxy_path))
                 {
                     ThreadHandler.RecursiveFuncRun(delegate (ThreadHandler.RecursiveFuncRecurse recurse)
                     {
@@ -332,7 +332,7 @@ namespace MelonLoader
                     });
                 }
 
-                if (GetExistingProxyPath(destination, out global::System.String proxy_path))
+                if (GetExistingProxyPath(destination, out String proxy_path))
                 {
                     ThreadHandler.RecursiveFuncRun(delegate (ThreadHandler.RecursiveFuncRecurse recurse)
                     {
