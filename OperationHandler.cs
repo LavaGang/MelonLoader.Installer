@@ -13,7 +13,7 @@ namespace MelonLoader
 {
     internal static class OperationHandler
     {
-        private static string[] ProxyNames = { "version", "winmm", "winhttp" };
+        private static readonly string[] ProxyNames = { "version", "winmm", "winhttp" };
 
         internal enum Operations
         {
