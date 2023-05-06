@@ -30,8 +30,7 @@ namespace MelonLoader
         {
             get
             {
-                string opname = null;
-                opname = CurrentOperation switch
+                string opname = CurrentOperation switch
                 {
                     Operations.DOWNGRADE => "DOWNGRADE",
                     Operations.UPDATE => "UPDATE",
