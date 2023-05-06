@@ -36,24 +36,22 @@ namespace MelonLoader
 
         private void SelectUnityGame()
         {
-            using (OpenFileDialog opd = new OpenFileDialog())
+            using OpenFileDialog opd = new();
+            opd.Filter = "Unity Game (*.exe)|*.exe|Shortcut (*.lnk)|*.lnk";
+            opd.RestoreDirectory = true;
+            opd.Multiselect = false;
+            opd.DereferenceLinks = false;
+            if ((opd.ShowDialog() != DialogResult.OK) || string.IsNullOrEmpty(opd.FileName))
+                return;
+            string filepath = opd.FileName;
+            if (!Program.ValidateUnityGamePath(ref filepath))
             {
-                opd.Filter = "Unity Game (*.exe)|*.exe|Shortcut (*.lnk)|*.lnk";
-                opd.RestoreDirectory = true;
-                opd.Multiselect = false;
-                opd.DereferenceLinks = false;
-                if ((opd.ShowDialog() != DialogResult.OK) || string.IsNullOrEmpty(opd.FileName))
-                    return;
-                string filepath = opd.FileName;
-                if (!Program.ValidateUnityGamePath(ref filepath))
-                {
-                    MessageBox.Show("Invalid Unity Game Selected!", BuildInfo.Name, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    SelectUnityGame();
-                    return;
-                }
-                Config.LastSelectedGamePath = filepath;
-                SetUnityGame(filepath);
+                MessageBox.Show("Invalid Unity Game Selected!", BuildInfo.Name, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                SelectUnityGame();
+                return;
             }
+            Config.LastSelectedGamePath = filepath;
+            SetUnityGame(filepath);
         }
 
         internal void SetUnityGame(string filepath)
@@ -66,23 +64,21 @@ namespace MelonLoader
 
         private void SelectZipArchive()
         {
-            using (OpenFileDialog opd = new OpenFileDialog())
+            using OpenFileDialog opd = new();
+            opd.Filter = "MelonLoader Zip Archive (*.zip)|*.zip";
+            opd.RestoreDirectory = true;
+            opd.Multiselect = false;
+            opd.DereferenceLinks = false;
+            if ((opd.ShowDialog() != DialogResult.OK) || string.IsNullOrEmpty(opd.FileName))
+                return;
+            string filepath = opd.FileName;
+            if (!Program.ValidateZipPath(filepath))
             {
-                opd.Filter = "MelonLoader Zip Archive (*.zip)|*.zip";
-                opd.RestoreDirectory = true;
-                opd.Multiselect = false;
-                opd.DereferenceLinks = false;
-                if ((opd.ShowDialog() != DialogResult.OK) || string.IsNullOrEmpty(opd.FileName))
-                    return;
-                string filepath = opd.FileName;
-                if (!Program.ValidateZipPath(filepath))
-                {
-                    MessageBox.Show("Invalid Zip Selected!", BuildInfo.Name, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    SelectZipArchive();
-                    return;
-                }
-                SetZipArchive(filepath);
+                MessageBox.Show("Invalid Zip Selected!", BuildInfo.Name, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                SelectZipArchive();
+                return;
             }
+            SetZipArchive(filepath);
         }
 
         internal void SetZipArchive(string filepath)
@@ -97,13 +93,21 @@ namespace MelonLoader
         {
             if (string.IsNullOrEmpty(Automated_UnityGame_Display.Text) || Automated_UnityGame_Display.Text.Equals("Please Select your Unity Game..."))
                 return;
-            byte[] filedata = File.ReadAllBytes(Automated_UnityGame_Display.Text);
-            if ((filedata == null)
+            try
+            {
+                byte[] filedata = File.ReadAllBytes(Automated_UnityGame_Display.Text);
+                if ((filedata == null)
                 || (filedata.Length <= 0)
                 || (BitConverter.ToUInt16(filedata, (BitConverter.ToInt32(filedata, 60) + 4)) != 34404))
                 GameArch = 0;
             else
                 GameArch = 1;
+            }
+            catch {
+                MessageBox.Show("Can't find Unity game executable, please re-select it.", BuildInfo.Name, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Automated_UnityGame_Display.Text = ("Please Select your Unity Game...");
+                Automated_Install.Enabled = false;
+            }
             if (!string.IsNullOrEmpty(ManualZip_ZipArchive_Display.Text)
                 && !ManualZip_ZipArchive_Display.Text.Equals("Please Select your MelonLoader Zip Archive..."))
                 ManualZip_Install.Enabled = true;
@@ -128,7 +132,7 @@ namespace MelonLoader
             Automated_Uninstall.Visible = true;
             ManualZip_Uninstall.Visible = true;
             ManualZip_Install.Text = "RE-INSTALL";
-            Version selected_ver = new Version(Automated_Version_Selection.Text.Substring(1));
+            Version selected_ver = new(Automated_Version_Selection.Text.Substring(1));
             int compare_ver = selected_ver.CompareTo(Program.CurrentInstalledVersion);
             if (compare_ver < 0)
                 Automated_Install.Text = "DOWNGRADE";
@@ -265,7 +269,7 @@ namespace MelonLoader
                 Automated_Install.Text = "INSTALL";
             else
             {
-                Version selected_ver = new Version(Automated_Version_Selection.Text.Substring(1));
+                Version selected_ver = new(Automated_Version_Selection.Text.Substring(1));
                 int compare_ver = selected_ver.CompareTo(Program.CurrentInstalledVersion);
                 if (compare_ver < 0)
                     Automated_Install.Text = "DOWNGRADE";
@@ -287,6 +291,12 @@ namespace MelonLoader
 
         private void Automated_Install_Click(object sender, EventArgs e)
         {
+            if (string.IsNullOrEmpty(Automated_UnityGame_Display.Text) || Automated_UnityGame_Display.Text.Equals("Please Select your Unity Game..."))
+            {
+                MessageBox.Show("Please select your Unity Game", BuildInfo.Name, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Automated_Install.Enabled = false;
+                return;
+            }
             if ((Program.CurrentInstalledVersion == null) || string.IsNullOrEmpty(Automated_Version_Selection.Text))
             {
                 OperationHandler.CurrentOperation = OperationHandler.Operations.INSTALL;
@@ -294,7 +304,7 @@ namespace MelonLoader
             }
             else
             {
-                Version selected_ver = new Version(Automated_Version_Selection.Text.Substring(1));
+                Version selected_ver = new(Automated_Version_Selection.Text.Substring(1));
                 int compare_ver = selected_ver.CompareTo(Program.CurrentInstalledVersion);
                 if (compare_ver < 0)
                 {
@@ -314,7 +324,7 @@ namespace MelonLoader
             }
             bool legacy_version = (Automated_Version_Selection.Text.StartsWith("v0.2") || Automated_Version_Selection.Text.StartsWith("v0.1"));
             string selected_version = Automated_Version_Selection.Text;
-            new Thread(() => { OperationHandler.Automated_Install(Path.GetDirectoryName(Automated_UnityGame_Display.Text), selected_version, (legacy_version ? false : (Automated_Arch_Selection.SelectedIndex == 0)), legacy_version); }).Start();
+            new Thread(() => { OperationHandler.Automated_Install(Path.GetDirectoryName(Automated_UnityGame_Display.Text), selected_version, !legacy_version && (Automated_Arch_Selection.SelectedIndex == 0), legacy_version); }).Start();
             Program.SetTotalPercentage(0);
             PageManager.Cursor = Cursors.Default;
             PageManager.Controls.Clear();

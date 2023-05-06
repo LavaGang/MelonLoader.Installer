@@ -66,7 +66,7 @@ namespace MelonLoader
             if (File.Exists(new_exe_path))
                 File.Delete(new_exe_path);
             File.Copy(exe_fullpath, new_exe_path);
-            ProcessStartInfo procinfo = new ProcessStartInfo(new_exe_path);
+            ProcessStartInfo procinfo = new(new_exe_path);
             if ((args != null) && (args.Length > 0))
                 procinfo.Arguments = string.Join(" ", args.Where(s => !string.IsNullOrEmpty(s)).Select(it => ("\"" + Regex.Replace(it, @"(\\+)$", @"$1$1") + "\""))); ;
             Process.Start(procinfo);
