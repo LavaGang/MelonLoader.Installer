@@ -76,8 +76,8 @@ namespace MelonLoader
 
         internal static void Save()
         {
-            DocumentSyntax doc = new DocumentSyntax();
-            TableSyntax tbl = new TableSyntax("Installer");
+            DocumentSyntax doc = new();
+            TableSyntax tbl = new("Installer");
             tbl.Items.Add(new KeyValueSyntax("Theme", new IntegerValueSyntax(_theme)));
             tbl.Items.Add(new KeyValueSyntax("AutoUpdateInstaller", new BooleanValueSyntax(_autoupdateinstaller)));
             tbl.Items.Add(new KeyValueSyntax("CloseAfterCompletion", new BooleanValueSyntax(_closeaftercompletion)));
