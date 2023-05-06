@@ -31,27 +31,14 @@ namespace MelonLoader
             get
             {
                 string opname = null;
-                switch (CurrentOperation)
+                opname = CurrentOperation switch
                 {
-                    case Operations.DOWNGRADE:
-                        opname = "DOWNGRADE";
-                        break;
-                    case Operations.UPDATE:
-                        opname = "UPDATE";
-                        break;
-                    case Operations.UNINSTALL:
-                        opname = "UN-INSTALL";
-                        break;
-                    case Operations.REINSTALL:
-                        opname = "RE-INSTALL";
-                        break;
-                    case Operations.INSTALL:
-                    case Operations.INSTALLER_UPDATE:
-                    case Operations.NONE:
-                    default:
-                        opname = "INSTALL";
-                        break;
-                }
+                    Operations.DOWNGRADE => "DOWNGRADE",
+                    Operations.UPDATE => "UPDATE",
+                    Operations.UNINSTALL => "UN-INSTALL",
+                    Operations.REINSTALL => "RE-INSTALL",
+                    _ => "INSTALL",
+                };
                 return opname;
             }
         }
