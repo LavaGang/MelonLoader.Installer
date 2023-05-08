@@ -18,6 +18,12 @@ namespace MelonLoader
         internal static bool AutoDetectArch = true;
         internal static bool Requested32Bit = false;
 
+        /// <summary>
+        /// Runs the program with the given arguments.
+        /// </summary>
+        /// <param name="args">The command-line arguments to run the program with.</param>
+        /// <param name="returnval">The exit code of the program.</param>
+        /// <returns>True if the program was run successfully, false otherwise.</returns>
         internal static bool Run(string[] args, ref int returnval)
         {
             if (args.Length <= 0)
@@ -79,11 +85,18 @@ namespace MelonLoader
             return true;
         }
 
+        /// <summary>
+        /// Prints the help information for this program.
+        /// </summary>
         private static void PrintHelp()
         {
-
+            // TODO: Add implementation for printing help information.
         }
 
+        /// <summary>
+        /// Attempts to install the latest version of MelonLoader.
+        /// </summary>
+        /// <param name="returnval">An integer reference to store the return value of the installation process.</param>
         private static void Install(ref int returnval)
         {
             if (!Program.ValidateUnityGamePath(ref ExePath))
@@ -123,6 +136,10 @@ namespace MelonLoader
             OperationHandler.Automated_Install(Path.GetDirectoryName(ExePath), selected_version, Requested32Bit, (selected_version.StartsWith("v0.2") || selected_version.StartsWith("v0.1")));
         }
 
+        /// <summary>
+        /// Attempts to install MelonLoader from the zip file specified by <see cref="ZipPath"/> to the directory containing the executable specified by <see cref="ExePath"/>.
+        /// </summary>
+        /// <param name="returnval">Reference to an integer to store the return value.</param>
         private static void InstallFromZip(ref int returnval)
         {
             if (!Program.ValidateZipPath(ZipPath))
@@ -133,7 +150,10 @@ namespace MelonLoader
             OperationHandler.ManualZip_Install(ZipPath, Path.GetDirectoryName(ExePath));
         }
 
-
+        /// <summary>
+        /// Uninstalls the currently installed MelonLoader version.
+        /// </summary>
+        /// <param name="returnval">A reference to an integer that will store the return value.</param>
         private static void Uninstall(ref int returnval)
         {
             if (!Program.ValidateUnityGamePath(ref ExePath))

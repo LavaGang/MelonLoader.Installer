@@ -7,6 +7,12 @@ namespace MelonLoader
 {
     internal static class SteamHandler
     {
+
+        /// <summary>
+        /// Given a Steam AppID, returns the full file path to the executable file associated with the game.
+        /// </summary>
+        /// <param name="appid">The Steam AppID to look up.</param>
+        /// <returns>The full file path to the executable file associated with the game, or null if not found.</returns>
         internal static string GetFilePathFromAppId(string appid)
         {
             if (string.IsNullOrEmpty(appid))
@@ -31,6 +37,11 @@ namespace MelonLoader
             return filepath;
         }
 
+        /// <summary>
+        /// Reads the installation directory from a given app manifest file.
+        /// </summary>
+        /// <param name="appmanifestpath">The path to the app manifest file.</param>
+        /// <returns>The installation directory, or null if it could not be found.</returns>
         private static string ReadAppManifestInstallDir(string appmanifestpath)
         {
             if (!File.Exists(appmanifestpath))
@@ -50,6 +61,12 @@ namespace MelonLoader
             return output;
         }
 
+        /// <summary>
+        /// Reads the library folders from the specified app manifest file and updates the steamapps path if necessary.
+        /// </summary>
+        /// <param name="appmanifestfilename">The name of the app manifest file.</param>
+        /// <param name="steamappspath">The path to the steamapps folder.</param>
+        /// <returns>The install directory for the specified app manifest file, or null if it could not be found.</returns>
         private static string ReadLibraryFolders(string appmanifestfilename, ref string steamappspath)
         {
             string libraryfoldersfilepath = Path.Combine(steamappspath, "libraryfolders.vdf");
@@ -76,6 +93,13 @@ namespace MelonLoader
             return output;
         }
 
+        /// <summary>
+        /// Scans for an executable file in the given directory and its subdirectories
+        /// </summary>
+        /// <param name="steamappspath">Path to the steamapps directory</param>
+        /// <param name="installdir">Name of the game's installation directory</param>
+        /// <param name="filepath">Output parameter that will contain the full path to the executable file if found</param>
+        /// <returns>True if an executable file is found, false otherwise</returns>
         private static bool ScanForExe(string steamappspath, string installdir, out string filepath)
         {
             filepath = null;
@@ -110,6 +134,10 @@ namespace MelonLoader
             return false;
         }
 
+        /// <summary>
+        /// Retrieves the installation path of the Steam client from the Windows Registry.
+        /// </summary>
+        /// <returns>A string representing the installation path of the Steam client, or null if the path could not be retrieved.</returns>
         private static string GetSteamInstallPath() => Registry.LocalMachine.OpenSubKey(!Environment.Is64BitOperatingSystem ? "SOFTWARE\\Valve\\Steam" : "SOFTWARE\\Wow6432Node\\Valve\\Steam")?.GetValue("InstallPath")?.ToString();
     }
 }
