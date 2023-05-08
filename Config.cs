@@ -41,6 +41,9 @@ namespace MelonLoader
         private static bool _highlightlogfilelocation = true;
         internal static bool HighlightLogFileLocation { get => _highlightlogfilelocation; set { _highlightlogfilelocation = value; Save(); } }
 
+        /// <summary>
+        /// Loads settings from a file at a specified file path and applies them to the application.
+        /// </summary>
         internal static void Load()
         {
             if (!File.Exists(FilePath))
@@ -74,6 +77,9 @@ namespace MelonLoader
 
         }
 
+        /// <summary>
+        /// Saves the current configuration settings to a file
+        /// </summary>
         internal static void Save()
         {
             DocumentSyntax doc = new();

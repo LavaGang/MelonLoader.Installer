@@ -15,6 +15,9 @@ namespace MelonLoader
     {
         private static readonly string[] ProxyNames = { "version", "winmm", "winhttp" };
 
+        /// <summary>
+        /// Enum representing different operations that can be performed.
+        /// </summary>
         internal enum Operations
         {
             NONE,
@@ -26,6 +29,10 @@ namespace MelonLoader
             DOWNGRADE,
         }
         internal static Operations CurrentOperation = Operations.NONE;
+
+        /// <summary>
+        /// Gets the current operation name.
+        /// </summary>
         internal static string CurrentOperationName
         {
             get
@@ -42,6 +49,13 @@ namespace MelonLoader
             }
         }
 
+        /// <summary>
+        /// Downloads and installs MelonLoader to the specified destination folder.
+        /// </summary>
+        /// <param name="destination">The destination folder to install MelonLoader to.</param>
+        /// <param name="selected_version">The version of MelonLoader to install.</param>
+        /// <param name="is_x86">Whether or not to install the x86 version of MelonLoader.</param>
+        /// <param name="legacy_version">Whether or not to install a legacy version of MelonLoader.</param>
         internal static void Automated_Install(string destination, string selected_version, bool is_x86, bool legacy_version)
         {
             Program.SetCurrentOperation("Downloading MelonLoader...");
@@ -208,6 +222,11 @@ namespace MelonLoader
             Program.FinishingMessageBox((CurrentOperationName + " was Successful!"), MessageBoxButtons.OK, MessageBoxIcon.None);
         }
 
+        /// <summary>
+        /// Extracts the contents of a MelonLoader zip archive to a specified destination folder.
+        /// </summary>
+        /// <param name="zip_path">The path to MelonLoader zip archive to extract.</param>
+        /// <param name="destination">The folder to extract the archive contents to.</param>
         internal static void ManualZip_Install(string zip_path, string destination)
         {
             Program.SetCurrentOperation("Extracting Zip Archive...");
@@ -309,6 +328,10 @@ namespace MelonLoader
             Program.FinishingMessageBox((CurrentOperationName + " was Successful!"), MessageBoxButtons.OK, MessageBoxIcon.None);
         }
 
+        /// <summary>
+        /// Uninstalls MelonLoader from the specified destination folder.
+        /// </summary>
+        /// <param name="destination">The destination folder to uninstall MelonLoader from.</param>
         internal static void Uninstall(string destination)
         {
             Program.SetCurrentOperation("Uninstalling MelonLoader...");
@@ -388,6 +411,12 @@ namespace MelonLoader
             Program.FinishingMessageBox((CurrentOperationName + " was Successful!"), MessageBoxButtons.OK, MessageBoxIcon.None);
         }
 
+        /// <summary>
+        /// Tries to find an existing proxy DLL from a list of possible proxy names and returns its path.
+        /// </summary>
+        /// <param name="destination">The destination directory to search for the proxy DLL.</param>
+        /// <param name="proxy_path">The path to the found proxy DLL, if any.</param>
+        /// <returns>True if a proxy DLL was found, false otherwise.</returns>
         private static bool GetExistingProxyPath(string destination, out string proxy_path)
         {
             proxy_path = null;
@@ -407,6 +436,11 @@ namespace MelonLoader
             return !string.IsNullOrEmpty(proxy_path);
         }
 
+        /// <summary>
+        /// Downgrades the MelonPreferences.cfg file to modprefs.ini if necessary.
+        /// </summary>
+        /// <param name="destination">The destination directory.</param>
+        /// <param name="legacy_version">Whether or not the current version is a legacy version.</param>
         private static void DowngradeMelonPreferences(string destination, bool legacy_version)
         {
             if (!legacy_version || (Program.CurrentInstalledVersion == null) || (Program.CurrentInstalledVersion.CompareTo(new Version("0.3.0")) < 0))
@@ -466,6 +500,10 @@ namespace MelonLoader
             File.Delete(oldfilepath);
         }
 
+        /// <summary>
+        /// Creates the required directories if they don't exist already.
+        /// </summary>
+        /// <param name="destination">The root directory where the directories will be created.</param>
         private static void ExtraDirectoryChecks(string destination)
         {
             string pluginsDirectory = Path.Combine(destination, "Plugins");
@@ -479,6 +517,11 @@ namespace MelonLoader
                 Directory.CreateDirectory(userdataDirectory);
         }
 
+        /// <summary>
+        /// Deletes MelonLoader.dll and MelonLoader.ModHandler.dll files from various directories
+        /// Deletes the Logs folder if it exists
+        /// </summary>
+        /// <param name="destination">The directory to perform cleanup in</param>
         private static void ExtraCleanupCheck(string destination)
         {
             string main_dll = Path.Combine(destination, "MelonLoader.dll");

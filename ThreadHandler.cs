@@ -10,6 +10,10 @@ namespace MelonLoader
 {
     internal static class ThreadHandler
     {
+
+        /// <summary>
+        /// Checks for an update to the installer and updates it if necessary.
+        /// </summary>
         internal static void CheckForInstallerUpdate()
         {
             Program.webClient.Headers.Clear();
@@ -106,6 +110,9 @@ namespace MelonLoader
             Process.GetCurrentProcess().Kill();
         }
 
+        /// <summary>
+        /// Adds the ManualZip and Settings tabs to the MainForm's PageManager control, and refreshes the list of releases.
+        /// </summary>
         private static void GetReleases()
         {
             Program.mainForm.Invoke(new Action(() => {
@@ -115,6 +122,9 @@ namespace MelonLoader
             RefreshReleases();
         }
 
+        /// <summary>
+        /// Refreshes the releases list and updates the main form with new data.
+        /// </summary>
         internal static void RefreshReleases()
         {
             Program.mainForm.Invoke(new Action(() => {
@@ -200,6 +210,11 @@ namespace MelonLoader
 
         internal delegate void RecursiveFuncRecurse();
         internal delegate void RecursiveFuncVoid(RecursiveFuncRecurse recurse);
+
+        /// <summary>
+        /// Recursively runs a given function until it returns null.
+        /// </summary>
+        /// <param name="func">The function to run.</param>
         internal static void RecursiveFuncRun(RecursiveFuncVoid func)
         {
             if (func == null)

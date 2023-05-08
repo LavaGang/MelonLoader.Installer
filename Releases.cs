@@ -8,6 +8,9 @@ namespace MelonLoader
         internal static List<string> Official = new List<string>();
         internal static List<string> All = new List<string>();
 
+        /// <summary>
+        /// Requests lists of available versions of MelonLoader from the official repository API.
+        /// </summary>
         internal static void RequestLists()
         {
             Program.webClient.Headers.Clear();

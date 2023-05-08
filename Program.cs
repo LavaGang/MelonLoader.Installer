@@ -22,6 +22,9 @@ namespace MelonLoader
         internal static bool RunInstallerUpdateCheck = true;
 #endif
 
+        /// <summary>
+        /// Initializes the program with necessary configurations
+        /// </summary>
         static Program()
         {
             AppDomain.CurrentDomain.UnhandledException += UnhandledExceptionHandler;
@@ -36,6 +39,11 @@ namespace MelonLoader
             Config.Load();
         }
 
+        /// <summary>
+        /// The entry point of the application.
+        /// </summary>
+        /// <param name="args">The command-line arguments.</param>
+        /// <returns>The exit code of the application.</returns>
         [STAThread]
         private static int Main(string[] args)
         {
@@ -49,6 +57,12 @@ namespace MelonLoader
             return 0;
         }
 
+        /// <summary>
+        /// Checks if the current process executable file name ends with ".tmp"
+        /// and renames it to remove the extension and start the new process.
+        /// </summary>
+        /// <param name="args">The command-line arguments to pass to the new process.</param>
+        /// <returns>True if the current process executable was renamed and started with the new name; false otherwise.</returns>
         private static bool FileNameCheck(string[] args)
         {
             string exe_fullpath = Process.GetCurrentProcess().MainModule.FileName;
@@ -74,6 +88,10 @@ namespace MelonLoader
             return true;
         }
 
+        /// <summary>
+        /// Sets the current operation and updates the UI with the new operation and progress display.
+        /// </summary>
+        /// <param name="op">The new operation to set.</param>
         internal static void SetCurrentOperation(string op)
         {
             mainForm.Invoke(new Action(() =>
@@ -86,6 +104,10 @@ namespace MelonLoader
             }));
         }
 
+        /// <summary>
+        /// Logs an error message to a file and displays an error message box to the user.
+        /// </summary>
+        /// <param name="msg">The error message to log and display.</param>
         internal static void LogError(string msg)
         {
             TempFileCache.ClearCache();
@@ -109,6 +131,9 @@ namespace MelonLoader
             }
         }
 
+        /// <summary>
+        /// Displays an error message in the main form.
+        /// </summary>
         internal static void OperationError()
         {
             mainForm.Invoke(new Action(() =>
@@ -120,6 +145,9 @@ namespace MelonLoader
             }));
         }
 
+        /// <summary>
+        /// Updates the main form to indicate the successful completion of an operation.
+        /// </summary>
         internal static void OperationSuccess()
         {
             mainForm.Invoke(new Action(() =>
@@ -135,6 +163,10 @@ namespace MelonLoader
             }));
         }
 
+        /// <summary>
+        /// Sets the current percentage value of the progress display and text on the main form.
+        /// </summary>
+        /// <param name="percentage">The percentage value to set.</param>
         internal static void SetCurrentPercentage(int percentage)
         {
             mainForm.Invoke(new Action(() =>
@@ -144,6 +176,10 @@ namespace MelonLoader
             }));
         }
 
+        /// <summary>
+        /// Sets the percentage value for the total progress display.
+        /// </summary>
+        /// <param name="percentage">The percentage value to set.</param>
         internal static void SetTotalPercentage(int percentage)
         {
             mainForm.Invoke(new Action(() =>
@@ -153,6 +189,13 @@ namespace MelonLoader
             }));
         }
 
+        /// <summary>
+        /// Displays a message box with the specified message, buttons, and icon. 
+        /// If the icon is not an error, the function also performs additional tasks.
+        /// </summary>
+        /// <param name="msg">The message to display in the message box.</param>
+        /// <param name="buttons">The buttons to display in the message box.</param>
+        /// <param name="icon">The icon to display in the message box.</param>
         internal static void FinishingMessageBox(string msg, MessageBoxButtons buttons, MessageBoxIcon icon)
         {
             mainForm.Invoke(new Action(() =>
@@ -179,6 +222,10 @@ namespace MelonLoader
             }));
         }
 
+        /// <summary>
+        /// Gets the current installed version of MelonLoader in the specified directory path.
+        /// </summary>
+        /// <param name="dirpath">The directory path to check for MelonLoader.</param>
         internal static void GetCurrentInstallVersion(string dirpath)
         {
             string folder_path = Path.Combine(dirpath, "MelonLoader");
@@ -203,6 +250,11 @@ namespace MelonLoader
             CurrentInstalledVersion = new Version(fileversion);
         }
 
+        /// <summary>
+        /// Validates the provided Unity game path and updates it if it is a shortcut.
+        /// </summary>
+        /// <param name="filepath">The file path to validate and update if necessary.</param>
+        /// <returns>True if the file path is a valid Unity game path, false otherwise.</returns>
         internal static bool ValidateUnityGamePath(ref string filepath)
         {
             if (string.IsNullOrEmpty(filepath))
@@ -223,6 +275,11 @@ namespace MelonLoader
             return true;
         }
 
+        /// <summary>
+        /// Validates if the given file path is a valid path to a zip file.
+        /// </summary>
+        /// <param name="filepath">The path to the file to validate.</param>
+        /// <returns>True if the file path is valid, false otherwise.</returns>
         internal static bool ValidateZipPath(string filepath)
         {
             if (string.IsNullOrEmpty(filepath))
@@ -233,6 +290,11 @@ namespace MelonLoader
             return true;
         }
 
+        /// <summary>
+        /// Given a shortcut path, this function returns the path of the target file.
+        /// </summary>
+        /// <param name="shortcut_path">The path to the shortcut file.</param>
+        /// <returns>The path to the target file.</returns>
         private static string GetFilePathFromShortcut(string shortcut_path)
         {
             string shortcut_extension = Path.GetExtension(shortcut_path);
@@ -242,7 +304,20 @@ namespace MelonLoader
                 return GetFilePathFromURL(shortcut_path);
             return null;
         }
+
+        /// <summary>
+        /// Gets the file path from a Windows shortcut (.lnk file).
+        /// </summary>
+        /// <param name="shortcut_path">The path of the shortcut file.</param>
+        /// <returns>The target file path of the shortcut.</returns>
         private static string GetFilePathFromLNK(string shortcut_path) => ((IWshRuntimeLibrary.IWshShortcut)new IWshRuntimeLibrary.WshShell().CreateShortcut(shortcut_path)).TargetPath;
+
+        /// <summary>
+        /// Given a file path to a shortcut file, this function reads the file and extracts a URL string. 
+        /// If the URL string starts with "steam://rungameid/", it returns the file path of the game executable.
+        /// </summary>
+        /// <param name="shortcut_path">The path to the shortcut file.</param>
+        /// <returns>The file path of the game executable, or null if the URL string is not found or not a Steam game.</returns>
         private static string GetFilePathFromURL(string shortcut_path)
         {
             string[] file_lines = File.ReadAllLines(shortcut_path);
@@ -259,6 +334,11 @@ namespace MelonLoader
             return null;
         }
 
+        /// <summary>
+        /// Handles unhandled exceptions by displaying a message box with the exception details.
+        /// </summary>
+        /// <param name="sender">The source of the unhandled exception event.</param>
+        /// <param name="e">The arguments containing the unhandled exception details.</param>
         private static void UnhandledExceptionHandler(object sender, UnhandledExceptionEventArgs e) => MessageBox.Show((e.ExceptionObject as Exception).ToString());
     }
 }
