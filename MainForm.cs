@@ -192,16 +192,30 @@ namespace MelonLoader
         {
             bool lightmode = (Settings_Theme_Selection.SelectedIndex == 1);
             Config.Theme = (lightmode ? 1 : 0);
-            MetroFramework.MetroThemeStyle themeStyle = (lightmode ? MetroFramework.MetroThemeStyle.Light : MetroFramework.MetroThemeStyle.Dark);
-            StyleManager.Style = (lightmode ? MetroFramework.MetroColorStyle.Green : MetroFramework.MetroColorStyle.Red);
+            MetroFramework.MetroThemeStyle themeStyle = (
+                lightmode
+                    ? MetroFramework.MetroThemeStyle.Light
+                    : MetroFramework.MetroThemeStyle.Dark
+            );
+            StyleManager.Style = (
+                lightmode
+                    ? MetroFramework.MetroColorStyle.Green
+                    : MetroFramework.MetroColorStyle.Red
+            );
             StyleManager.Theme = themeStyle;
             Theme = themeStyle;
-            Style = (lightmode ? MetroFramework.MetroColorStyle.Red : MetroFramework.MetroColorStyle.Green);
+            Style = (
+                lightmode
+                    ? MetroFramework.MetroColorStyle.Red
+                    : MetroFramework.MetroColorStyle.Green
+            );
             Link_Discord.BackColor = (lightmode ? Color.White : Color.FromArgb(17, 17, 17));
             Link_Twitter.BackColor = Link_Discord.BackColor;
             Link_Wiki.BackColor = Link_Discord.BackColor;
             Link_GitHub.BackColor = Link_Discord.BackColor;
-            Link_GitHub.Image = (lightmode ? Properties.Resources.GitHub_Light : Properties.Resources.GitHub_Dark);
+            Link_GitHub.Image = (
+                lightmode ? Properties.Resources.GitHub_Light : Properties.Resources.GitHub_Dark
+            );
             ML_Logo.BackColor = Link_Discord.BackColor;
             ML_Text.BackColor = Link_Discord.BackColor;
             InstallerVersion.Theme = themeStyle;
@@ -215,7 +229,11 @@ namespace MelonLoader
             Settings_Theme_Selection.Theme = MetroFramework.MetroThemeStyle.Light;
             Settings_AutoUpdateInstaller.Style = Style;
             Settings_AutoUpdateInstaller.Theme = themeStyle;
-            Settings_AutoUpdateInstaller.ForeColor = (lightmode ? Color.FromKnownColor(KnownColor.ControlText) : Color.FromKnownColor(KnownColor.ControlDark));
+            Settings_AutoUpdateInstaller.ForeColor = (
+                lightmode
+                    ? Color.FromKnownColor(KnownColor.ControlText)
+                    : Color.FromKnownColor(KnownColor.ControlDark)
+            );
             Settings_AutoUpdateInstaller.CustomForeColor = true;
             Settings_CloseAfterCompletion.Style = Style;
             Settings_CloseAfterCompletion.Theme = themeStyle;
@@ -235,8 +253,12 @@ namespace MelonLoader
             Settings_HighlightLogFileLocation.CustomForeColor = true;
             Automated_UnityGame_Text.Theme = themeStyle;
             Automated_UnityGame_Select.Theme = themeStyle;
-            Automated_UnityGame_Display.BackColor = (lightmode ? Color.White : Color.FromArgb(34, 34, 34));
-            Automated_UnityGame_Display.ForeColor = (lightmode ? Color.Black : Color.FromArgb(204, 204, 204));
+            Automated_UnityGame_Display.BackColor = (
+                lightmode ? Color.White : Color.FromArgb(34, 34, 34)
+            );
+            Automated_UnityGame_Display.ForeColor = (
+                lightmode ? Color.Black : Color.FromArgb(204, 204, 204)
+            );
             Automated_Version_Text.Theme = themeStyle;
             Automated_Version_Selection.Style = Style;
             Automated_Version_Selection.Theme = themeStyle;
