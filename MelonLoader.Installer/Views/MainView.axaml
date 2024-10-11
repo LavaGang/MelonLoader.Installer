@@ -1,0 +1,51 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="clr-namespace:MelonLoader.Installer.ViewModels"
+    xmlns:views="clr-namespace:MelonLoader.Installer.Views"
+    mc:Ignorable="d" d:DesignWidth="450" d:DesignHeight="650"
+    x:Class="MelonLoader.Installer.Views.MainView"
+    x:DataType="vm:MainViewModel">
+    <Design.DataContext>
+        <!-- This only sets the DataContext for the previewer in an IDE,
+         to set the actual DataContext for runtime, set the DataContext property in code (look at
+        App.axaml.cs) -->
+        <vm:MainViewModel />
+    </Design.DataContext>
+
+    <Grid RowDefinitions="auto,auto,*,auto">
+        <TextBlock Grid.Row="100" VerticalAlignment="Bottom" Foreground="Gray">v4.0</TextBlock>
+
+        <StackPanel Grid.Row="0" Height="40" Orientation="Horizontal" HorizontalAlignment="Center">
+            <Image Source="/Assets/icon.ico" Margin="0 0 10 0" />
+            <Image Source="/Assets/ML_Text.png" Height="30" />
+        </StackPanel>
+        <TextBlock Margin="0 20 0 0" HorizontalAlignment="Center" Grid.Row="1" Foreground="#7FFF"
+            xml:space="preserve" TextAlignment="Center">To install MelonLoader, click on one of the games below.
+If it's not on the list, add it manually.</TextBlock>
+        <Border Grid.Row="2" Background="#3223" CornerRadius="20" Margin="0 10" ClipToBounds="True">
+            <Grid>
+                <ScrollViewer>
+                    <ItemsControl ItemsSource="{Binding Games}" Margin="10">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <views:GameControl DataContext="{Binding}" />
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+                <TextBlock Name="NoGamesText" Foreground="#3FFF" HorizontalAlignment="Center"
+                    VerticalAlignment="Center" TextAlignment="Center" xml:space="preserve">
+No Unity games have been found on your device.
+Please add one manually using the button below.
+                </TextBlock>
+            </Grid>
+        </Border>
+        <StackPanel Grid.Row="3" HorizontalAlignment="Right">
+            <Button HorizontalAlignment="Right" Click="AddGameManuallyHandler">Add Game Manually</Button>
+            <TextBlock Name="ErrorText" Foreground="#F55" FontSize="12" Margin="0 0 5 0"
+                HorizontalAlignment="Right" />
+        </StackPanel>
+    </Grid>
+</UserControl>

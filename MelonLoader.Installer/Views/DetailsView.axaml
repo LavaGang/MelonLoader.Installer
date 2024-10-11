@@ -1,0 +1,53 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="clr-namespace:MelonLoader.Installer.ViewModels"
+    xmlns:views="clr-namespace:MelonLoader.Installer.Views"
+    xmlns:root="clr-namespace:MelonLoader.Installer"
+    mc:Ignorable="d" d:DesignWidth="450" d:DesignHeight="650"
+    x:Class="MelonLoader.Installer.Views.DetailsView"
+    x:DataType="vm:GameModel">
+    <Grid RowDefinitions="auto, *, 80, 60, auto, *, 80, auto, 2*, auto, auto, auto, auto, *">
+        <Button Grid.Row="0" IsEnabled="{Binding !Installing}" Click="BackClickHandler"
+            FontSize="20" Background="Transparent" Content="←" FontWeight="Bold" Foreground="Gray"
+            HorizontalContentAlignment="Center" />
+        <Border Grid.Row="2" ClipToBounds="True" CornerRadius="20" HorizontalAlignment="Center">
+            <Image Source="{Binding Icon}" />
+        </Border>
+        <TextBlock Grid.Row="3" HorizontalAlignment="Center" VerticalAlignment="Center"
+            FontSize="22" Text="{Binding Name}" />
+        <Grid Grid.Row="4" ColumnDefinitions="*, auto">
+            <TextBox Grid.Column="0" Foreground="Gray" Text="{Binding Path}" IsReadOnly="True"
+                Focusable="False" SelectionBrush="#222" Background="Transparent" BorderThickness="0" />
+            <Button Click="OpenDirHandler" Grid.Column="1" Margin="3">📂</Button>
+        </Grid>
+        <Image Name="MelonIcon" Grid.Row="6" Source="/Assets/icon.ico" />
+        <TextBlock Grid.Row="7" HorizontalAlignment="Center" FontSize="18" Foreground="#7FFF"
+            Text="{Binding MLStatusText}" />
+        <TextBlock Grid.Row="9" HorizontalAlignment="Center" Foreground="#BFFF">Select a version</TextBlock>
+        <ComboBox IsEnabled="{Binding !Installing}" SelectionChanged="VersionSelectHandler"
+            Name="VersionCombobox" Grid.Row="10" Margin="5" HorizontalAlignment="Center"
+            SelectedIndex="0" MaxDropDownHeight="150" />
+        <CheckBox IsEnabled="{Binding !Installing}" Name="KeepFilesCheck" Grid.Row="11"
+            IsVisible="{Binding MLInstalled}" HorizontalAlignment="Center" IsChecked="True">Keep
+            mods and settings</CheckBox>
+        <Grid Grid.Row="12" Margin="10" Width="300" HorizontalAlignment="Center">
+            <Grid IsVisible="{Binding !Installing}" ColumnDefinitions="*, auto">
+                <Button Click="InstallHandler" Name="InstallButton" Grid.Column="0"
+                    HorizontalAlignment="Stretch" Background="#383" Height="40"
+                    HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+                    FontSize="18">Install</Button>
+                <Button Click="UninstallHandler" Margin="10 0 0 0" Grid.Column="1"
+                    IsVisible="{Binding MLInstalled}" HorizontalAlignment="Stretch"
+                    Background="#833" Height="40" HorizontalContentAlignment="Center"
+                    VerticalContentAlignment="Center" FontSize="18">Uninstall</Button>
+            </Grid>
+            <Grid IsVisible="{Binding Installing}">
+                <ProgressBar Name="Progress" Height="40" Background="#4383" Foreground="#383" />
+                <TextBlock Name="InstallStatus" HorizontalAlignment="Center"
+                    VerticalAlignment="Center" Opacity="0.7" FontSize="14" />
+            </Grid>
+        </Grid>
+    </Grid>
+</UserControl>

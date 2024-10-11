@@ -1,0 +1,45 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <OutputType>WinExe</OutputType>
+        <TargetFramework>net8.0-windows</TargetFramework>
+        <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
+        <ApplicationManifest>app.manifest</ApplicationManifest>
+        <LangVersion>latest</LangVersion>
+        <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+        <ApplicationIcon>Assets/icon.ico</ApplicationIcon>
+        <PublishDir>../Output/win-x64</PublishDir>
+        <PublishSingleFile>true</PublishSingleFile>
+        <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+        <DebugType>embedded</DebugType>
+        <PublishTrimmed>true</PublishTrimmed>
+        <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+        <AssemblyName>MelonLoader Installer</AssemblyName>
+        <Authors>Lava Gang</Authors>
+        <Company>discord.gg/2Wn3N2P</Company>
+
+        <Version>4.0.0</Version>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <AvaloniaResource Include="Assets\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Avalonia" Version="$(AvaloniaVersion)" />
+        <PackageReference Include="Avalonia.Themes.Fluent" Version="$(AvaloniaVersion)" />
+        <PackageReference Include="Avalonia.Fonts.Inter" Version="$(AvaloniaVersion)" />
+        <PackageReference Include="CommunityToolkit.Mvvm" Version="8.3.2" />
+        <PackageReference Include="Avalonia.Desktop" Version="$(AvaloniaVersion)" />
+
+        <!--Condition
+        below is needed to remove Avalonia.Diagnostics package from build output in Release
+        configuration.-->
+        <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics"
+            Version="$(AvaloniaVersion)" />
+        <PackageReference Include="GameFinder.StoreHandlers.Steam" Version="4.3.2" />
+        <PackageReference Include="System.Drawing.Common" Version="8.0.10" />
+    </ItemGroup>
+</Project>
