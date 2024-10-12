@@ -14,7 +14,7 @@
         <vm:MainViewModel />
     </Design.DataContext>
 
-    <Grid RowDefinitions="auto,auto,*,auto">
+    <Grid RowDefinitions="auto, auto, *, auto, auto">
         <TextBlock Grid.Row="100" VerticalAlignment="Bottom" Foreground="Gray">v4.0</TextBlock>
 
         <StackPanel Grid.Row="0" Height="40" Orientation="Horizontal" HorizontalAlignment="Center">
@@ -46,6 +46,36 @@ Please add one manually using the button below.
             <Button HorizontalAlignment="Right" Click="AddGameManuallyHandler">Add Game Manually</Button>
             <TextBlock Name="ErrorText" Foreground="#F55" FontSize="12" Margin="0 0 5 0"
                 HorizontalAlignment="Right" />
+        </StackPanel>
+        <StackPanel Height="38" Grid.Row="3" Spacing="1" Orientation="Horizontal">
+            <Button Click="MelonWikiLink" ToolTip.Tip="MelonWiki"
+                ToolTip.Placement="LeftEdgeAlignedBottom" Padding="3" CornerRadius="1000"
+                Background="Transparent">
+                <Border CornerRadius="1000" ClipToBounds="True">
+                    <Image Source="/Assets/icon.ico" />
+                </Border>
+            </Button>
+            <Button Click="DiscordLink" ToolTip.Tip="Official MelonLoader Discord"
+                ToolTip.Placement="LeftEdgeAlignedBottom" Padding="3"
+                CornerRadius="1000" Background="Transparent">
+                <Border CornerRadius="1000" ClipToBounds="True">
+                    <Image Source="/Assets/discord.png" />
+                </Border>
+            </Button>
+            <Button Click="GithubLink" ToolTip.Tip="LavaGang Github"
+                ToolTip.Placement="LeftEdgeAlignedBottom" Padding="0" CornerRadius="1000"
+                Background="Transparent">
+                <Border CornerRadius="1000" ClipToBounds="True">
+                    <Image Source="/Assets/github.png" />
+                </Border>
+            </Button>
+            <Button Click="TwitterLink" ToolTip.Tip="LavaGang Twitter (nobody is calling it X)"
+                ToolTip.Placement="LeftEdgeAlignedBottom"
+                Padding="3" CornerRadius="1000" Background="Transparent">
+                <Border CornerRadius="1000" ClipToBounds="True">
+                    <Image Source="/Assets/twitter.png" />
+                </Border>
+            </Button>
         </StackPanel>
     </Grid>
 </UserControl>

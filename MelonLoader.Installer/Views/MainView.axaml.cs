@@ -60,4 +60,30 @@ public partial class MainView : UserControl
     {
         ErrorText.Text = errorMessage;
     }
+
+    private async void OpenURL(Uri url)
+    {
+        var topLevel = TopLevel.GetTopLevel(this)!;
+        await topLevel.Launcher.LaunchUriAsync(url);
+    }
+
+    private void MelonWikiLink(object sender, RoutedEventArgs args)
+    {
+        OpenURL(Config.MelonWiki);
+    }
+
+    private void DiscordLink(object sender, RoutedEventArgs args)
+    {
+        OpenURL(Config.Discord);
+    }
+
+    private void GithubLink(object sender, RoutedEventArgs args)
+    {
+        OpenURL(Config.Github);
+    }
+
+    private void TwitterLink(object sender, RoutedEventArgs args)
+    {
+        OpenURL(Config.Twitter);
+    }
 }

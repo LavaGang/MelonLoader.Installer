@@ -2,6 +2,10 @@
 
 internal static class Config
 {
+    public static Uri MelonWiki { get; private set; } = new("https://melonwiki.xyz");
+    public static Uri Discord { get; private set; } = new("https://discord.gg/2Wn3N2P");
+    public static Uri Github { get; private set; } = new("https://github.com/LavaGang");
+    public static Uri Twitter { get; private set; } = new("https://x.com/lava_gang");
     public static string DotnetRuntimeX64Download { get; private set; } = "https://aka.ms/dotnet/6.0/dotnet-runtime-win-x64.exe";
     public static string DotnetRuntimeX86Download { get; private set; } = "https://aka.ms/dotnet/6.0/dotnet-runtime-win-x86.exe";
     public static string MelonLoaderReleasesApi { get; private set; } = "https://api.github.com/repos/LavaGang/MelonLoader/releases";
