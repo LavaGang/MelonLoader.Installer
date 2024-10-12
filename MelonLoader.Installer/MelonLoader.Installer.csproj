@@ -17,6 +17,7 @@
         <PublishTrimmed>true</PublishTrimmed>
         <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
 
         <AssemblyName>MelonLoader Installer</AssemblyName>
         <Authors>Lava Gang</Authors>
