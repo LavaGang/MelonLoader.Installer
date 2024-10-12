@@ -43,11 +43,28 @@ public partial class DetailsView : UserControl
 
         Model.PropertyChanged += PropertyChangedHandler;
 
-        VersionCombobox.ItemsSource = MLManager.Versions.Where(x => x.IsX86 == Model.Is32Bit);
+        UpdateVersionList();
+    }
+
+    private void NightlyToggleHandler(object sender, RoutedEventArgs args)
+    {
+        UpdateVersionList();
+    }
+
+    public void UpdateVersionList()
+    {
+        if (Model == null)
+            return;
+
+        var en = MLManager.Versions.Where(x => x.IsX86 == Model.Is32Bit);
+        if (NightlyCheck.IsChecked != true)
+            en = en.Where(x => !x.IsArtifact);
+
+        VersionCombobox.ItemsSource = en;
         VersionCombobox.SelectedIndex = 0;
     }
 
-    public void BackClickHandler(object sender, RoutedEventArgs args)
+    private void BackClickHandler(object sender, RoutedEventArgs args)
     {
         if (Model != null && Model.Installing)
             return;
@@ -55,7 +72,7 @@ public partial class DetailsView : UserControl
         MainWindow.Instance.ShowMainView();
     }
 
-    public void VersionSelectHandler(object? sender, SelectionChangedEventArgs args)
+    private void VersionSelectHandler(object? sender, SelectionChangedEventArgs args)
     {
         UpdateVersionInfo();
     }
@@ -91,7 +108,7 @@ public partial class DetailsView : UserControl
         };
     }
 
-    public void InstallHandler(object sender, RoutedEventArgs args)
+    private void InstallHandler(object sender, RoutedEventArgs args)
     {
         if (Model == null || !Model.ValidateGame())
         {
@@ -125,7 +142,7 @@ public partial class DetailsView : UserControl
         Model.ValidateGame();
     }
 
-    public void OpenDirHandler(object sender, RoutedEventArgs args)
+    private void OpenDirHandler(object sender, RoutedEventArgs args)
     {
         if (Model == null)
             return;
@@ -133,7 +150,7 @@ public partial class DetailsView : UserControl
         TopLevel.GetTopLevel(this)!.Launcher.LaunchDirectoryInfoAsync(new(Path.GetDirectoryName(Model.Path)!));
     }
 
-    public void UninstallHandler(object sender, RoutedEventArgs args)
+    private void UninstallHandler(object sender, RoutedEventArgs args)
     {
         if (Model == null || !Model.ValidateGame())
         {

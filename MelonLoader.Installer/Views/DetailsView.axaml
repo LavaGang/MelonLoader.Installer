@@ -8,7 +8,7 @@
     mc:Ignorable="d" d:DesignWidth="450" d:DesignHeight="650"
     x:Class="MelonLoader.Installer.Views.DetailsView"
     x:DataType="vm:GameModel">
-    <Grid RowDefinitions="auto, *, 80, 60, auto, *, 80, auto, 2*, auto, auto, auto, auto, *">
+    <Grid RowDefinitions="auto, *, 80, 60, auto, *, 80, auto, 2*, auto, auto, 70, auto, *">
         <Button Grid.Row="0" IsEnabled="{Binding !Installing}" Click="BackClickHandler"
             FontSize="20" Background="Transparent" Content="←" FontWeight="Bold" Foreground="Gray"
             HorizontalContentAlignment="Center" />
@@ -29,9 +29,15 @@
         <ComboBox IsEnabled="{Binding !Installing}" SelectionChanged="VersionSelectHandler"
             Name="VersionCombobox" Grid.Row="10" Margin="5" HorizontalAlignment="Center"
             SelectedIndex="0" MaxDropDownHeight="150" />
-        <CheckBox IsEnabled="{Binding !Installing}" Name="KeepFilesCheck" Grid.Row="11"
-            IsVisible="{Binding MLInstalled}" HorizontalAlignment="Center" IsChecked="True">Keep
-            mods and settings</CheckBox>
+        <StackPanel Grid.Row="11">
+            <CheckBox IsEnabled="{Binding !Installing}" Name="NightlyCheck"
+                ToolTip.Tip="Enables bleeding-edge builds. ONLY ENABLE IF YOU KNOW WHAT YOU'RE DOING!"
+                Click="NightlyToggleHandler" HorizontalAlignment="Center">Enable Nightly builds</CheckBox>
+            <CheckBox IsEnabled="{Binding !Installing}" Name="KeepFilesCheck"
+                ToolTip.Tip="Keep mods, plugins, UserData, and UserLibs when uninstalling."
+                HorizontalAlignment="Center"
+                IsVisible="{Binding MLInstalled}" IsChecked="True">Keep mods and settings</CheckBox>
+        </StackPanel>
         <Grid Grid.Row="12" Margin="10" Width="300" HorizontalAlignment="Center">
             <Grid IsVisible="{Binding !Installing}" ColumnDefinitions="*, auto">
                 <Button Click="InstallHandler" Name="InstallButton" Grid.Column="0"
