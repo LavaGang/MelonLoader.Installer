@@ -15,6 +15,14 @@ public partial class MainWindow : Window
         ShowMainView();
     }
 
+    protected override void OnClosing(WindowClosingEventArgs e)
+    {
+        if (Content is DetailsView view && view.Model != null && view.Model.Installing)
+            e.Cancel = true;
+
+        base.OnClosing(e);
+    }
+
     public void ShowMainView()
     {
         Content = new MainView();
