@@ -24,11 +24,11 @@ public partial class GameControl : UserControl
         }
 
         var mlInstalled = Model.MLVersion != null;
-        var isSteam = Model.GameSource == GameSource.Steam;
 
-        IconsPanel.IsVisible = mlInstalled || isSteam;
+        IconsPanel.IsVisible = mlInstalled || Model.GameSource != GameSource.Manual;
         MLIcon.IsVisible = mlInstalled;
-        SteamIcon.IsVisible = isSteam;
+        SteamIcon.IsVisible = Model.GameSource == GameSource.Steam;
+        EgsIcon.IsVisible = Model.GameSource == GameSource.EGS;
     }
 
     public void ClickHandler(object sender, RoutedEventArgs args)

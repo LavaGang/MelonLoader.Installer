@@ -21,6 +21,8 @@ internal static class GameManager
         inited = true;
 
         LoadSteamGames();
+        LoadEgsGames();
+
         LoadSavedGames();
     }
 
@@ -48,6 +50,18 @@ internal static class GameManager
         {
             var iconPath = Path.Combine(SteamReader.SteamPath, "appcache", "librarycache", game.AppId + "_icon.jpg");
             TryAddGame(game.Directory, game.Name, GameSource.Steam, iconPath, out _);
+        }
+    }
+
+    private static void LoadEgsGames()
+    {
+        var games = EgsReader.GetGames();
+        if (games == null)
+            return;
+
+        foreach (var game in games)
+        {
+            TryAddGame(game.Directory, game.Name, GameSource.EGS, null, out _);
         }
     }
 

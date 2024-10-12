@@ -3,5 +3,6 @@
 public enum GameSource
 {
     Manual,
-    Steam
+    Steam,
+    EGS
 }

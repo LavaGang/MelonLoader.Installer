@@ -19,6 +19,7 @@
                 Padding="8 5" CornerRadius="1000">
                 <StackPanel Orientation="Horizontal">
                     <Image Name="SteamIcon" IsVisible="False" Source="/Assets/steam.png" />
+                    <Image Name="EgsIcon" IsVisible="False" Source="/Assets/egs.png" />
                     <Image Name="MLIcon" IsVisible="False" Margin="5 0" Source="/Assets/icon.ico" />
                     <TextBlock FontSize="13" VerticalAlignment="Center"
                         Text="{Binding MLVersionText}" />
