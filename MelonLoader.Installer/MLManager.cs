@@ -361,6 +361,11 @@ internal static class MLManager
             SetProgress(i / (double)(zipLength - 1));
         }
 
+        Directory.CreateDirectory(Path.Combine(gameDir, "Mods"));
+        Directory.CreateDirectory(Path.Combine(gameDir, "Plugins"));
+        Directory.CreateDirectory(Path.Combine(gameDir, "UserData"));
+        Directory.CreateDirectory(Path.Combine(gameDir, "UserLibs"));
+
         onFinished?.Invoke(null);
     }
 
