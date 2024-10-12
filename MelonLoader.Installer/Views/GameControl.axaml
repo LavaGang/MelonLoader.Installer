@@ -11,7 +11,7 @@
         HorizontalAlignment="Stretch" Background="#99202030" CornerRadius="1000" Padding="0">
         <Grid ColumnDefinitions="auto, *, auto" Margin="5">
             <TextBlock Grid.Column="1" Margin="8 0" VerticalAlignment="Center" FontSize="15"
-                Text="{Binding Name}" />
+                TextTrimming="CharacterEllipsis" Text="{Binding Name}" />
             <Border Grid.Column="0" CornerRadius="70" ClipToBounds="True">
                 <Image Source="{Binding Icon}" />
             </Border>

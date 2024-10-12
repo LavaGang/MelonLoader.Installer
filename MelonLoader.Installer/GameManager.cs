@@ -173,7 +173,11 @@ internal static class GameManager
                 {
                     mlAssemblyPath = Path.Combine(mlDir, "net35", "MelonLoader.dll");
                     if (!File.Exists(mlAssemblyPath))
-                        mlAssemblyPath = null;
+                    {
+                        mlAssemblyPath = Path.Combine(mlDir, "net6", "MelonLoader.dll");
+                        if (!File.Exists(mlAssemblyPath))
+                            mlAssemblyPath = null;
+                    }
                 }
             }
             if (mlAssemblyPath != null)
