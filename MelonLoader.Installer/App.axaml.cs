@@ -13,8 +13,6 @@ public partial class App : Application
 {
     public override void Initialize()
     {
-        GameManager.Init();
-
         AvaloniaXamlLoader.Load(this);
     }
 

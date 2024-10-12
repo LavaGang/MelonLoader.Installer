@@ -1,0 +1,16 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="clr-namespace:MelonLoader.Installer.ViewModels"
+    xmlns:views="clr-namespace:MelonLoader.Installer.Views"
+    mc:Ignorable="d" d:DesignWidth="450" d:DesignHeight="650"
+    x:Class="MelonLoader.Installer.Views.UpdaterView">
+
+    <Grid RowDefinitions="*, 100, 40, *, auto, 2*, auto, *">
+        <Image Grid.Row="1" Source="/Assets/icon.ico" />
+        <Image Grid.Row="2" Source="/Assets/ML_Text.png" />
+        <TextBlock Grid.Row="4" FontSize="24" HorizontalAlignment="Center">Updating...</TextBlock>
+        <ProgressBar Grid.Row="6" Name="Progress" Height="40" Background="#4383" Foreground="#383" />
+    </Grid>
+</UserControl>

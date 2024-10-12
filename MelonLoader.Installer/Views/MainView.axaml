@@ -15,7 +15,8 @@
     </Design.DataContext>
 
     <Grid RowDefinitions="auto, auto, *, auto, auto">
-        <TextBlock Grid.Row="100" VerticalAlignment="Bottom" Foreground="Gray">v4.0</TextBlock>
+        <TextBlock Grid.Row="100" VerticalAlignment="Bottom" Foreground="Gray"
+            Text="{Binding Version}" />
 
         <StackPanel Grid.Row="0" Height="40" Orientation="Horizontal" HorizontalAlignment="Center">
             <Image Source="/Assets/icon.ico" Margin="0 0 10 0" />

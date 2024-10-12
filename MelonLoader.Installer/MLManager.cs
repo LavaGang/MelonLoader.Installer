@@ -7,20 +7,18 @@ namespace MelonLoader.Installer;
 
 internal static class MLManager
 {
-    private static readonly HttpClient http = new();
+    private static bool inited;
     private static readonly string[] proxyNames = ["version", "winmm", "winhttp"];
 
     public static MLVersion[] Versions { get; private set; } = [];
 
-    static MLManager()
-    {
-        http = new();
-        http.DefaultRequestHeaders.Add("User-Agent", "MelonLoader Installer");
-    }
-
     public static void Init()
     {
+        if (inited)
+            return;
+
         RefreshVersions();
+        inited = true;
     }
 
     public static void RefreshVersions()
@@ -40,7 +38,7 @@ internal static class MLManager
         HttpResponseMessage resp;
         try
         {
-            resp = await http.GetAsync(Config.MelonLoaderBuildWorkflowApi).ConfigureAwait(false);
+            resp = await InstallerUtils.Http.GetAsync(Config.MelonLoaderBuildWorkflowApi);
         }
         catch
         {
@@ -50,7 +48,7 @@ internal static class MLManager
         if (!resp.IsSuccessStatusCode)
             return null;
 
-        var relStr = await resp.Content.ReadAsStringAsync().ConfigureAwait(false);
+        var relStr = await resp.Content.ReadAsStringAsync();
         var runsJson = JsonNode.Parse(relStr)!["workflow_runs"]!.AsArray();
 
         var versionsList = new List<MLVersion>();
@@ -59,14 +57,14 @@ internal static class MLManager
         {
             try
             {
-                resp = await http.GetAsync(run!["artifacts_url"]!.ToString()).ConfigureAwait(false);
+                resp = await InstallerUtils.Http.GetAsync(run!["artifacts_url"]!.ToString());
             }
             catch
             {
                 return null;
             }
 
-            relStr = await resp.Content.ReadAsStringAsync().ConfigureAwait(false);
+            relStr = await resp.Content.ReadAsStringAsync();
             var artifactsJson = JsonNode.Parse(relStr)!["artifacts"]!.AsArray();
 
             var art64 = artifactsJson.FirstOrDefault(x => x!["name"]!.ToString() == "MelonLoader.Windows.x64.CI.Release");
@@ -99,7 +97,7 @@ internal static class MLManager
 
         try
         {
-            resp = await http.GetAsync(Config.MelonLoaderReleasesApi).ConfigureAwait(false);
+            resp = await InstallerUtils.Http.GetAsync(Config.MelonLoaderReleasesApi);
         }
         catch
         {
@@ -109,7 +107,7 @@ internal static class MLManager
         if (!resp.IsSuccessStatusCode)
             return null;
 
-        relStr = await resp.Content.ReadAsStringAsync().ConfigureAwait(false);
+        relStr = await resp.Content.ReadAsStringAsync();
         var releasesJson = JsonNode.Parse(relStr)!.AsArray();
 
         foreach (var release in releasesJson)
@@ -315,7 +313,7 @@ internal static class MLManager
             string? dnResult;
             using (var dnStr = File.Create(installerPath))
             {
-                dnResult = await DownloadFileAsync(x86 ? Config.DotnetRuntimeX86Download : Config.DotnetRuntimeX64Download, dnStr, SetProgress);
+                dnResult = await InstallerUtils.DownloadFileAsync(x86 ? Config.DotnetRuntimeX86Download : Config.DotnetRuntimeX64Download, dnStr, SetProgress);
             }
 
             SetProgress(1, "Installing .NET 6.0");
@@ -336,7 +334,7 @@ internal static class MLManager
         SetProgress(0, "Downloading MelonLoader " + version.VersionName);
 
         using var bufferStr = new MemoryStream();
-        var result = await DownloadFileAsync(version.DownloadUrl, bufferStr, SetProgress);
+        var result = await InstallerUtils.DownloadFileAsync(version.DownloadUrl, bufferStr, SetProgress);
         if (result != null)
         {
             onFinished?.Invoke("Failed to download MelonLoader: " + result);
@@ -374,58 +372,4 @@ internal static class MLManager
         var dotnetDir = $@"C:\Program Files{(x86 ? " (x86)" : string.Empty)}\dotnet\shared\Microsoft.NETCore.App";
         return Directory.Exists(dotnetDir) && Directory.EnumerateDirectories(dotnetDir, "6.*").Any();
     }
-
-    private static async Task<string?> DownloadFileAsync(string url, Stream destination, InstallProgressEventHandler? onProgress)
-    {
-        HttpResponseMessage response;
-        try
-        {
-            response = await http.GetAsync(url, HttpCompletionOption.ResponseHeadersRead);
-        }
-        catch (HttpRequestException)
-        {
-            return "Could not establish a connection.";
-        }
-        catch
-        {
-            return "Something went wrong while requesting the download files.";
-        }
-
-        if (!response.IsSuccessStatusCode)
-        {
-            return response.ReasonPhrase;
-        }
-
-        using var content = await response.Content.ReadAsStreamAsync();
-
-        var length = response.Content.Headers.ContentLength ?? 0;
-
-        if (length > 0)
-        {
-            destination.SetLength(length);
-        }
-        else
-        {
-            await content.CopyToAsync(destination);
-            return null;
-        }
-
-        var position = 0;
-        var buffer = new byte[1024 * 16];
-        while (position < destination.Length - 1)
-        {
-            var read = await content.ReadAsync(buffer, 0, buffer.Length);
-            await destination.WriteAsync(buffer, 0, read);
-
-            position += read;
-
-            onProgress?.Invoke(position / (double)(destination.Length - 1), null);
-        }
-
-        return null;
-    }
 }
-
-public delegate void InstallProgressEventHandler(double progress, string? newStatus);
-
-public delegate void InstallFinishedEventHandler(string? errorMessage);
