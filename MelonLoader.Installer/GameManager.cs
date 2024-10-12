@@ -1,8 +1,6 @@
 ﻿using Avalonia.Media.Imaging;
-using GameFinder.RegistryUtils;
-using GameFinder.StoreHandlers.Steam;
+using MelonLoader.Installer.Utils;
 using MelonLoader.Installer.ViewModels;
-using NexusMods.Paths;
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection.PortableExecutable;
@@ -39,12 +37,17 @@ internal static class GameManager
 
     private static void LoadSteamGames()
     {
-        var steam = new SteamHandler(FileSystem.Shared, WindowsRegistry.Shared);
-        var games = steam.FindAllGames().Where(x => x.IsT0).Select(x => x.AsT0);
+        if (SteamReader.SteamPath == null)
+            return;
+
+        var games = SteamReader.GetGames();
+        if (games == null)
+            return;
+
         foreach (var game in games)
         {
-            var iconPath = Path.Combine(game.SteamPath.ToString(), "appcache", "librarycache", game.AppId.Value.ToString() + "_icon.jpg");
-            TryAddGame(game.Path.ToString(), game.Name, GameSource.Steam, iconPath, out _);
+            var iconPath = Path.Combine(SteamReader.SteamPath, "appcache", "librarycache", game.AppId + "_icon.jpg");
+            TryAddGame(game.Directory, game.Name, GameSource.Steam, iconPath, out _);
         }
     }
 
