@@ -9,7 +9,7 @@ namespace MelonLoader.Installer.Views;
 
 public partial class DetailsView : UserControl
 {
-    public GameModel? Model => (GameModel?)DataContext;
+    public DetailsViewModel? Model => (DetailsViewModel?)DataContext;
 
     public DetailsView()
     {
@@ -23,7 +23,7 @@ public partial class DetailsView : UserControl
         if (Model == null)
             return;
 
-        Model.PropertyChanged -= PropertyChangedHandler;
+        Model.Game.PropertyChanged -= PropertyChangedHandler;
     }
 
     private void PropertyChangedHandler(object? sender, PropertyChangedEventArgs change)
@@ -41,9 +41,18 @@ public partial class DetailsView : UserControl
         if (Model == null)
             return;
 
-        Model.PropertyChanged += PropertyChangedHandler;
+        Model.Game.PropertyChanged += PropertyChangedHandler;
 
         UpdateVersionList();
+
+        MLManager.Init();
+        if (MLManager.Versions.Length == 0)
+        {
+            InstallButton.IsEnabled = false;
+            NightlyCheck.IsEnabled = false;
+            VersionCombobox.IsEnabled = false;
+            ErrorBox.Open("Failed to fetch MelonLoader releases. Ensure you're online.");
+        }
     }
 
     private void NightlyToggleHandler(object sender, RoutedEventArgs args)
@@ -56,7 +65,7 @@ public partial class DetailsView : UserControl
         if (Model == null)
             return;
 
-        var en = MLManager.Versions.Where(x => x.IsX86 == Model.Is32Bit);
+        var en = MLManager.Versions.Where(x => x.IsX86 == Model.Game.Is32Bit);
         if (NightlyCheck.IsChecked != true)
             en = en.Where(x => !x.IsArtifact);
 
@@ -82,9 +91,9 @@ public partial class DetailsView : UserControl
         if (Model == null || VersionCombobox.SelectedItem == null)
             return;
 
-        MelonIcon.Opacity = Model.MLInstalled ? 1 : 0.3;
+        MelonIcon.Opacity = Model.Game.MLInstalled ? 1 : 0.3;
 
-        if (Model.MLVersion == null)
+        if (Model.Game.MLVersion == null)
         {
             InstallButton.Content = "Install";
             return;
@@ -97,7 +106,7 @@ public partial class DetailsView : UserControl
         var comp = 1;
         if (Version.TryParse(versionName, out var selVer))
         {
-            comp = selVer.CompareTo(Model.MLVersion);
+            comp = selVer.CompareTo(Model.Game.MLVersion);
         }
 
         InstallButton.Content = comp switch
@@ -110,15 +119,18 @@ public partial class DetailsView : UserControl
 
     private void InstallHandler(object sender, RoutedEventArgs args)
     {
-        if (Model == null || !Model.ValidateGame())
+        if (Model == null || !Model.Game.ValidateGame())
         {
             MainWindow.Instance.ShowMainView();
             return;
         }
 
         Model.Installing = true;
-        _ = MLManager.InstallAsync(Path.GetDirectoryName(Model.Path)!, Model.MLInstalled && !KeepFilesCheck.IsChecked!.Value,
-            (MLVersion)VersionCombobox.SelectedItem!, Model.Is32Bit,
+        NightlyCheck.IsEnabled = false;
+        VersionCombobox.IsEnabled = false;
+
+        _ = MLManager.InstallAsync(Path.GetDirectoryName(Model.Game.Path)!, Model.Game.MLInstalled && !KeepFilesCheck.IsChecked!.Value,
+            (MLVersion)VersionCombobox.SelectedItem!, Model.Game.Is32Bit,
             (progress, newStatus) => Dispatcher.UIThread.Post(() => OnInstallProgress(progress, newStatus)),
             (errorMessage) => Dispatcher.UIThread.Post(() => OnInstallFinished(errorMessage)));
     }
@@ -138,8 +150,15 @@ public partial class DetailsView : UserControl
             return;
 
         Model.Installing = false;
+        NightlyCheck.IsEnabled = true;
+        VersionCombobox.IsEnabled = true;
 
-        Model.ValidateGame();
+        Model.Game.ValidateGame();
+
+        if (errorMessage != null)
+        {
+            ErrorBox.Open(errorMessage);
+        }
     }
 
     private void OpenDirHandler(object sender, RoutedEventArgs args)
@@ -147,26 +166,25 @@ public partial class DetailsView : UserControl
         if (Model == null)
             return;
 
-        TopLevel.GetTopLevel(this)!.Launcher.LaunchDirectoryInfoAsync(new(Path.GetDirectoryName(Model.Path)!));
+        TopLevel.GetTopLevel(this)!.Launcher.LaunchDirectoryInfoAsync(new(Path.GetDirectoryName(Model.Game.Path)!));
     }
 
     private void UninstallHandler(object sender, RoutedEventArgs args)
     {
-        if (Model == null || !Model.ValidateGame())
+        if (Model == null || !Model.Game.ValidateGame())
         {
             MainWindow.Instance.ShowMainView();
             return;
         }
 
-        if (!Model.MLInstalled)
+        if (!Model.Game.MLInstalled)
             return;
 
-        if (!MLManager.Uninstall(Path.GetDirectoryName(Model.Path)!, !KeepFilesCheck.IsChecked!.Value, out var error))
+        if (!MLManager.Uninstall(Path.GetDirectoryName(Model.Game.Path)!, !KeepFilesCheck.IsChecked!.Value, out var error))
         {
-            throw new Exception(error);
-            // TODO: Display error message
+            ErrorBox.Open(error);
         }
 
-        Model.ValidateGame();
+        Model.Game.ValidateGame();
     }
 }

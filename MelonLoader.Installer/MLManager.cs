@@ -17,20 +17,20 @@ internal static class MLManager
         if (inited)
             return;
 
-        RefreshVersions();
-        inited = true;
+        inited = RefreshVersions();
     }
 
-    public static void RefreshVersions()
+    public static bool RefreshVersions()
     {
         var versions = GetVersionsAsync().GetAwaiter().GetResult();
         if (versions == null)
         {
             Versions = [];
-            return;
+            return false;
         }
 
         Versions = [.. versions];
+        return true;
     }
 
     private static async Task<List<MLVersion>?> GetVersionsAsync()
@@ -38,7 +38,7 @@ internal static class MLManager
         HttpResponseMessage resp;
         try
         {
-            resp = await InstallerUtils.Http.GetAsync(Config.MelonLoaderBuildWorkflowApi);
+            resp = await InstallerUtils.Http.GetAsync(Config.MelonLoaderBuildWorkflowApi).ConfigureAwait(false);
         }
         catch
         {
@@ -48,7 +48,7 @@ internal static class MLManager
         if (!resp.IsSuccessStatusCode)
             return null;
 
-        var relStr = await resp.Content.ReadAsStringAsync();
+        var relStr = await resp.Content.ReadAsStringAsync().ConfigureAwait(false);
         var runsJson = JsonNode.Parse(relStr)!["workflow_runs"]!.AsArray();
 
         var versionsList = new List<MLVersion>();
@@ -57,14 +57,17 @@ internal static class MLManager
         {
             try
             {
-                resp = await InstallerUtils.Http.GetAsync(run!["artifacts_url"]!.ToString());
+                resp = await InstallerUtils.Http.GetAsync(run!["artifacts_url"]!.ToString()).ConfigureAwait(false);
             }
             catch
             {
                 return null;
             }
 
-            relStr = await resp.Content.ReadAsStringAsync();
+            if (!resp.IsSuccessStatusCode)
+                return null;
+
+            relStr = await resp.Content.ReadAsStringAsync().ConfigureAwait(false);
             var artifactsJson = JsonNode.Parse(relStr)!["artifacts"]!.AsArray();
 
             var art64 = artifactsJson.FirstOrDefault(x => x!["name"]!.ToString() == "MelonLoader.Windows.x64.CI.Release");
@@ -97,7 +100,7 @@ internal static class MLManager
 
         try
         {
-            resp = await InstallerUtils.Http.GetAsync(Config.MelonLoaderReleasesApi);
+            resp = await InstallerUtils.Http.GetAsync(Config.MelonLoaderReleasesApi).ConfigureAwait(false);
         }
         catch
         {
@@ -107,7 +110,7 @@ internal static class MLManager
         if (!resp.IsSuccessStatusCode)
             return null;
 
-        relStr = await resp.Content.ReadAsStringAsync();
+        relStr = await resp.Content.ReadAsStringAsync().ConfigureAwait(false);
         var releasesJson = JsonNode.Parse(relStr)!.AsArray();
 
         foreach (var release in releasesJson)
@@ -159,20 +162,6 @@ internal static class MLManager
             return false;
         }
 
-        var mlDir = Path.Combine(gameDir, "MelonLoader");
-        if (Directory.Exists(mlDir))
-        {
-            try
-            {
-                Directory.Delete(mlDir, true);
-            }
-            catch
-            {
-                errorMessage = "Failed to uninstall MelonLoader. Ensure that the game is fully closed before trying again.";
-                return false;
-            }
-        }
-
         foreach (var proxy in proxyNames)
         {
             var proxyPath = Path.Combine(gameDir, proxy + ".dll");
@@ -189,7 +178,21 @@ internal static class MLManager
             }
             catch
             {
-                errorMessage = $"Failed to fully uninstall MelonLoader: Failed to remove proxy '{proxy}'.";
+                errorMessage = "Failed to uninstall MelonLoader. Ensure that the game is fully closed before trying again.";
+                return false;
+            }
+        }
+
+        var mlDir = Path.Combine(gameDir, "MelonLoader");
+        if (Directory.Exists(mlDir))
+        {
+            try
+            {
+                Directory.Delete(mlDir, true);
+            }
+            catch
+            {
+                errorMessage = "Failed to uninstall MelonLoader. Ensure that the game is fully closed before trying again.";
                 return false;
             }
         }
@@ -314,6 +317,10 @@ internal static class MLManager
             using (var dnStr = File.Create(installerPath))
             {
                 dnResult = await InstallerUtils.DownloadFileAsync(x86 ? Config.DotnetRuntimeX86Download : Config.DotnetRuntimeX64Download, dnStr, SetProgress);
+                if (dnResult != null)
+                {
+                    onFinished?.Invoke("Failed to download the .NET Runtime: " + dnResult);
+                }
             }
 
             SetProgress(1, "Installing .NET 6.0");
@@ -346,17 +353,30 @@ internal static class MLManager
 
         SetProgress(0, "Installing MelonLoader " + version.VersionName);
 
-        using var zip = new ZipArchive(bufferStr, ZipArchiveMode.Read);
-
-        var zipLength = zip.Entries.Count;
-        for (var i = 0; i < zipLength; i++)
+        try
         {
-            var entry = zip.Entries[i];
-            var dest = Path.Combine(gameDir, entry.FullName);
-            Directory.CreateDirectory(Path.GetDirectoryName(dest)!);
-            entry.ExtractToFile(dest, true);
+            using var zip = new ZipArchive(bufferStr, ZipArchiveMode.Read);
 
-            SetProgress(i / (double)(zipLength - 1));
+            var zipLength = zip.Entries.Count;
+            for (var i = 0; i < zipLength; i++)
+            {
+                var entry = zip.Entries[i];
+                var dest = Path.Combine(gameDir, entry.FullName);
+                Directory.CreateDirectory(Path.GetDirectoryName(dest)!);
+                entry.ExtractToFile(dest, true);
+
+                SetProgress(i / (double)(zipLength - 1));
+            }
+        }
+        catch (InvalidDataException)
+        {
+            onFinished?.Invoke("Failed to install MelonLoader: The downloaded data seems to be corrupt.");
+            return;
+        }
+        catch
+        {
+            onFinished?.Invoke("Failed to install MelonLoader: Failed to extract all files.");
+            return;
         }
 
         Directory.CreateDirectory(Path.Combine(gameDir, "Mods"));

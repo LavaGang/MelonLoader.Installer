@@ -1,5 +1,4 @@
 ﻿using Avalonia.Controls;
-using Avalonia.Input;
 using Avalonia.Interactivity;
 using System.Collections.Specialized;
 
@@ -10,7 +9,6 @@ public partial class MainView : UserControl
     public MainView()
     {
         InitializeComponent();
-        PointerPressed += ResetErrorMessage;
 
         OnGameListUpdate(null, null);
         GameManager.Games.CollectionChanged += OnGameListUpdate;
@@ -26,11 +24,6 @@ public partial class MainView : UserControl
     private void OnGameListUpdate(object? sender, NotifyCollectionChangedEventArgs? e)
     {
         NoGamesText.IsVisible = GameManager.Games.Count == 0;
-    }
-
-    private void ResetErrorMessage(object? sender, PointerPressedEventArgs e)
-    {
-        ErrorText.Text = string.Empty;
     }
 
     public async void AddGameManuallyHandler(object sender, RoutedEventArgs args)
@@ -49,16 +42,11 @@ public partial class MainView : UserControl
         GameManager.TryAddGame(path, null, GameSource.Manual, null, out var error);
         if (error != null)
         {
-            SetErrorMessage(error);
+            ErrorBox.Open(error);
             return;
         }
 
         GameManager.SaveManualGameList();
-    }
-
-    public void SetErrorMessage(string errorMessage)
-    {
-        ErrorText.Text = errorMessage;
     }
 
     private async void OpenURL(Uri url)

@@ -4,8 +4,6 @@ namespace MelonLoader.Installer.ViewModels;
 
 public class GameModel(string path, string name, bool is32Bit, GameSource gameSource, Bitmap? icon, Version? mlVersion) : ViewModelBase
 {
-    private bool _installing;
-
     public string Path => path;
     public string Name => name;
     public bool Is32Bit => is32Bit;
@@ -25,16 +23,6 @@ public class GameModel(string path, string name, bool is32Bit, GameSource gameSo
             OnPropertyChanged(nameof(MLVersionText));
             OnPropertyChanged(nameof(MLStatusText));
             OnPropertyChanged(nameof(MLInstalled));
-        }
-    }
-
-    public bool Installing
-    {
-        get => _installing;
-        set
-        {
-            _installing = value;
-            OnPropertyChanged(nameof(Installing));
         }
     }
 

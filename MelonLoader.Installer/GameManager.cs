@@ -130,7 +130,7 @@ internal static class GameManager
         }
         catch
         {
-            errorMessage = "The game executable is possibly corrupted.";
+            errorMessage = "The game executable is invalid (possibly corrupted).";
             return null;
         }
 

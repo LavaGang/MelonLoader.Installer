@@ -1,0 +1,19 @@
+<Window xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    x:Class="MelonLoader.Installer.Views.ErrorBox"
+    Title="Error"
+    Icon="/Assets/icon.ico"
+    WindowStartupLocation="CenterScreen"
+    Background="#121217"
+    CanResize="False"
+    Padding="25"
+    Width="600" Height="100">
+    <Grid ColumnDefinitions="auto, 20, *">
+        <Image Grid.Column="0" Source="/Assets/error.png" />
+        <TextBlock Name="Message" Grid.Column="2" VerticalAlignment="Center" FontSize="15">
+            abcdsdfsdfsdfsfghdgfhe</TextBlock>
+    </Grid>
+</Window>

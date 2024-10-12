@@ -37,7 +37,7 @@ public partial class MainWindow : Window
     {
         if (errorMessage != null)
         {
-            // TODO: Show error message
+            ErrorBox.Open(errorMessage);
             ShowMainView();
             return;
         }
@@ -64,7 +64,7 @@ public partial class MainWindow : Window
     {
         Content = new DetailsView()
         {
-            DataContext = game
+            DataContext = new DetailsViewModel(game)
         };
     }
 }
