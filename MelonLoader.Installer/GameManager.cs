@@ -1,5 +1,5 @@
 ﻿using Avalonia.Media.Imaging;
-using MelonLoader.Installer.Utils;
+using MelonLoader.Installer.GameLaunchers;
 using MelonLoader.Installer.ViewModels;
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
@@ -20,8 +20,10 @@ internal static class GameManager
 
         inited = true;
 
-        LoadSteamGames();
-        LoadEgsGames();
+        foreach (var launcher in GameLauncher.Launchers)
+        {
+            launcher.AddGames();
+        }
 
         LoadSavedGames();
     }
@@ -30,44 +32,16 @@ internal static class GameManager
     {
         foreach (var gamePath in Config.LoadGameList())
         {
-            TryAddGame(gamePath, null, GameSource.Manual, null, out _);
+            TryAddGame(gamePath, null, null, null, out _);
         }
 
         // In case it was manually edited or if any games were removed
         SaveManualGameList();
     }
 
-    private static void LoadSteamGames()
-    {
-        if (SteamReader.SteamPath == null)
-            return;
-
-        var games = SteamReader.GetGames();
-        if (games == null)
-            return;
-
-        foreach (var game in games)
-        {
-            var iconPath = Path.Combine(SteamReader.SteamPath, "appcache", "librarycache", game.AppId + "_icon.jpg");
-            TryAddGame(game.Directory, game.Name, GameSource.Steam, iconPath, out _);
-        }
-    }
-
-    private static void LoadEgsGames()
-    {
-        var games = EgsReader.GetGames();
-        if (games == null)
-            return;
-
-        foreach (var game in games)
-        {
-            TryAddGame(game.Directory, game.Name, GameSource.EGS, null, out _);
-        }
-    }
-
     public static void SaveManualGameList()
     {
-        Config.SaveGameList(Games.Where(x => x.GameSource == GameSource.Manual).Select(x => x.Path));
+        Config.SaveGameList(Games.Where(x => x.Launcher == null).Select(x => x.Path));
     }
 
     private static void AddGameSorted(GameModel game)
@@ -107,10 +81,12 @@ internal static class GameManager
         Games.Remove(game);
     }
 
-    public static GameModel? TryAddGame(string path, string? customName, GameSource gameSource, string? iconPath, [NotNullWhen(false)] out string? errorMessage)
+    public static GameModel? TryAddGame(string path, string? customName, GameLauncher? launcher, string? iconPath, [NotNullWhen(false)] out string? errorMessage)
     {
         if (File.Exists(path))
+        {
             path = Path.GetDirectoryName(path)!;
+        }
         else if (!Directory.Exists(path))
         {
             errorMessage = "The selected directory does not exist.";
@@ -166,7 +142,7 @@ internal static class GameManager
 
         icon ??= IconExtractor.GetExeIcon(exe);
 
-        var result = new GameModel(exe, customName ?? Path.GetFileNameWithoutExtension(exe), !is64, gameSource, icon, mlVersion);
+        var result = new GameModel(exe, customName ?? Path.GetFileNameWithoutExtension(exe), !is64, launcher, icon, mlVersion);
         errorMessage = null;
 
         AddGameSorted(result);

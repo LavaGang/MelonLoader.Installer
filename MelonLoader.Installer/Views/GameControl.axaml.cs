@@ -1,5 +1,7 @@
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using Avalonia.Media.Imaging;
+using Avalonia.Platform;
 using MelonLoader.Installer.ViewModels;
 
 namespace MelonLoader.Installer.Views;
@@ -25,10 +27,13 @@ public partial class GameControl : UserControl
 
         var mlInstalled = Model.MLVersion != null;
 
-        IconsPanel.IsVisible = mlInstalled || Model.GameSource != GameSource.Manual;
+        IconsPanel.IsVisible = mlInstalled || Model.Launcher != null;
         MLIcon.IsVisible = mlInstalled;
-        SteamIcon.IsVisible = Model.GameSource == GameSource.Steam;
-        EgsIcon.IsVisible = Model.GameSource == GameSource.EGS;
+        if (Model.Launcher != null)
+        {
+            LauncherIcon.Source = new Bitmap(AssetLoader.Open(new("avares://" + typeof(GameControl).Assembly.GetName().Name + Model.Launcher.IconPath)));
+            LauncherIcon.IsVisible = true;
+        }
     }
 
     public void ClickHandler(object sender, RoutedEventArgs args)

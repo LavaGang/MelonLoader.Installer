@@ -1,25 +1,26 @@
 ﻿using Microsoft.Win32;
 using System.Text.Json.Nodes;
 
-namespace MelonLoader.Installer.Utils;
+namespace MelonLoader.Installer.GameLaunchers;
 
-public static class EgsReader
+public class EgsLauncher : GameLauncher
 {
     private static readonly string? manifestDir;
 
-    static EgsReader()
+    static EgsLauncher()
     {
         manifestDir = Registry.CurrentUser.OpenSubKey(@"Software\Epic Games\EOS")?.GetValue("ModSdkMetadataDir") as string;
         if (manifestDir != null && !Directory.Exists(manifestDir))
             manifestDir = null;
     }
 
-    public static List<EgsGame>? GetGames()
+    internal EgsLauncher() : base("/Assets/egs.png") { }
+
+    public override void AddGames()
     {
         if (manifestDir == null)
-            return null;
+            return;
 
-        var games = new List<EgsGame>();
         foreach (var item in Directory.EnumerateFiles(manifestDir, "*.item"))
         {
             var json = JsonNode.Parse(File.ReadAllText(item));
@@ -34,13 +35,7 @@ public static class EgsReader
             if (name == null)
                 continue;
 
-            games.Add(new()
-            {
-                Directory = dir,
-                Name = name
-            });
+            GameManager.TryAddGame(dir, name, this, null, out _);
         }
-
-        return games;
     }
 }

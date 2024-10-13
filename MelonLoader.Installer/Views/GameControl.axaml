@@ -8,18 +8,17 @@
     x:DataType="vm:GameModel"
     Margin="0 0 0 5">
     <Button Height="40" Click="ClickHandler" ToolTip.Tip="{Binding Path}" ToolTip.Placement="Bottom"
-        HorizontalAlignment="Stretch" Background="#99202030" CornerRadius="1000" Padding="0">
+        HorizontalAlignment="Stretch" Background="#99202030" Padding="0">
         <Grid ColumnDefinitions="auto, *, auto" Margin="5">
             <TextBlock Grid.Column="1" Margin="8 0" VerticalAlignment="Center" FontSize="15"
                 TextTrimming="CharacterEllipsis" Text="{Binding Name}" />
-            <Border Grid.Column="0" CornerRadius="70" ClipToBounds="True">
+            <Border Grid.Column="0" CornerRadius="8" ClipToBounds="True">
                 <Image Source="{Binding Icon}" />
             </Border>
             <Border Name="IconsPanel" IsVisible="False" Grid.Column="2" Background="#1AAA"
-                Padding="8 5" CornerRadius="1000">
+                Padding="8 5" CornerRadius="8">
                 <StackPanel Orientation="Horizontal">
-                    <Image Name="SteamIcon" IsVisible="False" Source="/Assets/steam.png" />
-                    <Image Name="EgsIcon" IsVisible="False" Source="/Assets/egs.png" />
+                    <Image Name="LauncherIcon" IsVisible="False" />
                     <Image Name="MLIcon" IsVisible="False" Margin="5 0" Source="/Assets/icon.ico" />
                     <TextBlock FontSize="13" VerticalAlignment="Center"
                         Text="{Binding MLVersionText}" />

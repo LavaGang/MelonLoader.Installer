@@ -1,13 +1,14 @@
 ﻿using Avalonia.Media.Imaging;
+using MelonLoader.Installer.GameLaunchers;
 
 namespace MelonLoader.Installer.ViewModels;
 
-public class GameModel(string path, string name, bool is32Bit, GameSource gameSource, Bitmap? icon, Version? mlVersion) : ViewModelBase
+public class GameModel(string path, string name, bool is32Bit, GameLauncher? launcher, Bitmap? icon, Version? mlVersion) : ViewModelBase
 {
     public string Path => path;
     public string Name => name;
     public bool Is32Bit => is32Bit;
-    public GameSource GameSource => gameSource;
+    public GameLauncher? Launcher => launcher;
     public Bitmap? Icon => icon;
     public string? MLVersionText => mlVersion != null ? 'v' + mlVersion.ToString() : null;
     public string MLStatusText => mlVersion == null ? "Not Installed" : "Installed " + MLVersionText;

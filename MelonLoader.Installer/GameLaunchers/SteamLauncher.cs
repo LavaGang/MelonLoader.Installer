@@ -2,35 +2,35 @@
 using Gameloop.Vdf.Linq;
 using Microsoft.Win32;
 
-namespace MelonLoader.Installer.Utils;
+namespace MelonLoader.Installer.GameLaunchers;
 
-public static class SteamReader
+public class SteamLauncher : GameLauncher
 {
-    public static string? SteamPath { get; private set; }
+    private static readonly string? steamPath;
 
-    static SteamReader()
+    static SteamLauncher()
     {
         var key = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\WOW6432Node\Valve\Steam");
         key ??= Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Valve\Steam");
 
-        SteamPath = (string?)key?.GetValue("InstallPath");
-        if (SteamPath != null && !Directory.Exists(SteamPath))
-            SteamPath = null;
+        steamPath = (string?)key?.GetValue("InstallPath");
+        if (steamPath != null && !Directory.Exists(steamPath))
+            steamPath = null;
     }
 
-    public static List<SteamGame>? GetGames()
-    {
-        if (SteamPath == null)
-            return null;
+    internal SteamLauncher() : base("/Assets/steam.png") { }
 
-        var libPath = Path.Combine(SteamPath, "config", "libraryfolders.vdf");
+    public override void AddGames()
+    {
+        if (steamPath == null)
+            return;
+
+        var libPath = Path.Combine(steamPath, "config", "libraryfolders.vdf");
         if (!File.Exists(libPath))
-            return null;
+            return;
 
         var libraryFolders = VdfConvert.Deserialize(File.ReadAllText(libPath));
         var libDirs = libraryFolders.Value.Select(x => ((VProperty)((VProperty)x).Value.First(y => ((VProperty)y).Key == "path")).Value.ToString()); // Lord forgive me for this one-liner
-
-        var games = new List<SteamGame>();
 
         foreach (var library in libDirs)
         {
@@ -62,15 +62,9 @@ public static class SteamReader
                 if (!Directory.Exists(appDir))
                     continue;
 
-                games.Add(new()
-                {
-                    AppId = id,
-                    Name = name,
-                    Directory = appDir
-                });
+                var iconPath = Path.Combine(steamPath, "appcache", "librarycache", id + "_icon.jpg");
+                GameManager.TryAddGame(appDir, name, this, iconPath, out _);
             }
         }
-
-        return games;
     }
 }
