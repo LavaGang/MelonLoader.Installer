@@ -6,6 +6,7 @@ public readonly struct MLVersion
     public required string VersionName { get; init; }
     public required bool IsArtifact { get; init; }
     public required bool IsX86 { get; init; }
+    public bool IsLocalZip { get; init; }
     public required string DownloadUrl { get; init; }
 
     public readonly override string ToString()

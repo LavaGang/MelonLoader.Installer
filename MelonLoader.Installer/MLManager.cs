@@ -290,15 +290,40 @@ internal static class MLManager
 
     public static async Task InstallAsync(string gameDir, bool removeUserFiles, MLVersion version, bool x86, InstallProgressEventHandler? onProgress, InstallFinishedEventHandler? onFinished)
     {
-        onProgress?.Invoke(0, "Uninstalling previous versions");
-
-        if (!Uninstall(gameDir, removeUserFiles, out var error))
+        ZipArchive? zip = null;
+        if (version.IsLocalZip)
         {
-            onFinished?.Invoke(error);
-            return;
+            if (!File.Exists(version.DownloadUrl))
+            {
+                onFinished?.Invoke("The selected zip archive no longer exists!");
+                return;
+            }
+
+            try
+            {
+                var zipStr = File.OpenRead(version.DownloadUrl);
+                zip ??= new ZipArchive(zipStr, ZipArchiveMode.Read);
+            }
+            catch (IOException)
+            {
+                onFinished?.Invoke("Failed to open the zip archive. Make sure the zip isn't being used by other programs.");
+                return;
+            }
+            catch
+            {
+                onFinished?.Invoke("The selected zip archive contains invalid data.");
+                return;
+            }
+
+            if (!zip.Entries.Any(x => x.FullName.StartsWith("MelonLoader/")))
+            {
+                onFinished?.Invoke("The selected zip archive does not contain a valid MelonLoader build.");
+                zip.Dispose();
+                return;
+            }
         }
 
-        var tasks = 2;
+        var tasks = 1;
         var currentTask = 0;
 
         void SetProgress(double progress, string? newStatus = null)
@@ -306,56 +331,51 @@ internal static class MLManager
             onProgress?.Invoke(currentTask / (double)tasks + progress / tasks, newStatus);
         }
 
-        if (!CheckDotnetInstalled(x86))
+        SetProgress(0, "Uninstalling previous versions");
+
+        if (!Uninstall(gameDir, removeUserFiles, out var error))
+        {
+            onFinished?.Invoke(error);
+            zip?.Dispose();
+            return;
+        }
+
+        MemoryStream? bufferStr = null;
+        if (zip == null)
         {
             tasks++;
 
-            SetProgress(0, "Downloading .NET 6.0");
+            SetProgress(0, "Downloading MelonLoader " + version.VersionName);
 
-            var installerPath = Path.GetTempFileName() + ".exe";
-            string? dnResult;
-            using (var dnStr = File.Create(installerPath))
+            bufferStr = new MemoryStream();
+            var result = await InstallerUtils.DownloadFileAsync(version.DownloadUrl, bufferStr, SetProgress);
+            if (result != null)
             {
-                dnResult = await InstallerUtils.DownloadFileAsync(x86 ? Config.DotnetRuntimeX86Download : Config.DotnetRuntimeX64Download, dnStr, SetProgress);
-                if (dnResult != null)
-                {
-                    onFinished?.Invoke("Failed to download the .NET Runtime: " + dnResult);
-                }
-            }
-
-            SetProgress(1, "Installing .NET 6.0");
-
-            await Process.Start(installerPath, "/install /passive /norestart").WaitForExitAsync();
-
-            File.Delete(installerPath);
-
-            if (!CheckDotnetInstalled(x86))
-            {
-                onFinished?.Invoke("Failed to install .NET Runtime. Make sure to give admin permissions if prompted.");
+                onFinished?.Invoke("Failed to download MelonLoader: " + result);
                 return;
             }
+            bufferStr.Seek(0, SeekOrigin.Begin);
 
             currentTask++;
         }
 
-        SetProgress(0, "Downloading MelonLoader " + version.VersionName);
-
-        using var bufferStr = new MemoryStream();
-        var result = await InstallerUtils.DownloadFileAsync(version.DownloadUrl, bufferStr, SetProgress);
-        if (result != null)
-        {
-            onFinished?.Invoke("Failed to download MelonLoader: " + result);
-            return;
-        }
-        bufferStr.Seek(0, SeekOrigin.Begin);
-
-        currentTask++;
-
-        SetProgress(0, "Installing MelonLoader " + version.VersionName);
+        SetProgress(0, "Installing " + version.VersionName);
 
         try
         {
-            using var zip = new ZipArchive(bufferStr, ZipArchiveMode.Read);
+            if (zip == null)
+            {
+                if (bufferStr != null)
+                {
+                    zip = new ZipArchive(bufferStr, ZipArchiveMode.Read);
+                }
+                else
+                {
+                    // This should never happen
+                    onFinished?.Invoke("Lemon?");
+                    return;
+                }
+            }
 
             var zipLength = zip.Entries.Count;
             for (var i = 0; i < zipLength; i++)
@@ -378,11 +398,57 @@ internal static class MLManager
             onFinished?.Invoke("Failed to install MelonLoader: Failed to extract all files.");
             return;
         }
+        finally
+        {
+            zip?.Dispose();
+        }
 
         Directory.CreateDirectory(Path.Combine(gameDir, "Mods"));
         Directory.CreateDirectory(Path.Combine(gameDir, "Plugins"));
         Directory.CreateDirectory(Path.Combine(gameDir, "UserData"));
         Directory.CreateDirectory(Path.Combine(gameDir, "UserLibs"));
+
+        if (!CheckDotnetInstalled(x86))
+        {
+            // Reset the entire progress bar
+            currentTask = 0;
+            tasks = 1;
+
+            SetProgress(0, "Downloading .NET 6.0");
+
+            var installerPath = Path.GetTempFileName() + ".exe";
+            using (var dnStr = File.Create(installerPath))
+            {
+                var dnResult = await InstallerUtils.DownloadFileAsync(x86 ? Config.DotnetRuntimeX86Download : Config.DotnetRuntimeX64Download, dnStr, SetProgress);
+                if (dnResult != null)
+                {
+                    onFinished?.Invoke("Failed to download the .NET Runtime: " + dnResult);
+                    return;
+                }
+            }
+
+            SetProgress(1, "Installing .NET 6.0");
+
+            try
+            {
+                await Process.Start(installerPath, "/install /passive /norestart").WaitForExitAsync();
+            }
+            catch (Exception ex)
+            {
+                onFinished?.Invoke("Failed to install .NET Runtime. " + ex.Message);
+                return;
+            }
+
+            File.Delete(installerPath);
+
+            if (!CheckDotnetInstalled(x86))
+            {
+                onFinished?.Invoke("Failed to install .NET Runtime. Make sure to give admin permissions if prompted.");
+                return;
+            }
+
+            currentTask++;
+        }
 
         onFinished?.Invoke(null);
     }

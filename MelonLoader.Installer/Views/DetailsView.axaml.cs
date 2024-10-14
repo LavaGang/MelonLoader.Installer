@@ -1,4 +1,5 @@
 using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
 using Avalonia.Threading;
@@ -10,6 +11,8 @@ namespace MelonLoader.Installer.Views;
 public partial class DetailsView : UserControl
 {
     public DetailsViewModel? Model => (DetailsViewModel?)DataContext;
+
+    private MLVersion zippedVersion;
 
     public DetailsView()
     {
@@ -68,6 +71,18 @@ public partial class DetailsView : UserControl
         var en = MLManager.Versions.Where(x => x.IsX86 == Model.Game.Is32Bit);
         if (NightlyCheck.IsChecked != true)
             en = en.Where(x => !x.IsArtifact);
+
+        if (zippedVersion.IsLocalZip)
+        {
+            if (File.Exists(zippedVersion.DownloadUrl))
+            {
+                en = en.Prepend(zippedVersion);
+            }
+            else
+            {
+                zippedVersion = default;
+            }
+        }
 
         VersionCombobox.ItemsSource = en;
         VersionCombobox.SelectedIndex = 0;
@@ -186,5 +201,39 @@ public partial class DetailsView : UserControl
         }
 
         Model.Game.ValidateGame();
+    }
+
+    private async void SelectZipHandler(object sender, TappedEventArgs args)
+    {
+        var topLevel = TopLevel.GetTopLevel(this)!;
+        var files = await topLevel.StorageProvider.OpenFilePickerAsync(new()
+        {
+            Title = "Select a zipped MelonLoader version...",
+            AllowMultiple = false,
+            FileTypeFilter =
+            [
+                new("ZIP Archive")
+                {
+                    Patterns = [ "*.zip" ]
+                }
+            ]
+        });
+
+        if (files.Count is 0 or > 1)
+            return;
+
+        var path = files[0].Path.LocalPath;
+
+        zippedVersion = new()
+        {
+            IsLocalZip = true,
+            VersionName = Path.GetFileName(path),
+            DownloadUrl = path,
+            Id = 0,
+            IsArtifact = false,
+            IsX86 = false
+        };
+
+        UpdateVersionList();
     }
 }
