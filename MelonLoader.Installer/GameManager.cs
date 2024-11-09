@@ -46,9 +46,14 @@ internal static class GameManager
 
     private static void AddGameSorted(GameModel game)
     {
+        var gameIsProt = game.IsProtected;
         var gameHasMl = game.MLVersion != null;
         for (var i = 0; i < Games.Count; i++)
         {
+            var iIsProt = Games[i].IsProtected;
+            if (gameIsProt && !iIsProt)
+                continue;
+
             var iHasMl = Games[i].MLVersion != null;
             if (gameHasMl && !iHasMl)
             {
@@ -142,7 +147,9 @@ internal static class GameManager
 
         icon ??= IconExtractor.GetExeIcon(exe);
 
-        var result = new GameModel(exe, customName ?? Path.GetFileNameWithoutExtension(exe), !is64, launcher, icon, mlVersion);
+        var isProtected = Directory.Exists(Path.Combine(path, "EasyAntiCheat"));
+
+        var result = new GameModel(exe, customName ?? Path.GetFileNameWithoutExtension(exe), !is64, launcher, icon, mlVersion, isProtected);
         errorMessage = null;
 
         AddGameSorted(result);

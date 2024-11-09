@@ -34,6 +34,11 @@ public partial class GameControl : UserControl
             LauncherIcon.Source = new Bitmap(AssetLoader.Open(new("avares://" + typeof(GameControl).Assembly.GetName().Name + Model.Launcher.IconPath)));
             LauncherIcon.IsVisible = true;
         }
+
+        if (Model.IsProtected)
+        {
+            ToolTip.SetTip(this, "This game contains anti-modding measures.");
+        }
     }
 
     public void ClickHandler(object sender, RoutedEventArgs args)

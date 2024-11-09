@@ -4,7 +4,7 @@ using Semver;
 
 namespace MelonLoader.Installer.ViewModels;
 
-public class GameModel(string path, string name, bool is32Bit, GameLauncher? launcher, Bitmap? icon, SemVersion? mlVersion) : ViewModelBase
+public class GameModel(string path, string name, bool is32Bit, GameLauncher? launcher, Bitmap? icon, SemVersion? mlVersion, bool isProtected) : ViewModelBase
 {
     public string Path => path;
     public string Name => name;
@@ -14,6 +14,7 @@ public class GameModel(string path, string name, bool is32Bit, GameLauncher? lau
     public string? MLVersionText => mlVersion != null ? 'v' + mlVersion.ToString() : null;
     public string MLStatusText => mlVersion == null ? "Not Installed" : "Installed " + MLVersionText;
     public bool MLInstalled => mlVersion != null;
+    public bool IsProtected => isProtected;
 
     public SemVersion? MLVersion
     {
