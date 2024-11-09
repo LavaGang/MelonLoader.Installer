@@ -24,7 +24,7 @@
         </StackPanel>
         <TextBlock Margin="0 20 0 0" HorizontalAlignment="Center" Grid.Row="1" Foreground="#7FFF"
             xml:space="preserve" TextAlignment="Center">To install MelonLoader, click on one of the games below.
-If it's not on the list, add it manually.</TextBlock>
+If you can't find your game on the list, add it manually.</TextBlock>
         <Border Grid.Row="2" Background="#3223" CornerRadius="8" Margin="0 10" ClipToBounds="True">
             <Grid>
                 <ScrollViewer>

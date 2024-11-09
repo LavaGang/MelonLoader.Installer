@@ -1,9 +1,10 @@
 ﻿using Avalonia.Media.Imaging;
 using MelonLoader.Installer.GameLaunchers;
+using Semver;
 
 namespace MelonLoader.Installer.ViewModels;
 
-public class GameModel(string path, string name, bool is32Bit, GameLauncher? launcher, Bitmap? icon, Version? mlVersion) : ViewModelBase
+public class GameModel(string path, string name, bool is32Bit, GameLauncher? launcher, Bitmap? icon, SemVersion? mlVersion) : ViewModelBase
 {
     public string Path => path;
     public string Name => name;
@@ -14,7 +15,7 @@ public class GameModel(string path, string name, bool is32Bit, GameLauncher? lau
     public string MLStatusText => mlVersion == null ? "Not Installed" : "Installed " + MLVersionText;
     public bool MLInstalled => mlVersion != null;
 
-    public Version? MLVersion
+    public SemVersion? MLVersion
     {
         get => mlVersion;
         set
@@ -39,7 +40,7 @@ public class GameModel(string path, string name, bool is32Bit, GameLauncher? lau
             return false;
         }
 
-        var newMlVersion = GameManager.GetMelonLoaderVersion(System.IO.Path.GetDirectoryName(path)!);
+        var newMlVersion = Installer.MLVersion.GetMelonLoaderVersion(System.IO.Path.GetDirectoryName(path)!);
         if (newMlVersion != MLVersion)
         {
             MLVersion = newMlVersion;

@@ -14,6 +14,7 @@ internal static class Config
     public static string InstallerLatestReleaseApi { get; private set; } = "https://api.github.com/repos/LavaGang/MelonLoader.Installer/releases/latest";
     public static string ConfigsDir { get; private set; } = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "MelonLoader Installer");
     public static string CacheDir { get; private set; } = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "MelonLoader Installer");
+    public static string LocalZipCache { get; private set; } = Path.Combine(CacheDir, "Local Build");
     public static string GameListPath { get; private set; } = Path.Combine(ConfigsDir, "games.txt");
 
     public static string[] LoadGameList()

@@ -3,9 +3,11 @@ using System.Diagnostics;
 
 namespace MelonLoader.Installer;
 
-internal class Program
+internal static class Program
 {
     private static FileStream processLock = null!;
+
+    public static event Action? Exiting;
 
     // Initialization code. Don't use any Avalonia, third-party APIs or any
     // SynchronizationContext-reliant code before AppMain is called: things aren't initialized
@@ -37,6 +39,8 @@ internal class Program
             MLManager.Init();
 
         BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
+
+        Exiting?.Invoke();
     }
 
     private static bool CheckProcessLock()

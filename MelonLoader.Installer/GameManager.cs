@@ -127,7 +127,7 @@ internal static class GameManager
             return null;
         }
 
-        var mlVersion = GetMelonLoaderVersion(path);
+        var mlVersion = MLVersion.GetMelonLoaderVersion(path);
 
         Bitmap? icon = null;
 
@@ -148,38 +148,5 @@ internal static class GameManager
         AddGameSorted(result);
 
         return result;
-    }
-
-    public static Version? GetMelonLoaderVersion(string gameDir)
-    {
-        var mlDir = Path.Combine(gameDir, "MelonLoader");
-        if (Directory.Exists(mlDir))
-        {
-            var mlAssemblyPath = Path.Combine(mlDir, "MelonLoader.dll");
-            if (!File.Exists(mlAssemblyPath))
-            {
-                mlAssemblyPath = Path.Combine(mlDir, "MelonLoader.ModHandler.dll");
-                if (!File.Exists(mlAssemblyPath))
-                {
-                    mlAssemblyPath = Path.Combine(mlDir, "net35", "MelonLoader.dll");
-                    if (!File.Exists(mlAssemblyPath))
-                    {
-                        mlAssemblyPath = Path.Combine(mlDir, "net6", "MelonLoader.dll");
-                        if (!File.Exists(mlAssemblyPath))
-                            mlAssemblyPath = null;
-                    }
-                }
-            }
-            if (mlAssemblyPath != null)
-            {
-                try
-                {
-                    return Version.Parse(System.Diagnostics.FileVersionInfo.GetVersionInfo(mlAssemblyPath).FileVersion!);
-                }
-                catch { }
-            }
-        }
-
-        return null;
     }
 }

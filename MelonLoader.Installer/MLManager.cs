@@ -1,6 +1,6 @@
-﻿using System.Diagnostics;
+﻿using Semver;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.IO.Compression;
 using System.Text.Json.Nodes;
 
 namespace MelonLoader.Installer;
@@ -8,32 +8,50 @@ namespace MelonLoader.Installer;
 internal static class MLManager
 {
     private static bool inited;
-    private static readonly string[] proxyNames = ["version", "winmm", "winhttp"];
+    internal static readonly string[] proxyNames = ["version", "winmm", "winhttp"];
 
-    public static MLVersion[] Versions { get; private set; } = [];
+    private static MLVersion? localBuild;
 
-    public static void Init()
+    public static List<MLVersion> Versions { get; private set; } = [];
+    public static bool Initialized { get; private set; }
+
+    static MLManager()
+    {
+        Program.Exiting += HandleExit;
+    }
+
+    private static void HandleExit()
+    {
+        if (Directory.Exists(Config.LocalZipCache))
+        {
+            try
+            {
+                Directory.Delete(Config.LocalZipCache, true);
+            }
+            catch { }
+        }
+    }
+
+    public static bool Init()
     {
         if (inited)
-            return;
+            return true;
 
         inited = RefreshVersions();
+        return inited;
     }
 
-    public static bool RefreshVersions()
+    private static bool RefreshVersions()
     {
-        var versions = GetVersionsAsync().GetAwaiter().GetResult();
-        if (versions == null)
-        {
-            Versions = [];
-            return false;
-        }
+        Versions.Clear();
 
-        Versions = [.. versions];
-        return true;
+        if (localBuild != null)
+            Versions.Add(localBuild);
+
+        return GetVersionsAsync(Versions).GetAwaiter().GetResult();
     }
 
-    private static async Task<List<MLVersion>?> GetVersionsAsync()
+    private static async Task<bool> GetVersionsAsync(List<MLVersion> versions)
     {
         HttpResponseMessage resp;
         try
@@ -42,30 +60,37 @@ internal static class MLManager
         }
         catch
         {
-            return null;
+            return false;
         }
 
         if (!resp.IsSuccessStatusCode)
-            return null;
+            return false;
 
         var relStr = await resp.Content.ReadAsStringAsync().ConfigureAwait(false);
         var runsJson = JsonNode.Parse(relStr)!["workflow_runs"]!.AsArray();
 
-        var versionsList = new List<MLVersion>();
-
+        // All run names must follow the following format: "{SemVersion} Remaining name"
         foreach (var run in runsJson)
         {
+            var runName = run!["name"]!.ToString();
+            var runVerEnd = runName.IndexOf(' ');
+            if (runVerEnd == -1)
+                continue;
+
+            if (!SemVersion.TryParse(runName[..runVerEnd], SemVersionStyles.Any, out var runVersion))
+                continue;
+
             try
             {
                 resp = await InstallerUtils.Http.GetAsync(run!["artifacts_url"]!.ToString()).ConfigureAwait(false);
             }
             catch
             {
-                return null;
+                return false;
             }
 
             if (!resp.IsSuccessStatusCode)
-                return null;
+                return false;
 
             relStr = await resp.Content.ReadAsStringAsync().ConfigureAwait(false);
             var artifactsJson = JsonNode.Parse(relStr)!["artifacts"]!.AsArray();
@@ -73,29 +98,17 @@ internal static class MLManager
             var art64 = artifactsJson.FirstOrDefault(x => x!["name"]!.ToString() == "MelonLoader.Windows.x64.CI.Release");
             var art86 = artifactsJson.FirstOrDefault(x => x!["name"]!.ToString() == "MelonLoader.Windows.x86.CI.Release");
 
-            if (art64 != null)
+            var version = new MLVersion()
             {
-                versionsList.Add(new()
-                {
-                    Id = (int)run["run_number"]!,
-                    VersionName = "Nightly #" + run["run_number"]!,
-                    IsArtifact = true,
-                    IsX86 = false,
-                    DownloadUrl = $"https://nightly.link/LavaGang/MelonLoader/suites/{run["id"]}/artifacts/{art64["id"]}"
-                });
-            }
+                Version = runVersion,
+                DownloadUrl = art64 != null ? $"https://nightly.link/LavaGang/MelonLoader/suites/{run["id"]}/artifacts/{art64["id"]}" : null,
+                DownloadX86Url = art86 != null ? $"https://nightly.link/LavaGang/MelonLoader/suites/{run["id"]}/artifacts/{art86["id"]}" : null
+            };
 
-            if (art86 != null)
-            {
-                versionsList.Add(new()
-                {
-                    Id = (int)run["run_number"]!,
-                    VersionName = "Nightly #" + run["run_number"]!,
-                    IsArtifact = true,
-                    IsX86 = true,
-                    DownloadUrl = $"https://nightly.link/LavaGang/MelonLoader/suites/{run["id"]}/artifacts/{art86["id"]}"
-                });
-            }
+            if (version.DownloadUrl == null && version.DownloadX86Url == null)
+                continue;
+
+            versions.Add(version);
         }
 
         try
@@ -104,54 +117,40 @@ internal static class MLManager
         }
         catch
         {
-            return null;
+            return false;
         }
 
         if (!resp.IsSuccessStatusCode)
-            return null;
+            return false;
 
         relStr = await resp.Content.ReadAsStringAsync().ConfigureAwait(false);
         var releasesJson = JsonNode.Parse(relStr)!.AsArray();
 
         foreach (var release in releasesJson)
         {
-            if (release == null || release["tag_name"] == null || release["assets"] == null || release["assets"]!.AsArray().Count == 0)
+            if (!SemVersion.TryParse(release!["tag_name"]!.ToString(), SemVersionStyles.Any, out var relVersion))
                 continue;
 
-            var versionName = release["tag_name"]!.ToString();
-
-            if (versionName.StartsWith("v0.1.") || versionName == "v0.2" || versionName.StartsWith("v0.2."))
+            if (relVersion.Major == 0 && relVersion.Minor <= 2)
                 continue;
 
             var x64Asset = release["assets"]!.AsArray().FirstOrDefault(x => x?["name"]?.ToString() == "MelonLoader.x64.zip");
             var x86Asset = release["assets"]!.AsArray().FirstOrDefault(x => x?["name"]?.ToString() == "MelonLoader.x86.zip");
 
-            if (x64Asset != null)
+            var version = new MLVersion()
             {
-                versionsList.Add(new()
-                {
-                    Id = (int)x64Asset["id"]!,
-                    VersionName = versionName,
-                    IsArtifact = false,
-                    IsX86 = false,
-                    DownloadUrl = x64Asset["browser_download_url"]!.ToString()
-                });
-            }
+                Version = relVersion,
+                DownloadUrl = x64Asset != null ? x64Asset["browser_download_url"]!.ToString() : null,
+                DownloadX86Url = x86Asset != null ? x86Asset["browser_download_url"]!.ToString() : null
+            };
 
-            if (x86Asset != null)
-            {
-                versionsList.Add(new()
-                {
-                    Id = (int)x86Asset["id"]!,
-                    VersionName = versionName,
-                    IsArtifact = false,
-                    IsX86 = true,
-                    DownloadUrl = x86Asset["browser_download_url"]!.ToString()
-                });
-            }
+            if (version.DownloadUrl == null && version.DownloadX86Url == null)
+                continue;
+
+            versions.Add(version);
         }
 
-        return versionsList;
+        return true;
     }
 
     public static bool Uninstall(string gameDir, bool removeUserFiles, [NotNullWhen(false)] out string? errorMessage)
@@ -288,67 +287,111 @@ internal static class MLManager
         return true;
     }
 
-    public static async Task InstallAsync(string gameDir, bool removeUserFiles, MLVersion version, bool x86, InstallProgressEventHandler? onProgress, InstallFinishedEventHandler? onFinished)
+    public static void SetLocalZip(string zipPath, InstallProgressEventHandler? onProgress, InstallFinishedEventHandler? onFinished)
     {
-        ZipArchive? zip = null;
-        if (version.IsLocalZip)
+        if (!File.Exists(zipPath))
         {
-            if (!File.Exists(version.DownloadUrl))
-            {
-                onFinished?.Invoke("The selected zip archive no longer exists!");
-                return;
-            }
+            onFinished?.Invoke("The selected zip file does not exist.");
+            return;
+        }
 
+        localBuild = null;
+        if (Versions.Count > 0 && Versions[0].IsLocalPath)
+            Versions.RemoveAt(0);
+
+        if (Directory.Exists(Config.LocalZipCache))
+        {
             try
             {
-                var zipStr = File.OpenRead(version.DownloadUrl);
-                zip ??= new ZipArchive(zipStr, ZipArchiveMode.Read);
-            }
-            catch (IOException)
-            {
-                onFinished?.Invoke("Failed to open the zip archive. Make sure the zip isn't being used by other programs.");
-                return;
+                Directory.Delete(Config.LocalZipCache, true);
             }
             catch
             {
-                onFinished?.Invoke("The selected zip archive contains invalid data.");
-                return;
-            }
-
-            if (!zip.Entries.Any(x => x.FullName.StartsWith("MelonLoader/")))
-            {
-                onFinished?.Invoke("The selected zip archive does not contain a valid MelonLoader build.");
-                zip.Dispose();
+                onFinished?.Invoke("Failed to remove the previously extracted zip data.");
                 return;
             }
         }
 
-        var tasks = 1;
-        var currentTask = 0;
+        onProgress?.Invoke(0, "Extracting local zip archive");
 
-        void SetProgress(double progress, string? newStatus = null)
+        using var zipStr = File.OpenRead(zipPath);
+        var extRes = InstallerUtils.Extract(zipStr, Config.LocalZipCache, onProgress);
+        if (extRes != null)
         {
-            onProgress?.Invoke(currentTask / (double)tasks + progress / tasks, newStatus);
+            onFinished?.Invoke(extRes);
+            return;
         }
 
-        SetProgress(0, "Uninstalling previous versions");
+        var mlVer = MLVersion.GetMelonLoaderVersion(Config.LocalZipCache, out var x86);
+        if (mlVer == null)
+        {
+            onFinished?.Invoke("The selected zip archive does not contain a valid MelonLoader build.");
+            return;
+        }
+
+        var version = new MLVersion()
+        {
+            Version = mlVer,
+            DownloadUrl = !x86 ? Config.LocalZipCache : null,
+            DownloadX86Url = x86 ? Config.LocalZipCache : null,
+            IsLocalPath = true
+        };
+
+        localBuild = version;
+        Versions.Insert(0, version);
+
+        onFinished?.Invoke(null);
+    }
+
+    public static async Task InstallAsync(string gameDir, bool removeUserFiles, MLVersion version, bool x86, InstallProgressEventHandler? onProgress, InstallFinishedEventHandler? onFinished)
+    {
+        var downloadUrl = x86 ? version.DownloadX86Url : version.DownloadUrl;
+        if (downloadUrl == null)
+        {
+            onFinished?.Invoke($"The selected version does not support the selected architecture: {(x86 ? "x86" : "x64")}");
+            return;
+        }
+
+        onProgress?.Invoke(0, "Uninstalling previous versions");
 
         if (!Uninstall(gameDir, removeUserFiles, out var error))
         {
             onFinished?.Invoke(error);
-            zip?.Dispose();
             return;
         }
 
-        MemoryStream? bufferStr = null;
-        if (zip == null)
+        if (version.IsLocalPath)
         {
-            tasks++;
+            if (!Directory.Exists(downloadUrl))
+            {
+                onFinished?.Invoke("The selected local build was not found.");
+                return;
+            }
 
-            SetProgress(0, "Downloading MelonLoader " + version.VersionName);
+            onProgress?.Invoke(0, "Copying extracted files");
 
-            bufferStr = new MemoryStream();
-            var result = await InstallerUtils.DownloadFileAsync(version.DownloadUrl, bufferStr, SetProgress);
+            foreach (var file in Directory.EnumerateFiles(downloadUrl, "*.*", SearchOption.AllDirectories))
+            {
+                var rel = Path.GetRelativePath(downloadUrl, file);
+                var dest = Path.Combine(gameDir, rel);
+                Directory.CreateDirectory(Path.GetDirectoryName(dest)!);
+                File.Copy(file, dest, true);
+            }
+        }
+        else
+        {
+            var tasks = 2;
+            var currentTask = 0;
+
+            void SetProgress(double progress, string? newStatus = null)
+            {
+                onProgress?.Invoke(currentTask / (double)tasks + progress / tasks, newStatus);
+            }
+
+            SetProgress(0, "Downloading MelonLoader " + version.ToString());
+
+            using var bufferStr = new MemoryStream();
+            var result = await InstallerUtils.DownloadFileAsync(downloadUrl, bufferStr, SetProgress);
             if (result != null)
             {
                 onFinished?.Invoke("Failed to download MelonLoader: " + result);
@@ -357,50 +400,15 @@ internal static class MLManager
             bufferStr.Seek(0, SeekOrigin.Begin);
 
             currentTask++;
-        }
 
-        SetProgress(0, "Installing " + version.VersionName);
+            SetProgress(0, "Installing " + version.ToString());
 
-        try
-        {
-            if (zip == null)
+            var extRes = InstallerUtils.Extract(bufferStr, gameDir, SetProgress);
+            if (extRes != null)
             {
-                if (bufferStr != null)
-                {
-                    zip = new ZipArchive(bufferStr, ZipArchiveMode.Read);
-                }
-                else
-                {
-                    // This should never happen
-                    onFinished?.Invoke("Lemon?");
-                    return;
-                }
+                onFinished?.Invoke(extRes);
+                return;
             }
-
-            var zipLength = zip.Entries.Count;
-            for (var i = 0; i < zipLength; i++)
-            {
-                var entry = zip.Entries[i];
-                var dest = Path.Combine(gameDir, entry.FullName);
-                Directory.CreateDirectory(Path.GetDirectoryName(dest)!);
-                entry.ExtractToFile(dest, true);
-
-                SetProgress(i / (double)(zipLength - 1));
-            }
-        }
-        catch (InvalidDataException)
-        {
-            onFinished?.Invoke("Failed to install MelonLoader: The downloaded data seems to be corrupt.");
-            return;
-        }
-        catch
-        {
-            onFinished?.Invoke("Failed to install MelonLoader: Failed to extract all files.");
-            return;
-        }
-        finally
-        {
-            zip?.Dispose();
         }
 
         Directory.CreateDirectory(Path.Combine(gameDir, "Mods"));
@@ -408,54 +416,6 @@ internal static class MLManager
         Directory.CreateDirectory(Path.Combine(gameDir, "UserData"));
         Directory.CreateDirectory(Path.Combine(gameDir, "UserLibs"));
 
-        if (!CheckDotnetInstalled(x86))
-        {
-            // Reset the entire progress bar
-            currentTask = 0;
-            tasks = 1;
-
-            SetProgress(0, "Downloading .NET 6.0");
-
-            var installerPath = Path.GetTempFileName() + ".exe";
-            using (var dnStr = File.Create(installerPath))
-            {
-                var dnResult = await InstallerUtils.DownloadFileAsync(x86 ? Config.DotnetRuntimeX86Download : Config.DotnetRuntimeX64Download, dnStr, SetProgress);
-                if (dnResult != null)
-                {
-                    onFinished?.Invoke("Failed to download the .NET Runtime: " + dnResult);
-                    return;
-                }
-            }
-
-            SetProgress(1, "Installing .NET 6.0");
-
-            try
-            {
-                await Process.Start(installerPath, "/install /passive /norestart").WaitForExitAsync();
-            }
-            catch (Exception ex)
-            {
-                onFinished?.Invoke("Failed to install .NET Runtime. " + ex.Message);
-                return;
-            }
-
-            File.Delete(installerPath);
-
-            if (!CheckDotnetInstalled(x86))
-            {
-                onFinished?.Invoke("Failed to install .NET Runtime. Make sure to give admin permissions if prompted.");
-                return;
-            }
-
-            currentTask++;
-        }
-
         onFinished?.Invoke(null);
-    }
-
-    private static bool CheckDotnetInstalled(bool x86)
-    {
-        var dotnetDir = $@"C:\Program Files{(x86 ? " (x86)" : string.Empty)}\dotnet\shared\Microsoft.NETCore.App";
-        return Directory.Exists(dotnetDir) && Directory.EnumerateDirectories(dotnetDir, "6.*").Any();
     }
 }

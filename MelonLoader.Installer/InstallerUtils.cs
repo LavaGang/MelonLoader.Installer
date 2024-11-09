@@ -1,4 +1,6 @@
-﻿namespace MelonLoader.Installer;
+﻿using System.IO.Compression;
+
+namespace MelonLoader.Installer;
 
 public static class InstallerUtils
 {
@@ -55,6 +57,41 @@ public static class InstallerUtils
             position += read;
 
             onProgress?.Invoke(position / (double)(destination.Length - 1), null);
+        }
+
+        return null;
+    }
+
+    public static string? Extract(Stream archiveStream, string destination, InstallProgressEventHandler? onProgress)
+    {
+        Directory.CreateDirectory(destination);
+
+        try
+        {
+            archiveStream.Seek(0, SeekOrigin.Begin);
+            using var zip = new ZipArchive(archiveStream, ZipArchiveMode.Read);
+
+            var zipLength = zip.Entries.Count;
+            for (var i = 0; i < zipLength; i++)
+            {
+                var entry = zip.Entries[i];
+                if (entry.FullName.EndsWith('/'))
+                    continue;
+
+                var dest = Path.Combine(destination, entry.FullName);
+                Directory.CreateDirectory(Path.GetDirectoryName(dest)!);
+                entry.ExtractToFile(dest, true);
+
+                onProgress?.Invoke(i / (double)(zipLength - 1), null);
+            }
+        }
+        catch (InvalidDataException)
+        {
+            return "Failed to extract MelonLoader: The downloaded data seems to be corrupt.";
+        }
+        catch
+        {
+            return "Failed to extract MelonLoader: Failed to extract all files.";
         }
 
         return null;

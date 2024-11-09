@@ -12,8 +12,6 @@ public partial class DetailsView : UserControl
 {
     public DetailsViewModel? Model => (DetailsViewModel?)DataContext;
 
-    private MLVersion zippedVersion;
-
     public DetailsView()
     {
         InitializeComponent();
@@ -48,8 +46,7 @@ public partial class DetailsView : UserControl
 
         UpdateVersionList();
 
-        MLManager.Init();
-        if (MLManager.Versions.Length == 0)
+        if (!MLManager.Init())
         {
             InstallButton.IsEnabled = false;
             NightlyCheck.IsEnabled = false;
@@ -68,21 +65,9 @@ public partial class DetailsView : UserControl
         if (Model == null)
             return;
 
-        var en = MLManager.Versions.Where(x => x.IsX86 == Model.Game.Is32Bit);
+        var en = MLManager.Versions.Where(x => (Model.Game.Is32Bit ? x.DownloadX86Url : x.DownloadUrl) != null);
         if (NightlyCheck.IsChecked != true)
-            en = en.Where(x => !x.IsArtifact);
-
-        if (zippedVersion.IsLocalZip)
-        {
-            if (File.Exists(zippedVersion.DownloadUrl))
-            {
-                en = en.Prepend(zippedVersion);
-            }
-            else
-            {
-                zippedVersion = default;
-            }
-        }
+            en = en.Where(x => !x.Version.IsPrerelease || x.IsLocalPath);
 
         VersionCombobox.ItemsSource = en;
         VersionCombobox.SelectedIndex = 0;
@@ -114,15 +99,7 @@ public partial class DetailsView : UserControl
             return;
         }
 
-        var versionName = ((MLVersion)VersionCombobox.SelectedItem).VersionName;
-        if (versionName.StartsWith('v'))
-            versionName = versionName[1..];
-
-        var comp = 1;
-        if (Version.TryParse(versionName, out var selVer))
-        {
-            comp = selVer.CompareTo(Model.Game.MLVersion);
-        }
+        var comp = ((MLVersion)VersionCombobox.SelectedItem).Version.ComparePrecedenceTo(Model.Game.MLVersion);
 
         InstallButton.Content = comp switch
         {
@@ -205,6 +182,9 @@ public partial class DetailsView : UserControl
 
     private async void SelectZipHandler(object sender, TappedEventArgs args)
     {
+        if (Model == null)
+            return;
+
         var topLevel = TopLevel.GetTopLevel(this)!;
         var files = await topLevel.StorageProvider.OpenFilePickerAsync(new()
         {
@@ -224,16 +204,25 @@ public partial class DetailsView : UserControl
 
         var path = files[0].Path.LocalPath;
 
-        zippedVersion = new()
-        {
-            IsLocalZip = true,
-            VersionName = Path.GetFileName(path),
-            DownloadUrl = path,
-            Id = 0,
-            IsArtifact = false,
-            IsX86 = false
-        };
+        Model.Installing = true;
+        NightlyCheck.IsEnabled = false;
+        VersionCombobox.IsEnabled = false;
 
-        UpdateVersionList();
+        _ = Task.Run(() => MLManager.SetLocalZip(path,
+            (progress, newStatus) => Dispatcher.UIThread.Post(() => OnInstallProgress(progress, newStatus)),
+            (errorMessage) => Dispatcher.UIThread.Post(() =>
+            {
+                if (errorMessage == null)
+                {
+                    var ver = MLManager.Versions[0];
+                    if ((Model.Game.Is32Bit ? ver.DownloadX86Url : ver.DownloadUrl) == null)
+                    {
+                        ErrorBox.Open($"The selected version does not support the architechture of the current game: {(Model.Game.Is32Bit ? "x86" : "x64")}");
+                    }
+                }
+
+                OnInstallFinished(errorMessage);
+                UpdateVersionList();
+            })));
     }
 }

@@ -1,4 +1,5 @@
 using Avalonia.Controls;
+using Avalonia.Interactivity;
 
 namespace MelonLoader.Installer.Views;
 
@@ -17,5 +18,10 @@ public partial class ErrorBox : Window
             box.ShowDialog(MainWindow.Instance);
         else
             box.Show();
+    }
+
+    private void OkHandler(object sender, RoutedEventArgs args)
+    {
+        Close();
     }
 }
