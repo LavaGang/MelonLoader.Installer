@@ -9,6 +9,8 @@ internal static class Program
 
     public static event Action? Exiting;
 
+    public static Version Version { get; private set; } = typeof(Program).Assembly.GetName().Version!;
+
     // Initialization code. Don't use any Avalonia, third-party APIs or any
     // SynchronizationContext-reliant code before AppMain is called: things aren't initialized
     // yet and stuff might break.
@@ -31,6 +33,9 @@ internal static class Program
                 Updater.WaitAndRemoveApp(args[1], pid);
             }
         }
+
+        if (Updater.CheckLegacyUpdate())
+            return;
 
         if (!CheckProcessLock())
             return;

@@ -6,5 +6,5 @@ public partial class MainViewModel : ViewModelBase
 {
     public ObservableCollection<GameModel> Games => GameManager.Games;
 
-    public string Version => 'v' + typeof(MainViewModel).Assembly.GetName().Version?.ToString(3);
+    public string Version => 'v' + Program.Version.ToString(3);
 }

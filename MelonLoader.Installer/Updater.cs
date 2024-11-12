@@ -39,15 +39,17 @@ public static class Updater
         if (prevPID == Environment.ProcessId || Path.GetFullPath(originalPath).Equals(Path.GetFullPath(Environment.ProcessPath!), StringComparison.OrdinalIgnoreCase))
             return false;
 
-        Process? prevProc = null;
-        try
+        if (prevPID != 0)
         {
-            prevProc = Process.GetProcessById(prevPID);
-        }
-        catch { }
+            try
+            {
+                var prevProc = Process.GetProcessById(prevPID);
 
-        if (prevProc != null && !prevProc.HasExited)
-            prevProc.WaitForExit();
+                if (!prevProc.HasExited)
+                    prevProc.WaitForExit();
+            }
+            catch { }
+        }
 
         try
         {
@@ -92,6 +94,23 @@ public static class Updater
         }
 
         Finish(null);
+    }
+
+    public static bool CheckLegacyUpdate()
+    {
+        if (!Environment.ProcessPath!.EndsWith(".tmp.exe", StringComparison.OrdinalIgnoreCase))
+            return false;
+
+        var dir = Path.GetDirectoryName(Environment.ProcessPath!)!;
+        var name = Path.GetFileNameWithoutExtension(Environment.ProcessPath!);
+        name = name.Remove(name.Length - 4) + ".exe";
+
+        var final = Path.Combine(dir, name);
+
+        var prevProc = Process.GetProcessesByName(name);
+
+        HandleUpdate(final, prevProc.FirstOrDefault()?.Id ?? 0);
+        return true;
     }
 
     private static async Task<string?> CheckForUpdateAsync()

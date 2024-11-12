@@ -19,7 +19,6 @@
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
 
-        <AssemblyName>MelonLoader Installer</AssemblyName>
         <Authors>Lava Gang</Authors>
         <Company>discord.gg/2Wn3N2P</Company>
 
