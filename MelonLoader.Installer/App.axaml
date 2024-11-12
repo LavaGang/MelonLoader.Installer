@@ -1,0 +1,22 @@
+<Application xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    x:Class="MelonLoader.Installer.App"
+    RequestedThemeVariant="Dark">
+
+    <Application.Styles>
+        <FluentTheme>
+            <FluentTheme.Palettes>
+                <ColorPaletteResources x:Key="Dark" BaseMediumLow="#57A7" Accent="#57A7">
+                </ColorPaletteResources>
+
+            </FluentTheme.Palettes>
+        </FluentTheme>
+        <Style Selector="Button,TextBox,ComboBox,ProgressBar">
+            <Setter Property="CornerRadius" Value="8" />
+            <Setter Property="Background" Value="#202030" />
+        </Style>
+        <Style Selector="ComboBox">
+            <Setter Property="BorderThickness" Value="0" />
+        </Style>
+    </Application.Styles>
+</Application>
