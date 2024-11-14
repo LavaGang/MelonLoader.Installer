@@ -12,10 +12,9 @@ internal static class Config
     public static string MelonLoaderReleaseDownload { get; private set; } = "https://github.com/LavaGang/MelonLoader/releases/download";
     public static string MelonLoaderBuildWorkflowApi { get; private set; } = "https://api.github.com/repos/LavaGang/MelonLoader/actions/workflows/5411546/runs?branch=alpha-development&event=push&status=success&per_page=5";
     public static string InstallerLatestReleaseApi { get; private set; } = "https://api.github.com/repos/LavaGang/MelonLoader.Installer/releases/latest";
-    public static string ConfigsDir { get; private set; } = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "MelonLoader Installer");
     public static string CacheDir { get; private set; } = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "MelonLoader Installer");
     public static string LocalZipCache { get; private set; } = Path.Combine(CacheDir, "Local Build");
-    public static string GameListPath { get; private set; } = Path.Combine(ConfigsDir, "games.txt");
+    public static string GameListPath { get; private set; } = Path.Combine(CacheDir, "games.txt");
 
     public static string[] LoadGameList()
     {
