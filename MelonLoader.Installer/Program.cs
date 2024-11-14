@@ -17,6 +17,9 @@ internal static class Program
     [STAThread]
     private static void Main(string[] args)
     {
+        if (!Directory.Exists(Config.CacheDir))
+            Directory.CreateDirectory(Config.CacheDir);
+
         if (args.Length >= 3)
         {
             if (!int.TryParse(args[2], out var pid))
@@ -68,18 +71,16 @@ internal static class Program
                         return false;
 
                     var procId = BitConverter.ToInt32(procIdRaw);
-
                     var proc = Process.GetProcessById(procId);
-                    WindowsUtils.ShowWindow(proc.MainWindowHandle, 1);
-                    WindowsUtils.SetForegroundWindow(proc.MainWindowHandle);
+                    if (proc != null)
+                    {
+                        GrabAttention(proc);
+                        return false;
+                    }
                 }
-                catch { }
-
-                return false;
+                catch { return false; }
             }
         }
-
-        Directory.CreateDirectory(Config.CacheDir);
 
         processLock = File.Create(lockFile);
         processLock.Write(BitConverter.GetBytes(Environment.ProcessId));
@@ -87,7 +88,20 @@ internal static class Program
         processLock.Dispose();
         processLock = File.OpenRead(lockFile);
 
+        GrabAttention();
+
         return true;
+    }
+
+    internal static void GrabAttention()
+        => GrabAttention(Process.GetCurrentProcess());
+    private static void GrabAttention(Process process)
+    {
+        nint processHandle = process.MainWindowHandle;
+        if (WindowsUtils.IsIconic(processHandle))
+            WindowsUtils.ShowWindow(processHandle, 9);
+        WindowsUtils.SetForegroundWindow(processHandle);
+        WindowsUtils.BringWindowToTop(processHandle);
     }
 
     // Avalonia configuration, don't remove; also used by visual designer.

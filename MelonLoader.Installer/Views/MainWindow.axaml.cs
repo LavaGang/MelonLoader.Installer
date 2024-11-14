@@ -12,6 +12,8 @@ public partial class MainWindow : Window
     {
         Instance = this;
 
+        Activated += new EventHandler(OnActivation);
+
         if (Updater.CurrentState != Updater.State.None)
             GameManager.Init();
 
@@ -43,6 +45,17 @@ public partial class MainWindow : Window
         }
 
         Close();
+    }
+
+    private static void OnActivation(object? sender, EventArgs e)
+    {
+        var window = sender as Window;
+        if (window == null)
+            return;
+        window.Topmost = true;
+        window.Topmost = false;
+        Program.GrabAttention();
+        window.Focus();
     }
 
     protected override void OnClosing(WindowClosingEventArgs e)

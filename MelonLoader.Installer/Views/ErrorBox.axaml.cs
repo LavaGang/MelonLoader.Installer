@@ -14,6 +14,12 @@ public partial class ErrorBox : Window
     {
         var box = new ErrorBox();
         box.Message.Text = message;
+        box.Topmost = true;
+        box.Topmost = false;
+
+        Program.GrabAttention();
+        box.Focus();
+
         if (MainWindow.Instance.IsVisible)
             box.ShowDialog(MainWindow.Instance);
         else
