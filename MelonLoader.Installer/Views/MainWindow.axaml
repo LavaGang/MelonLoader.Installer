@@ -12,6 +12,6 @@
     WindowStartupLocation="CenterScreen"
     Background="#121217"
     CanResize="False"
-    Padding="25">
-
+    Padding="25"
+    RenderOptions.BitmapInterpolationMode="HighQuality">
 </Window>

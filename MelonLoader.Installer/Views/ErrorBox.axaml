@@ -11,7 +11,8 @@
     CanResize="False"
     Padding="15"
     Height="100"
-    SizeToContent="WidthAndHeight">
+    SizeToContent="WidthAndHeight"
+    RenderOptions.BitmapInterpolationMode="HighQuality">
     <Grid ColumnDefinitions="50, 20, *" RowDefinitions="auto, auto">
         <Image Grid.Column="0" Grid.Row="0" Source="/Assets/error.png" />
         <TextBlock Name="Message" Grid.Column="2" VerticalAlignment="Center" FontSize="15" Text="2gfdfgdsaffsdfsdfsdf" />
