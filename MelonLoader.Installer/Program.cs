@@ -43,9 +43,6 @@ internal static class Program
         if (!CheckProcessLock())
             return;
 
-        if (!Updater.UpdateIfPossible())
-            MLManager.Init();
-
         BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
 
         Exiting?.Invoke();
@@ -95,11 +92,13 @@ internal static class Program
 
     internal static void GrabAttention()
         => GrabAttention(Process.GetCurrentProcess());
+
     private static void GrabAttention(Process process)
     {
-        nint processHandle = process.MainWindowHandle;
+        var processHandle = process.MainWindowHandle;
         if (WindowsUtils.IsIconic(processHandle))
             WindowsUtils.ShowWindow(processHandle, 9);
+
         WindowsUtils.SetForegroundWindow(processHandle);
         WindowsUtils.BringWindowToTop(processHandle);
     }
