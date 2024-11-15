@@ -14,9 +14,6 @@ public partial class MainWindow : Window
 
         Activated += new EventHandler(OnActivation);
 
-        if (Updater.CurrentState != Updater.State.None)
-            GameManager.Init();
-
         InitializeComponent();
 
         if (Updater.CurrentState == Updater.State.Updating)
@@ -68,8 +65,6 @@ public partial class MainWindow : Window
 
     public void ShowMainView()
     {
-        MLManager.Init();
-        GameManager.Init();
         Content = new MainView();
     }
 

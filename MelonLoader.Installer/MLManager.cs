@@ -13,7 +13,6 @@ internal static class MLManager
     private static MLVersion? localBuild;
 
     public static List<MLVersion> Versions { get; private set; } = [];
-    public static bool Initialized { get; private set; }
 
     static MLManager()
     {

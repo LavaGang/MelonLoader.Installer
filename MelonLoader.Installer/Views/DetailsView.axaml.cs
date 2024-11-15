@@ -48,9 +48,7 @@ public partial class DetailsView : UserControl
 
         if (!MLManager.Init())
         {
-            InstallButton.IsEnabled = false;
-            NightlyCheck.IsEnabled = false;
-            VersionCombobox.IsEnabled = false;
+            Model.Offline = true;
             ErrorBox.Open("Failed to fetch MelonLoader releases. Ensure you're online.");
         }
     }
@@ -91,6 +89,8 @@ public partial class DetailsView : UserControl
         if (Model == null || VersionCombobox.SelectedItem == null)
             return;
 
+        Model.Confirmation = false;
+
         MelonIcon.Opacity = Model.Game.MLInstalled ? 1 : 0.3;
 
         if (Model.Game.MLVersion == null)
@@ -99,7 +99,7 @@ public partial class DetailsView : UserControl
             return;
         }
 
-        var comp = ((MLVersion)VersionCombobox.SelectedItem).Version.ComparePrecedenceTo(Model.Game.MLVersion);
+        var comp = ((MLVersion)VersionCombobox.SelectedItem).Version.CompareSortOrderTo(Model.Game.MLVersion);
 
         InstallButton.Content = comp switch
         {
@@ -118,8 +118,6 @@ public partial class DetailsView : UserControl
         }
 
         Model.Installing = true;
-        NightlyCheck.IsEnabled = false;
-        VersionCombobox.IsEnabled = false;
 
         _ = MLManager.InstallAsync(Path.GetDirectoryName(Model.Game.Path)!, Model.Game.MLInstalled && !KeepFilesCheck.IsChecked!.Value,
             (MLVersion)VersionCombobox.SelectedItem!, Model.Game.Is32Bit,
@@ -141,16 +139,18 @@ public partial class DetailsView : UserControl
         if (Model == null)
             return;
 
-        Model.Installing = false;
-        NightlyCheck.IsEnabled = true;
-        VersionCombobox.IsEnabled = true;
-
         Model.Game.ValidateGame();
+
+        Model.Installing = false;
 
         if (errorMessage != null)
         {
             ErrorBox.Open(errorMessage);
+            return;
         }
+
+        InstallStatus.Text = "Done!";
+        Model.Confirmation = true;
     }
 
     private void OpenDirHandler(object sender, RoutedEventArgs args)
@@ -205,8 +205,6 @@ public partial class DetailsView : UserControl
         var path = files[0].Path.LocalPath;
 
         Model.Installing = true;
-        NightlyCheck.IsEnabled = false;
-        VersionCombobox.IsEnabled = false;
 
         _ = Task.Run(() => MLManager.SetLocalZip(path,
             (progress, newStatus) => Dispatcher.UIThread.Post(() => OnInstallProgress(progress, newStatus)),

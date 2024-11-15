@@ -1,14 +1,41 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Interactivity;
+using Avalonia.Threading;
+using MelonLoader.Installer.ViewModels;
 using System.Collections.Specialized;
 
 namespace MelonLoader.Installer.Views;
 
 public partial class MainView : UserControl
 {
+    public MainViewModel? Model => (MainViewModel?)DataContext;
+
     public MainView()
     {
         InitializeComponent();
+    }
+
+    protected override void OnDataContextChanged(EventArgs e)
+    {
+        base.OnDataContextChanged(e);
+
+        if (Model == null)
+            return;
+
+        Task.Run(InitServicesAsync);
+    }
+
+    private void InitServicesAsync()
+    {
+        MLManager.Init();
+        GameManager.Init();
+
+        Dispatcher.UIThread.Post(Init);
+    }
+
+    private void Init()
+    {
+        Model!.Ready = true;
 
         OnGameListUpdate(null, null);
         GameManager.Games.CollectionChanged += OnGameListUpdate;
