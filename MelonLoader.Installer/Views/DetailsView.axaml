@@ -3,8 +3,6 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="clr-namespace:MelonLoader.Installer.ViewModels"
-    xmlns:views="clr-namespace:MelonLoader.Installer.Views"
-    xmlns:root="clr-namespace:MelonLoader.Installer"
     mc:Ignorable="d" d:DesignWidth="450" d:DesignHeight="650"
     x:Class="MelonLoader.Installer.Views.DetailsView"
     x:DataType="vm:DetailsViewModel">

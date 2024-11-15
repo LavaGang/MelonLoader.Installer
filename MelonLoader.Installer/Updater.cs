@@ -87,11 +87,7 @@ public static class Updater
             }
         }
 
-        if (Process.Start(newPath, ["-handleupdate", Environment.ProcessPath!, Environment.ProcessId.ToString()]) == null)
-        {
-            Finish("Failed to start the new installer.");
-            return;
-        }
+        Process.Start(newPath, ["-handleupdate", Environment.ProcessPath!, Environment.ProcessId.ToString()]);
 
         Finish(null);
     }
@@ -101,8 +97,8 @@ public static class Updater
         if (!Environment.ProcessPath!.EndsWith(".tmp.exe", StringComparison.OrdinalIgnoreCase))
             return false;
 
-        var dir = Path.GetDirectoryName(Environment.ProcessPath!)!;
-        var name = Path.GetFileNameWithoutExtension(Environment.ProcessPath!);
+        var dir = Path.GetDirectoryName(Environment.ProcessPath)!;
+        var name = Path.GetFileNameWithoutExtension(Environment.ProcessPath);
         name = name.Remove(name.Length - 4) + ".exe";
 
         var final = Path.Combine(dir, name);

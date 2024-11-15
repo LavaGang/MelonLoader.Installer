@@ -81,7 +81,7 @@ internal static class MLManager
 
             try
             {
-                resp = await InstallerUtils.Http.GetAsync(run!["artifacts_url"]!.ToString()).ConfigureAwait(false);
+                resp = await InstallerUtils.Http.GetAsync(run["artifacts_url"]!.ToString()).ConfigureAwait(false);
             }
             catch
             {
@@ -387,7 +387,7 @@ internal static class MLManager
                 onProgress?.Invoke(currentTask / (double)tasks + progress / tasks, newStatus);
             }
 
-            SetProgress(0, "Downloading MelonLoader " + version.ToString());
+            SetProgress(0, "Downloading MelonLoader " + version);
 
             using var bufferStr = new MemoryStream();
             var result = await InstallerUtils.DownloadFileAsync(downloadUrl, bufferStr, SetProgress);
@@ -400,7 +400,7 @@ internal static class MLManager
 
             currentTask++;
 
-            SetProgress(0, "Installing " + version.ToString());
+            SetProgress(0, "Installing " + version);
 
             var extRes = InstallerUtils.Extract(bufferStr, gameDir, SetProgress);
             if (extRes != null)
