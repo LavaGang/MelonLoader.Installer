@@ -2,9 +2,6 @@ name: Build Installer Final
 
 run-name: Final Build
 
-env:
-  DEVVERSION: "4.0.0"
-
 on:
   push:
     branches: [ master ]
@@ -21,7 +18,7 @@ jobs:
           dotnet-version: 9.0.x
         
       - name: Build
-        run: dotnet publish -p:Version="${{ env.DEVVERSION }}"
+        run: dotnet publish
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
