@@ -139,6 +139,7 @@ public partial class DetailsView : UserControl
         if (Model == null)
             return;
 
+        bool wasReinstall = Model.Game.MLInstalled;
         Model.Game.ValidateGame();
 
         Model.Installing = false;
@@ -151,7 +152,7 @@ public partial class DetailsView : UserControl
             return;
         }
 
-        DialogBox.ShowNotice("SUCCESS!", $"MelonLoader v{((MLVersion)VersionCombobox.SelectedItem!).Version} was Installed Successfully!");
+        DialogBox.ShowNotice("SUCCESS!", $"{(wasReinstall ? "Reinstall" : "Install")} was Successful!");
     }
 
     private void OpenDirHandler(object sender, RoutedEventArgs args)
@@ -176,9 +177,12 @@ public partial class DetailsView : UserControl
         if (!MLManager.Uninstall(Path.GetDirectoryName(Model.Game.Path)!, !KeepFilesCheck.IsChecked!.Value, out var error))
         {
             DialogBox.ShowError(error);
+            Model.Game.ValidateGame();
+            return;
         }
 
         Model.Game.ValidateGame();
+        DialogBox.ShowNotice("SUCCESS!", "Uninstall was Successful!");
     }
 
     private async void SelectZipHandler(object sender, TappedEventArgs args)
