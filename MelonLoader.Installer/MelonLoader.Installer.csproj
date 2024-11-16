@@ -10,7 +10,7 @@
         <LangVersion>latest</LangVersion>
         <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
         <ApplicationIcon>Assets/icon.ico</ApplicationIcon>
-        <PublishDir>../Output/win-x64</PublishDir>
+        <PublishDir>../Output/$(RuntimeIdentifier)</PublishDir>
         <PublishSingleFile>true</PublishSingleFile>
         <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
         <DebugType>embedded</DebugType>
@@ -21,8 +21,6 @@
 
         <Authors>Lava Gang</Authors>
         <Company>discord.gg/2Wn3N2P</Company>
-
-        <Version>4.0.0</Version>
     </PropertyGroup>
 
     <ItemGroup>

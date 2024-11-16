@@ -1,0 +1,27 @@
+<Window xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    x:Class="MelonLoader.Installer.Views.DialogBox"
+    Title="NOTICE"
+    Icon="/Assets/icon.ico"
+    WindowStartupLocation="CenterScreen"
+    Background="#121217"
+    CanResize="False"
+    Padding="15"
+    Height="100"
+    SizeToContent="WidthAndHeight"
+    RenderOptions.BitmapInterpolationMode="HighQuality">
+    <Grid ColumnDefinitions="auto" RowDefinitions="60, 30, auto">
+        <Image Name="HeaderImage" Grid.Column="0" Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Center" Source="/Assets/icon.ico" />
+        <TextBlock Name="Message" Grid.Column="0" Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="15" Text="The quick brown fox jumps over the lazy dog" />
+		<Grid Name="NoticeGrid" Grid.Column="0" Grid.Row="2" VerticalAlignment="Bottom" HorizontalAlignment="Center" ColumnDefinitions="60, 60, 60" RowDefinitions="60">
+            <Button Name="OkButton" Grid.Column="1" Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Center" Click="ConfirmHandler">OK</Button>
+        </Grid>
+		<Grid Name="ConfirmationGrid" Grid.Column="0" Grid.Row="2" VerticalAlignment="Bottom" HorizontalAlignment="Center" ColumnDefinitions="60, 60" RowDefinitions="60" IsVisible="false">
+            <Button Name="CancelButton" Grid.Column="0" Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Center" Click="CancelHandler">NO</Button>
+            <Button Name="ConfirmButton" Grid.Column="1" Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Center" Click="ConfirmHandler">YES</Button>
+        </Grid>
+    </Grid>
+</Window>

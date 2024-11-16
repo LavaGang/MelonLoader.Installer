@@ -9,7 +9,10 @@ internal static class Program
 
     public static event Action? Exiting;
 
-    public static Version Version { get; private set; } = typeof(Program).Assembly.GetName().Version!;
+    public static Version Version { get; } = typeof(Program).Assembly.GetName().Version!;
+
+    public static string VersionName { get; } =
+        $"v{Version.Major}.{Version.Minor}.{Version.Build}{(Version.Revision > 0 ? $"-ci.{Version.Revision}" : string.Empty)}";
 
     // Initialization code. Don't use any Avalonia, third-party APIs or any
     // SynchronizationContext-reliant code before AppMain is called: things aren't initialized
@@ -69,11 +72,8 @@ internal static class Program
 
                     var procId = BitConverter.ToInt32(procIdRaw);
                     var proc = Process.GetProcessById(procId);
-                    if (proc != null)
-                    {
-                        GrabAttention(proc);
-                        return false;
-                    }
+                    GrabAttention(proc);
+                    return false;
                 }
                 catch { return false; }
             }
