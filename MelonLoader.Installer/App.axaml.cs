@@ -9,7 +9,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace MelonLoader.Installer;
 
-public partial class App : Application
+public class App : Application
 {
     public override void Initialize()
     {

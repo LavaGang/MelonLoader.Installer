@@ -14,7 +14,7 @@ public class DetailsViewModel(GameModel game) : ViewModelBase
         set
         {
             _installing = value;
-            OnPropertyChanged(nameof(Installing));
+            OnPropertyChanged();
             OnPropertyChanged(nameof(CanInstall));
             OnPropertyChanged(nameof(EnableSettings));
         }
@@ -26,7 +26,7 @@ public class DetailsViewModel(GameModel game) : ViewModelBase
         set
         {
             _confirmation = value;
-            OnPropertyChanged(nameof(Confirmation));
+            OnPropertyChanged();
             OnPropertyChanged(nameof(CanInstall));
         }
     }

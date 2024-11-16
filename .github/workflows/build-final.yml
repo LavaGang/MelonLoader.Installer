@@ -1,0 +1,27 @@
+name: Build Installer Final
+
+run-name: Final Build
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  build:
+    name: Build Installer
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 9.0.x
+        
+      - name: Build
+        run: dotnet publish
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: MelonLoader.Installer
+          path: Output/win-x64/

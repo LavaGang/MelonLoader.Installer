@@ -15,7 +15,7 @@
     </Design.DataContext>
 
     <Grid RowDefinitions="auto, auto, *, auto, auto">
-        <TextBlock Grid.Row="100" VerticalAlignment="Bottom" Foreground="Gray"
+        <TextBlock Grid.Row="4" VerticalAlignment="Bottom" Foreground="Gray"
             Text="{Binding Version}" />
 
         <StackPanel Grid.Row="0" Height="40" Orientation="Horizontal" HorizontalAlignment="Center">

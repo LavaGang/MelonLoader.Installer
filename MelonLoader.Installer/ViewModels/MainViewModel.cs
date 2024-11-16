@@ -2,7 +2,7 @@
 
 namespace MelonLoader.Installer.ViewModels;
 
-public partial class MainViewModel : ViewModelBase
+public class MainViewModel : ViewModelBase
 {
     private static bool _ready;
 
@@ -12,11 +12,11 @@ public partial class MainViewModel : ViewModelBase
         set
         {
             _ready = value;
-            OnPropertyChanged(nameof(Ready));
+            OnPropertyChanged();
         }
     }
 
     public ObservableCollection<GameModel> Games => GameManager.Games;
 
-    public string Version => 'v' + Program.Version.ToString(3);
+    public string Version => Program.VersionName;
 }

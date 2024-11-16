@@ -9,7 +9,7 @@ public partial class UpdaterView : UserControl
     {
         InitializeComponent();
 
-        Updater.Progress += (progress, newStatus) => Dispatcher.UIThread.Post(() => OnProgress(progress));
+        Updater.Progress += (progress, _) => Dispatcher.UIThread.Post(() => OnProgress(progress));
     }
 
     private void OnProgress(double progress)
