@@ -9,7 +9,7 @@ public static class InstallerUtils
     static InstallerUtils()
     {
         Http = new();
-        Http.DefaultRequestHeaders.Add("User-Agent", $"MelonLoader Installer v{Program.Version.ToString(3)}");
+        Http.DefaultRequestHeaders.Add("User-Agent", $"MelonLoader Installer v{Program.VersionName}");
     }
 
     public static async Task<string?> DownloadFileAsync(string url, Stream destination, InstallProgressEventHandler? onProgress)
