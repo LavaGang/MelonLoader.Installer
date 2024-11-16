@@ -22,7 +22,7 @@ public class GameModel(string path, string name, bool is32Bit, GameLauncher? lau
         set
         {
             mlVersion = value;
-            OnPropertyChanged(nameof(MLVersion));
+            OnPropertyChanged();
             OnPropertyChanged(nameof(MLVersionText));
             OnPropertyChanged(nameof(MLStatusText));
             OnPropertyChanged(nameof(MLInstalled));

@@ -1,0 +1,33 @@
+name: Build Installer
+
+run-name: 4.0.0-ci.${{ github.run_number }} | ${{ github.event_name != 'workflow_dispatch' && (github.event.head_commit.message || format('`[PR]` {0}', github.event.pull_request.title)) || 'Manual Build' }}
+
+env:
+  DEVVERSION: "4.0.0"
+
+on:
+  push:
+    branches: [ development ]
+  pull_request:
+    branches: [ development ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build Installer
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 9.0.x
+        
+      - name: Build
+        run: dotnet publish -p:Version="${{ env.DEVVERSION }}.${{ github.run_number }}"
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: MelonLoader.Installer
+          path: Output/win-x64/

@@ -69,7 +69,7 @@ public partial class MainView : UserControl
         GameManager.TryAddGame(path, null, null, null, out var error);
         if (error != null)
         {
-            ErrorBox.Open(error);
+            DialogBox.ShowError(error);
             return;
         }
 

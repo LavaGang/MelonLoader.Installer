@@ -3,8 +3,6 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="clr-namespace:MelonLoader.Installer.ViewModels"
-    xmlns:views="clr-namespace:MelonLoader.Installer.Views"
-    xmlns:root="clr-namespace:MelonLoader.Installer"
     mc:Ignorable="d" d:DesignWidth="450" d:DesignHeight="650"
     x:Class="MelonLoader.Installer.Views.DetailsView"
     x:DataType="vm:DetailsViewModel">
@@ -42,7 +40,7 @@
                 IsVisible="{Binding Game.MLInstalled}" IsChecked="True">Keep mods and settings</CheckBox>
         </StackPanel>
         <Grid Grid.Row="13" Margin="10" Width="300" HorizontalAlignment="Center">
-            <Grid IsVisible="{Binding CanInstall}" ColumnDefinitions="*, auto">
+            <Grid IsVisible="{Binding !Installing}" ColumnDefinitions="*, auto">
                 <Button Click="InstallHandler" IsEnabled="{Binding !Offline}" Name="InstallButton" Grid.Column="0"
                     HorizontalAlignment="Stretch" Background="#383" Height="40"
                     HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
@@ -52,7 +50,7 @@
                     Background="#833" Height="40" HorizontalContentAlignment="Center"
                     VerticalContentAlignment="Center" FontSize="18">Uninstall</Button>
             </Grid>
-            <Grid IsVisible="{Binding !CanInstall}">
+            <Grid IsVisible="{Binding Installing}">
                 <ProgressBar Name="Progress" Height="40" Background="#4383" Foreground="#383" />
                 <TextBlock Name="InstallStatus" HorizontalAlignment="Center"
                     VerticalAlignment="Center" Opacity="0.7" FontSize="14" />

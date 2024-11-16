@@ -12,7 +12,7 @@ public partial class MainWindow : Window
     {
         Instance = this;
 
-        Activated += new EventHandler(OnActivation);
+        Activated += OnActivation;
 
         InitializeComponent();
 
@@ -36,7 +36,7 @@ public partial class MainWindow : Window
     {
         if (errorMessage != null)
         {
-            ErrorBox.Open(errorMessage);
+            DialogBox.ShowError(errorMessage);
             ShowMainView();
             return;
         }
@@ -46,9 +46,9 @@ public partial class MainWindow : Window
 
     private static void OnActivation(object? sender, EventArgs e)
     {
-        var window = sender as Window;
-        if (window == null)
+        if (sender is not Window window)
             return;
+
         window.Topmost = true;
         window.Topmost = false;
         Program.GrabAttention();

@@ -49,7 +49,7 @@ public partial class DetailsView : UserControl
         if (!MLManager.Init())
         {
             Model.Offline = true;
-            ErrorBox.Open("Failed to fetch MelonLoader releases. Ensure you're online.");
+            DialogBox.ShowError("Failed to fetch MelonLoader releases. Ensure you're online.");
         }
     }
 
@@ -88,8 +88,6 @@ public partial class DetailsView : UserControl
     {
         if (Model == null || VersionCombobox.SelectedItem == null)
             return;
-
-        Model.Confirmation = false;
 
         MelonIcon.Opacity = Model.Game.MLInstalled ? 1 : 0.3;
 
@@ -139,18 +137,20 @@ public partial class DetailsView : UserControl
         if (Model == null)
             return;
 
+        var wasReinstall = Model.Game.MLInstalled;
         Model.Game.ValidateGame();
 
         Model.Installing = false;
+        NightlyCheck.IsEnabled = true;
+        VersionCombobox.IsEnabled = true;
 
         if (errorMessage != null)
         {
-            ErrorBox.Open(errorMessage);
+            DialogBox.ShowError(errorMessage);
             return;
         }
 
-        InstallStatus.Text = "Done!";
-        Model.Confirmation = true;
+        DialogBox.ShowNotice("Success!", $"{(wasReinstall ? "Reinstall" : "Install")} was Successful!");
     }
 
     private void OpenDirHandler(object sender, RoutedEventArgs args)
@@ -174,10 +174,13 @@ public partial class DetailsView : UserControl
 
         if (!MLManager.Uninstall(Path.GetDirectoryName(Model.Game.Path)!, !KeepFilesCheck.IsChecked!.Value, out var error))
         {
-            ErrorBox.Open(error);
+            DialogBox.ShowError(error);
+            Model.Game.ValidateGame();
+            return;
         }
 
         Model.Game.ValidateGame();
+        DialogBox.ShowNotice("Success!", "Uninstall was Successful!");
     }
 
     private async void SelectZipHandler(object sender, TappedEventArgs args)
@@ -215,7 +218,7 @@ public partial class DetailsView : UserControl
                     var ver = MLManager.Versions[0];
                     if ((Model.Game.Is32Bit ? ver.DownloadX86Url : ver.DownloadUrl) == null)
                     {
-                        ErrorBox.Open($"The selected version does not support the architechture of the current game: {(Model.Game.Is32Bit ? "x86" : "x64")}");
+                        DialogBox.ShowError($"The selected version does not support the architechture of the current game: {(Model.Game.Is32Bit ? "x86" : "x64")}");
                     }
                 }
 
