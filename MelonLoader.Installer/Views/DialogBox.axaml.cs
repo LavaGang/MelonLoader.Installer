@@ -19,14 +19,14 @@ public partial class DialogBox : Window
     public static void ShowError(string message)
     {
         DialogBox dialogBox = new DialogBox();
-        dialogBox.Title = "Error";
+        dialogBox.Title = "ERROR";
         dialogBox.Message.Text = message;
         dialogBox.HeaderImage.Source = ErrorIcon;
         dialogBox.Open();
     }
 
     public static void ShowNotice(string message)
-        => ShowNotice("Notice", message);
+        => ShowNotice("NOTICE", message);
     public static void ShowNotice(string title, string message)
     {
         DialogBox dialogBox = new DialogBox();
@@ -41,7 +41,7 @@ public partial class DialogBox : Window
         dCallback? onCancel = null,
         string confirmText = "YES",
         string cancelText = "NO")
-        => ShowConfirmation("Confirmation", 
+        => ShowConfirmation("CONFIRMATION", 
             message, 
             onConfirm, 
             onCancel, 

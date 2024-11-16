@@ -4,7 +4,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     x:Class="MelonLoader.Installer.Views.DialogBox"
-    Title="Notice"
+    Title="NOTICE"
     Icon="/Assets/icon.ico"
     WindowStartupLocation="CenterScreen"
     Background="#121217"
