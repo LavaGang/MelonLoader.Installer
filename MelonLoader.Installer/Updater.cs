@@ -13,6 +13,10 @@ public static class Updater
 
     public static bool UpdateIfPossible()
     {
+        // Don't auto-update on CI builds
+        if (Program.Version.Revision > 0)
+            return false;
+
         var downloadUrl = CheckForUpdateAsync().GetAwaiter().GetResult();
         if (downloadUrl == null)
             return false;
