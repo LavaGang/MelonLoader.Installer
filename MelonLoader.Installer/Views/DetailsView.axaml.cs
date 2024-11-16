@@ -89,8 +89,6 @@ public partial class DetailsView : UserControl
         if (Model == null || VersionCombobox.SelectedItem == null)
             return;
 
-        Model.Confirmation = false;
-
         MelonIcon.Opacity = Model.Game.MLInstalled ? 1 : 0.3;
 
         if (Model.Game.MLVersion == null)
@@ -139,7 +137,7 @@ public partial class DetailsView : UserControl
         if (Model == null)
             return;
 
-        bool wasReinstall = Model.Game.MLInstalled;
+        var wasReinstall = Model.Game.MLInstalled;
         Model.Game.ValidateGame();
 
         Model.Installing = false;
@@ -152,7 +150,7 @@ public partial class DetailsView : UserControl
             return;
         }
 
-        DialogBox.ShowNotice("SUCCESS!", $"{(wasReinstall ? "Reinstall" : "Install")} was Successful!");
+        DialogBox.ShowNotice("Success!", $"{(wasReinstall ? "Reinstall" : "Install")} was Successful!");
     }
 
     private void OpenDirHandler(object sender, RoutedEventArgs args)
@@ -182,7 +180,7 @@ public partial class DetailsView : UserControl
         }
 
         Model.Game.ValidateGame();
-        DialogBox.ShowNotice("SUCCESS!", "Uninstall was Successful!");
+        DialogBox.ShowNotice("Success!", "Uninstall was Successful!");
     }
 
     private async void SelectZipHandler(object sender, TappedEventArgs args)

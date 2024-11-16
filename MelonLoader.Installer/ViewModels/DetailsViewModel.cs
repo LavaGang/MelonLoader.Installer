@@ -3,7 +3,6 @@
 public class DetailsViewModel(GameModel game) : ViewModelBase
 {
     private bool _installing;
-    private bool _confirmation;
     private bool _offline;
 
     public GameModel Game => game;
@@ -15,19 +14,7 @@ public class DetailsViewModel(GameModel game) : ViewModelBase
         {
             _installing = value;
             OnPropertyChanged();
-            OnPropertyChanged(nameof(CanInstall));
             OnPropertyChanged(nameof(EnableSettings));
-        }
-    }
-
-    public bool Confirmation
-    {
-        get => _confirmation;
-        set
-        {
-            _confirmation = value;
-            OnPropertyChanged();
-            OnPropertyChanged(nameof(CanInstall));
         }
     }
 
@@ -37,11 +24,10 @@ public class DetailsViewModel(GameModel game) : ViewModelBase
         set
         {
             _offline = value;
-            OnPropertyChanged(nameof(Confirmation));
+            OnPropertyChanged();
             OnPropertyChanged(nameof(EnableSettings));
         }
     }
 
-    public bool CanInstall => !Installing && !Confirmation;
     public bool EnableSettings => !Offline && !Installing;
 }

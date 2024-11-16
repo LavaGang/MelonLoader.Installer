@@ -48,7 +48,7 @@ public partial class MainWindow : Window
     {
         if (sender is not Window window)
             return;
-        
+
         window.Topmost = true;
         window.Topmost = false;
         Program.GrabAttention();
