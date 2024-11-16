@@ -13,7 +13,7 @@
     Height="100"
     SizeToContent="WidthAndHeight"
     RenderOptions.BitmapInterpolationMode="HighQuality">
-    <Grid ColumnDefinitions="auto" RowDefinitions="60, 30, auto" ShowGridLines="True">
+    <Grid ColumnDefinitions="auto" RowDefinitions="60, 30, auto">
         <Image Name="HeaderImage" Grid.Column="0" Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Center" Source="/Assets/icon.ico" />
         <TextBlock Name="Message" Grid.Column="0" Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="15" Text="The quick brown fox jumps over the lazy dog" />
 		<Grid Name="NoticeGrid" Grid.Column="0" Grid.Row="2" VerticalAlignment="Bottom" HorizontalAlignment="Center" ColumnDefinitions="60, 60, 60" RowDefinitions="60">

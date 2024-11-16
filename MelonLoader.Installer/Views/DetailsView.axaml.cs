@@ -142,6 +142,8 @@ public partial class DetailsView : UserControl
         Model.Game.ValidateGame();
 
         Model.Installing = false;
+        NightlyCheck.IsEnabled = true;
+        VersionCombobox.IsEnabled = true;
 
         if (errorMessage != null)
         {
@@ -149,8 +151,7 @@ public partial class DetailsView : UserControl
             return;
         }
 
-        InstallStatus.Text = "Done!";
-        Model.Confirmation = true;
+        DialogBox.ShowNotice("SUCCESS!", $"MelonLoader v{((MLVersion)VersionCombobox.SelectedItem!).Version} was Installed Successfully!");
     }
 
     private void OpenDirHandler(object sender, RoutedEventArgs args)

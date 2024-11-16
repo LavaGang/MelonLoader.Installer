@@ -23,7 +23,7 @@ To install MelonLoader, click on the game you wish to mod. Next, select your pre
 Nightly builds are bleeding-edge builds, generated right after any changes are made to the project. They can be enabled with the switch under the version selection menu.
 
 ## Compilation
-The project can be compiled using the .NET 8.0 compiler.<br>
+The project can be compiled using the .NET 9.0 compiler.<br>
 To create a single-file build, use the `dotnet publish` command in the repository's root directory.
 
 ## LICENSING & CREDITS:
