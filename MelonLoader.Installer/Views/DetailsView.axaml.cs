@@ -49,7 +49,7 @@ public partial class DetailsView : UserControl
         if (!MLManager.Init())
         {
             Model.Offline = true;
-            ErrorBox.Open("Failed to fetch MelonLoader releases. Ensure you're online.");
+            DialogBox.ShowError("Failed to fetch MelonLoader releases. Ensure you're online.");
         }
     }
 
@@ -145,7 +145,7 @@ public partial class DetailsView : UserControl
 
         if (errorMessage != null)
         {
-            ErrorBox.Open(errorMessage);
+            DialogBox.ShowError(errorMessage);
             return;
         }
 
@@ -174,7 +174,7 @@ public partial class DetailsView : UserControl
 
         if (!MLManager.Uninstall(Path.GetDirectoryName(Model.Game.Path)!, !KeepFilesCheck.IsChecked!.Value, out var error))
         {
-            ErrorBox.Open(error);
+            DialogBox.ShowError(error);
         }
 
         Model.Game.ValidateGame();
@@ -215,7 +215,7 @@ public partial class DetailsView : UserControl
                     var ver = MLManager.Versions[0];
                     if ((Model.Game.Is32Bit ? ver.DownloadX86Url : ver.DownloadUrl) == null)
                     {
-                        ErrorBox.Open($"The selected version does not support the architechture of the current game: {(Model.Game.Is32Bit ? "x86" : "x64")}");
+                        DialogBox.ShowError($"The selected version does not support the architechture of the current game: {(Model.Game.Is32Bit ? "x86" : "x64")}");
                     }
                 }
 

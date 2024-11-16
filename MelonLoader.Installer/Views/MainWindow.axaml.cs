@@ -36,7 +36,7 @@ public partial class MainWindow : Window
     {
         if (errorMessage != null)
         {
-            ErrorBox.Open(errorMessage);
+            DialogBox.ShowError(errorMessage);
             ShowMainView();
             return;
         }
