@@ -18,9 +18,10 @@
             <Border Name="IconsPanel" IsVisible="False" Grid.Column="2" Background="#1AAA"
                 Padding="8 5" CornerRadius="8">
                 <StackPanel Orientation="Horizontal">
-                    <Image Name="LauncherIcon" IsVisible="False" />
-                    <Image Name="MLIcon" IsVisible="False" Margin="5 0" Source="/Assets/icon.ico" />
-                    <TextBlock FontSize="13" VerticalAlignment="Center"
+                    <Image Name="WineIcon" IsVisible="False" Margin="3 0" Source="/Assets/wine.png" />
+                    <Image Name="LauncherIcon" IsVisible="False" Margin="3 0" />
+                    <Image Name="MLIcon" IsVisible="False" Margin="3 0" Source="/Assets/icon.ico" />
+                    <TextBlock FontSize="13" VerticalAlignment="Center" Margin="3 0"
                         Text="{Binding MLVersionText}" />
                 </StackPanel>
             </Border>
