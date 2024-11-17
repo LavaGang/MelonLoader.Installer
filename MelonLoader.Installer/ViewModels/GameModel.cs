@@ -4,11 +4,12 @@ using Semver;
 
 namespace MelonLoader.Installer.ViewModels;
 
-public class GameModel(string path, string name, bool is32Bit, GameLauncher? launcher, Bitmap? icon, SemVersion? mlVersion, bool isProtected) : ViewModelBase
+public class GameModel(string path, string name, bool is32Bit, bool isLinux, GameLauncher? launcher, Bitmap? icon, SemVersion? mlVersion, bool isProtected) : ViewModelBase
 {
     public string Path => path;
     public string Name => name;
     public bool Is32Bit => is32Bit;
+    public bool IsLinux => isLinux;
     public GameLauncher? Launcher => launcher;
     public Bitmap? Icon => icon;
     public string? MLVersionText => mlVersion != null ? 'v' + mlVersion.ToString() : null;
@@ -35,18 +36,25 @@ public class GameModel(string path, string name, bool is32Bit, GameLauncher? lau
     /// <returns>True if the game still exists, otherwise false.</returns>
     public bool ValidateGame()
     {
-        if (!File.Exists(path) || !Directory.Exists(path[..^4] + "_Data"))
+        var exeExtIdx = path.LastIndexOf('.');
+        
+        var pathNoExt = exeExtIdx != -1 ? path[..exeExtIdx] : path;
+        
+        if (!File.Exists(path) || !Directory.Exists(pathNoExt + "_Data"))
         {
             GameManager.RemoveGame(this);
             return false;
         }
 
-        var newMlVersion = Installer.MLVersion.GetMelonLoaderVersion(System.IO.Path.GetDirectoryName(path)!);
-        if (newMlVersion != MLVersion)
-        {
-            MLVersion = newMlVersion;
-            GameManager.ResortGame(this);
-        }
+        var newMlVersion = Installer.MLVersion.GetMelonLoaderVersion(System.IO.Path.GetDirectoryName(path)!, out var ml86, out var mlLinux);
+        if (newMlVersion != null && (ml86 != Is32Bit || mlLinux != IsLinux))
+            newMlVersion = null;
+        
+        if (newMlVersion == MLVersion) 
+            return true;
+        
+        MLVersion = newMlVersion;
+        GameManager.ResortGame(this);
 
         return true;
     }

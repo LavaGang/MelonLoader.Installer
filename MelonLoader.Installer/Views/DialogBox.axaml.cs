@@ -90,7 +90,9 @@ public partial class DialogBox : Window
     {
         Topmost = true;
         Topmost = false;
+#if WINDOWS
         Program.GrabAttention();
+#endif
         Focus();
     }
 

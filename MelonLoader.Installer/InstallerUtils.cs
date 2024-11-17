@@ -4,7 +4,7 @@ namespace MelonLoader.Installer;
 
 public static class InstallerUtils
 {
-    public static HttpClient Http { get; private set; }
+    public static HttpClient Http { get; }
 
     static InstallerUtils()
     {

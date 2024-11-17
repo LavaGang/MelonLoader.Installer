@@ -10,12 +10,18 @@ public class SteamLauncher : GameLauncher
 
     static SteamLauncher()
     {
+#if WINDOWS
         var key = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\WOW6432Node\Valve\Steam");
         key ??= Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Valve\Steam");
 
         steamPath = (string?)key?.GetValue("InstallPath");
         if (steamPath != null && !Directory.Exists(steamPath))
             steamPath = null;
+#else
+        steamPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".steam", "steam");
+        if (!Directory.Exists(steamPath))
+            steamPath = null;
+#endif
     }
 
     internal SteamLauncher() : base("/Assets/steam.png") { }

@@ -1,18 +1,30 @@
 ﻿using Semver;
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Nodes;
+
+#if WINDOWS
+using System.Diagnostics;
+#endif
 
 namespace MelonLoader.Installer;
 
 internal static class MLManager
 {
     private static bool inited;
-    internal static readonly string[] proxyNames = ["version", "winmm", "winhttp"];
+    internal static readonly string[] proxyNames = 
+    [
+        "version.dll",
+        "winmm.dll",
+        "winhttp.dll",
+        "MelonBootstrap.so",
+        "version.so",
+        "winmm.so",
+        "winhttp.so"
+    ];
 
     private static MLVersion? localBuild;
 
-    public static List<MLVersion> Versions { get; private set; } = [];
+    public static List<MLVersion> Versions { get; } = [];
 
     static MLManager()
     {
@@ -96,15 +108,17 @@ internal static class MLManager
 
             var art64 = artifactsJson.FirstOrDefault(x => x!["name"]!.ToString() == "MelonLoader.Windows.x64.CI.Release");
             var art86 = artifactsJson.FirstOrDefault(x => x!["name"]!.ToString() == "MelonLoader.Windows.x86.CI.Release");
+            var art64Linux = artifactsJson.FirstOrDefault(x => x!["name"]!.ToString() == "MelonLoader.Linux.x64.CI.Release");
 
-            var version = new MLVersion()
+            var version = new MLVersion
             {
                 Version = runVersion,
-                DownloadUrl = art64 != null ? $"https://nightly.link/LavaGang/MelonLoader/suites/{run["id"]}/artifacts/{art64["id"]}" : null,
-                DownloadX86Url = art86 != null ? $"https://nightly.link/LavaGang/MelonLoader/suites/{run["id"]}/artifacts/{art86["id"]}" : null
+                DownloadUrlWin = art64 != null ? $"https://nightly.link/LavaGang/MelonLoader/suites/{run["id"]}/artifacts/{art64["id"]}" : null,
+                DownloadUrlWinX86 = art86 != null ? $"https://nightly.link/LavaGang/MelonLoader/suites/{run["id"]}/artifacts/{art86["id"]}" : null,
+                DownloadUrlLinux = art64Linux != null ? $"https://nightly.link/LavaGang/MelonLoader/suites/{run["id"]}/artifacts/{art64Linux["id"]}" : null
             };
 
-            if (version.DownloadUrl == null && version.DownloadX86Url == null)
+            if (version.DownloadUrlWin == null && version.DownloadUrlWinX86 == null && version.DownloadUrlLinux == null)
                 continue;
 
             versions.Add(version);
@@ -135,15 +149,17 @@ internal static class MLManager
 
             var x64Asset = release["assets"]!.AsArray().FirstOrDefault(x => x?["name"]?.ToString() == "MelonLoader.x64.zip");
             var x86Asset = release["assets"]!.AsArray().FirstOrDefault(x => x?["name"]?.ToString() == "MelonLoader.x86.zip");
+            var linuxAsset = release["assets"]!.AsArray().FirstOrDefault(x => x?["name"]?.ToString() == "MelonLoader.Linux.x64.zip");
 
-            var version = new MLVersion()
+            var version = new MLVersion
             {
                 Version = relVersion,
-                DownloadUrl = x64Asset != null ? x64Asset["browser_download_url"]!.ToString() : null,
-                DownloadX86Url = x86Asset != null ? x86Asset["browser_download_url"]!.ToString() : null
+                DownloadUrlWin = x64Asset != null ? x64Asset["browser_download_url"]!.ToString() : null,
+                DownloadUrlWinX86 = x86Asset != null ? x86Asset["browser_download_url"]!.ToString() : null,
+                DownloadUrlLinux = linuxAsset != null ? linuxAsset["browser_download_url"]!.ToString() : null
             };
 
-            if (version.DownloadUrl == null && version.DownloadX86Url == null)
+            if (version.DownloadUrlWin == null && version.DownloadUrlWinX86 == null && version.DownloadUrlLinux == null)
                 continue;
 
             versions.Add(version);
@@ -162,13 +178,15 @@ internal static class MLManager
 
         foreach (var proxy in proxyNames)
         {
-            var proxyPath = Path.Combine(gameDir, proxy + ".dll");
+            var proxyPath = Path.Combine(gameDir, proxy);
             if (!File.Exists(proxyPath))
                 continue;
 
+#if WINDOWS
             var versionInf = FileVersionInfo.GetVersionInfo(proxyPath);
             if (versionInf.LegalCopyright != null && versionInf.LegalCopyright.Contains("Microsoft"))
                 continue;
+#endif
 
             try
             {
@@ -321,7 +339,7 @@ internal static class MLManager
             return;
         }
 
-        var mlVer = MLVersion.GetMelonLoaderVersion(Config.LocalZipCache, out var x86);
+        var mlVer = MLVersion.GetMelonLoaderVersion(Config.LocalZipCache, out var x86, out var linux);
         if (mlVer == null)
         {
             onFinished?.Invoke("The selected zip archive does not contain a valid MelonLoader build.");
@@ -331,8 +349,9 @@ internal static class MLManager
         var version = new MLVersion()
         {
             Version = mlVer,
-            DownloadUrl = !x86 ? Config.LocalZipCache : null,
-            DownloadX86Url = x86 ? Config.LocalZipCache : null,
+            DownloadUrlWin = !linux ? (!x86 ? Config.LocalZipCache : null) : null,
+            DownloadUrlWinX86 = !linux ? (x86 ? Config.LocalZipCache : null) : null,
+            DownloadUrlLinux = linux ? Config.LocalZipCache : null,
             IsLocalPath = true
         };
 
@@ -342,12 +361,12 @@ internal static class MLManager
         onFinished?.Invoke(null);
     }
 
-    public static async Task InstallAsync(string gameDir, bool removeUserFiles, MLVersion version, bool x86, InstallProgressEventHandler? onProgress, InstallFinishedEventHandler? onFinished)
+    public static async Task InstallAsync(string gameDir, bool removeUserFiles, MLVersion version, bool linux, bool x86, InstallProgressEventHandler? onProgress, InstallFinishedEventHandler? onFinished)
     {
-        var downloadUrl = x86 ? version.DownloadX86Url : version.DownloadUrl;
+        var downloadUrl = linux ? (!x86 ? version.DownloadUrlLinux : null) : (x86 ? version.DownloadUrlWinX86 : version.DownloadUrlWin);
         if (downloadUrl == null)
         {
-            onFinished?.Invoke($"The selected version does not support the selected architecture: {(x86 ? "x86" : "x64")}");
+            onFinished?.Invoke($"The selected version does not support the selected architecture: {(linux ? "linux" : "win")}-{(x86 ? "x86" : "x64")}");
             return;
         }
 

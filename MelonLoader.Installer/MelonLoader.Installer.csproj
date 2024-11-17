@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <OutputType>WinExe</OutputType>
-        <TargetFramework>net9.0-windows</TargetFramework>
-        <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+        <TargetFramework>net9.0</TargetFramework>
+        <RuntimeIdentifiers>win-x64;linux-x64</RuntimeIdentifiers>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
         <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
@@ -21,6 +21,15 @@
 
         <Authors>Lava Gang</Authors>
         <Company>discord.gg/2Wn3N2P</Company>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(RuntimeIdentifier.StartsWith(`win-`))' == 'true'">
+        <DefineConstants>$(DefineConstants);WINDOWS</DefineConstants>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(RuntimeIdentifier.StartsWith(`linux-`))' == 'true'">
+        <DefineConstants>$(DefineConstants);LINUX</DefineConstants>
+        <AssemblyName>MelonLoader.Installer.Linux</AssemblyName>
     </PropertyGroup>
 
     <ItemGroup>

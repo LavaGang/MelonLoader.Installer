@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿#if WINDOWS
+using System.Drawing;
 
 namespace MelonLoader.Installer;
 
@@ -24,3 +25,4 @@ internal class IconExtractor
         }
     }
 }
+#endif

@@ -1,4 +1,5 @@
-﻿using Microsoft.Win32;
+﻿#if WINDOWS
+using Microsoft.Win32;
 
 namespace MelonLoader.Installer.GameLaunchers;
 
@@ -35,3 +36,4 @@ public class GogLauncher : GameLauncher
         }
     }
 }
+#endif

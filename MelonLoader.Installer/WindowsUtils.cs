@@ -1,4 +1,5 @@
-﻿using System.Runtime.InteropServices;
+﻿#if WINDOWS
+using System.Runtime.InteropServices;
 
 namespace MelonLoader.Installer;
 
@@ -19,3 +20,4 @@ internal static partial class WindowsUtils
     [return: MarshalAs(UnmanagedType.Bool)]
     internal static partial bool BringWindowToTop(nint hWnd);
 }
+#endif

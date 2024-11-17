@@ -11,7 +11,7 @@ internal static class GameManager
 {
     private static bool inited;
 
-    public static ObservableCollection<GameModel> Games { get; private set; } = [];
+    public static ObservableCollection<GameModel> Games { get; } = [];
 
     public static void Init()
     {
@@ -100,19 +100,31 @@ internal static class GameManager
 
         path = Path.GetFullPath(path);
 
-        var dataDirs = Directory.GetDirectories(path, "*_Data").Where(x => File.Exists(x[..^5] + ".exe"));
-        if (!dataDirs.Any())
+        var linux = false;
+
+        var rawDataDirs = Directory.GetDirectories(path, "*_Data");
+        var dataDirs = rawDataDirs.Where(x => File.Exists(x[..^5] + ".exe")).ToArray();
+        if (dataDirs.Length == 0)
         {
-            errorMessage = "The selected directory does not contain a Unity game.";
-            return null;
+            dataDirs = rawDataDirs.Where(x => File.Exists(x[..^5] + ".x86_64")).ToArray();
+            if (dataDirs.Length != 0)
+            {
+                linux = true;
+            }
+            else
+            {
+                errorMessage = "The selected directory does not contain a Unity game.";
+                return null;
+            }
         }
-        if (dataDirs.Count() > 1)
+        
+        if (dataDirs.Length > 1)
         {
             errorMessage = "The selected directory contains multiple Unity games?";
             return null;
         }
 
-        var exe = dataDirs.First()[..^5] + ".exe";
+        var exe = dataDirs[0][..^5] + (linux ? ".x86_64" : ".exe");
 
         if (Games.Any(x => x.Path.Equals(exe, StringComparison.OrdinalIgnoreCase)))
         {
@@ -120,19 +132,24 @@ internal static class GameManager
             return null;
         }
 
-        bool is64;
-        try
+        var is64 = true;
+        if (!linux)
         {
-            using var pe = new PEReader(File.OpenRead(exe));
-            is64 = pe.PEHeaders.CoffHeader.Machine == Machine.Amd64;
-        }
-        catch
-        {
-            errorMessage = "The game executable is invalid (possibly corrupted).";
-            return null;
+            try
+            {
+                using var pe = new PEReader(File.OpenRead(exe));
+                is64 = pe.PEHeaders.CoffHeader.Machine == Machine.Amd64;
+            }
+            catch
+            {
+                errorMessage = "The game executable is invalid (possibly corrupted).";
+                return null;
+            }
         }
 
-        var mlVersion = MLVersion.GetMelonLoaderVersion(path);
+        var mlVersion = MLVersion.GetMelonLoaderVersion(path, out var ml86, out var mlLinux);
+        if (mlVersion != null && (is64 == ml86 || linux != mlLinux))
+            mlVersion = null;
 
         Bitmap? icon = null;
 
@@ -145,11 +162,14 @@ internal static class GameManager
             catch { }
         }
 
-        icon ??= IconExtractor.GetExeIcon(exe);
+#if WINDOWS
+        if (!linux)
+            icon ??= IconExtractor.GetExeIcon(exe);
+#endif
 
         var isProtected = Directory.Exists(Path.Combine(path, "EasyAntiCheat"));
 
-        var result = new GameModel(exe, customName ?? Path.GetFileNameWithoutExtension(exe), !is64, launcher, icon, mlVersion, isProtected);
+        var result = new GameModel(exe, customName ?? Path.GetFileNameWithoutExtension(exe), !is64, linux, launcher, icon, mlVersion, isProtected);
         errorMessage = null;
 
         AddGameSorted(result);

@@ -6,13 +6,17 @@ namespace MelonLoader.Installer;
 
 public class MLVersion
 {
-    public string? DownloadUrl { get; init; }
-    public string? DownloadX86Url { get; init; }
+    public string? DownloadUrlWin { get; init; }
+    public string? DownloadUrlWinX86 { get; init; }
+    public string? DownloadUrlLinux { get; init; }
     public required SemVersion Version { get; init; }
     public bool IsLocalPath { get; init; }
 
-    public static SemVersion? GetMelonLoaderVersion(string gameDir)
+    public static SemVersion? GetMelonLoaderVersion(string gameDir, out bool x86, out bool linux)
     {
+        x86 = false;
+        linux = false;
+        
         var mlDir = Path.Combine(gameDir, "MelonLoader");
         if (!Directory.Exists(mlDir))
             return null;
@@ -35,40 +39,41 @@ public class MLVersion
         if (mlAssemblyPath == null)
             return null;
 
+        SemVersion version;
         try
         {
             var fileVersionRaw = FileVersionInfo.GetVersionInfo(mlAssemblyPath).FileVersion!;
             var fileVersion = System.Version.Parse(fileVersionRaw);
-            return SemVersion.ParsedFrom(fileVersion.Major, fileVersion.Minor, fileVersion.Build, fileVersion.Revision == 0 ? string.Empty : $"ci.{fileVersion.Revision}");
+            version = SemVersion.ParsedFrom(fileVersion.Major, fileVersion.Minor, fileVersion.Build,
+                fileVersion.Revision == 0 ? string.Empty : $"ci.{fileVersion.Revision}");
         }
-        catch { }
-
-        return null;
-    }
-
-    public static SemVersion? GetMelonLoaderVersion(string gameDir, out bool x86)
-    {
-        x86 = false;
-        var ver = GetMelonLoaderVersion(gameDir);
-        if (ver == null)
+        catch
+        {
             return null;
+        }
 
-        var proxyPath = MLManager.proxyNames.FirstOrDefault(x => File.Exists(Path.Combine(gameDir, x + ".dll")));
+        var proxyPath = MLManager.proxyNames.FirstOrDefault(x => File.Exists(Path.Combine(gameDir, x)));
         if (proxyPath == null)
             return null;
 
-        proxyPath = Path.Combine(gameDir, proxyPath + ".dll");
+        proxyPath = Path.Combine(gameDir, proxyPath);
+
+        linux = proxyPath.EndsWith(".so");
+
+        if (linux)
+            return version;
 
         try
         {
             using var proxyStr = File.OpenRead(proxyPath);
             var pe = new PEReader(proxyStr);
             x86 = pe.PEHeaders.CoffHeader.Machine != Machine.Amd64;
-            return ver;
+            return version;
         }
-        catch { }
-
-        return null;
+        catch
+        {
+            return null;
+        }
     }
 
     public override string ToString()

@@ -51,13 +51,15 @@ public partial class MainWindow : Window
 
         window.Topmost = true;
         window.Topmost = false;
+#if WINDOWS
         Program.GrabAttention();
+#endif
         window.Focus();
     }
 
     protected override void OnClosing(WindowClosingEventArgs e)
     {
-        if (Updater.CurrentState == Updater.State.Updating || (Content is DetailsView view && view.Model != null && view.Model.Installing))
+        if (Updater.CurrentState == Updater.State.Updating || Content is DetailsView { Model.Installing: true })
             e.Cancel = true;
 
         base.OnClosing(e);

@@ -22,12 +22,24 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 9.0.x
-        
-      - name: Build
-        run: dotnet publish -p:Version="${{ env.DEVVERSION }}.${{ github.run_number }}"
 
-      - name: Upload Artifact
+      - name: Restore Dependencies
+        run: dotnet restore
+        
+      - name: Build for Windows
+        run: dotnet publish --no-restore -r win-x64 -p:Version="${{ env.DEVVERSION }}.${{ github.run_number }}"
+
+      - name: Upload Artifact for Windows
         uses: actions/upload-artifact@v4
         with:
           name: MelonLoader.Installer
           path: Output/win-x64/
+        
+      - name: Build for Linux
+        run: dotnet publish --no-restore -r linux-x64 -p:Version="${{ env.DEVVERSION }}.${{ github.run_number }}"
+
+      - name: Upload Artifact for Linux
+        uses: actions/upload-artifact@v4
+        with:
+          name: MelonLoader.Installer.Linux
+          path: Output/linux-x64/

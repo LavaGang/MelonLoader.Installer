@@ -1,5 +1,8 @@
 ﻿using Avalonia;
+
+#if WINDOWS
 using System.Diagnostics;
+#endif
 
 namespace MelonLoader.Installer;
 
@@ -40,8 +43,10 @@ internal static class Program
             }
         }
 
+#if WINDOWS
         if (Updater.CheckLegacyUpdate())
             return;
+#endif
 
         if (!CheckProcessLock())
             return;
@@ -65,6 +70,7 @@ internal static class Program
             }
             catch
             {
+#if WINDOWS
                 try
                 {
                     // Try to set focus on the existing instance.
@@ -78,6 +84,9 @@ internal static class Program
                     return false;
                 }
                 catch { return false; }
+#else
+                return false;
+#endif
             }
         }
 
@@ -87,11 +96,14 @@ internal static class Program
         processLock.Dispose();
         processLock = File.OpenRead(lockFile);
 
+#if WINDOWS
         GrabAttention();
+#endif
 
         return true;
     }
 
+#if WINDOWS
     internal static void GrabAttention()
         => GrabAttention(Process.GetCurrentProcess());
 
@@ -104,6 +116,7 @@ internal static class Program
         WindowsUtils.SetForegroundWindow(processHandle);
         WindowsUtils.BringWindowToTop(processHandle);*/
     }
+#endif
 
     // Avalonia configuration, don't remove; also used by visual designer.
     public static AppBuilder BuildAvaloniaApp()

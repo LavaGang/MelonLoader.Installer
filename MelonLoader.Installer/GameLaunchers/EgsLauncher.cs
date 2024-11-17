@@ -1,4 +1,5 @@
-﻿using Microsoft.Win32;
+﻿#if WINDOWS
+using Microsoft.Win32;
 using System.Text.Json.Nodes;
 
 namespace MelonLoader.Installer.GameLaunchers;
@@ -39,3 +40,4 @@ public class EgsLauncher : GameLauncher
         }
     }
 }
+#endif

@@ -63,7 +63,7 @@ public partial class DetailsView : UserControl
         if (Model == null)
             return;
 
-        var en = MLManager.Versions.Where(x => (Model.Game.Is32Bit ? x.DownloadX86Url : x.DownloadUrl) != null);
+        var en = MLManager.Versions.Where(x => (Model.Game.IsLinux ? x.DownloadUrlLinux : (Model.Game.Is32Bit ? x.DownloadUrlWinX86 : x.DownloadUrlWin)) != null);
         if (NightlyCheck.IsChecked != true)
             en = en.Where(x => !x.Version.IsPrerelease || x.IsLocalPath);
 
@@ -73,7 +73,7 @@ public partial class DetailsView : UserControl
 
     private void BackClickHandler(object sender, RoutedEventArgs args)
     {
-        if (Model != null && Model.Installing)
+        if (Model is { Installing: true })
             return;
 
         MainWindow.Instance.ShowMainView();
@@ -118,7 +118,7 @@ public partial class DetailsView : UserControl
         Model.Installing = true;
 
         _ = MLManager.InstallAsync(Path.GetDirectoryName(Model.Game.Path)!, Model.Game.MLInstalled && !KeepFilesCheck.IsChecked!.Value,
-            (MLVersion)VersionCombobox.SelectedItem!, Model.Game.Is32Bit,
+            (MLVersion)VersionCombobox.SelectedItem!, Model.Game.IsLinux, Model.Game.Is32Bit,
             (progress, newStatus) => Dispatcher.UIThread.Post(() => OnInstallProgress(progress, newStatus)),
             (errorMessage) => Dispatcher.UIThread.Post(() => OnInstallFinished(errorMessage)));
     }
@@ -216,9 +216,9 @@ public partial class DetailsView : UserControl
                 if (errorMessage == null)
                 {
                     var ver = MLManager.Versions[0];
-                    if ((Model.Game.Is32Bit ? ver.DownloadX86Url : ver.DownloadUrl) == null)
+                    if ((Model.Game.IsLinux ? ver.DownloadUrlLinux : (Model.Game.Is32Bit ? ver.DownloadUrlWinX86 : ver.DownloadUrlWin)) == null)
                     {
-                        DialogBox.ShowError($"The selected version does not support the architechture of the current game: {(Model.Game.Is32Bit ? "x86" : "x64")}");
+                        DialogBox.ShowError($"The selected version does not support the architechture of the current game: {(Model.Game.IsLinux ? "linux" : "win")}-{(Model.Game.Is32Bit ? "x86" : "x64")}");
                     }
                 }
 
