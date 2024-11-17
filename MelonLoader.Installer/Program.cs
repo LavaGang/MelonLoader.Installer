@@ -1,14 +1,12 @@
 ﻿using Avalonia;
-
-#if WINDOWS
 using System.Diagnostics;
-#endif
 
 namespace MelonLoader.Installer;
 
 internal static class Program
 {
     private static FileStream processLock = null!;
+    private static readonly string processLockPath = Path.Combine(Config.CacheDir, "process.lock");
 
     public static event Action? Exiting;
 
@@ -56,25 +54,27 @@ internal static class Program
         BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
 
         Exiting?.Invoke();
+        
+        processLock.Dispose();
+        File.Delete(processLockPath);
     }
 
     private static bool CheckProcessLock()
     {
-        var lockFile = Path.Combine(Config.CacheDir, "process.lock");
-        if (File.Exists(lockFile))
+        if (File.Exists(processLockPath))
         {
+#if WINDOWS
             // Try to delete the lock. It will fail if it's used by another instance.
             try
             {
-                File.Delete(lockFile);
+                File.Delete(processLockPath);
             }
             catch
             {
-#if WINDOWS
                 try
                 {
                     // Try to set focus on the existing instance.
-                    var procIdRaw = File.ReadAllBytes(lockFile);
+                    var procIdRaw = File.ReadAllBytes(processLockPath);
                     if (procIdRaw.Length != sizeof(int))
                         return false;
 
@@ -83,18 +83,30 @@ internal static class Program
                     GrabAttention(proc);
                     return false;
                 }
-                catch { return false; }
-#else
-                return false;
-#endif
+                catch 
+                {
+                    return false; 
+                }
             }
+#else
+            var procIdRaw = File.ReadAllBytes(processLockPath);
+            if (procIdRaw.Length == sizeof(int))
+            {
+                var procId = BitConverter.ToInt32(procIdRaw);
+
+                try
+                {
+                    Process.GetProcessById(procId);
+                    return false;
+                }
+                catch { }
+            }
+#endif
         }
 
-        processLock = File.Create(lockFile);
+        processLock = File.Open(processLockPath, FileMode.Create, FileAccess.Write, FileShare.Read);
         processLock.Write(BitConverter.GetBytes(Environment.ProcessId));
         processLock.Flush();
-        processLock.Dispose();
-        processLock = File.OpenRead(lockFile);
 
 #if WINDOWS
         GrabAttention();
