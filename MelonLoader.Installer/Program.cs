@@ -46,6 +46,8 @@ internal static class Program
         if (!CheckProcessLock())
             return;
 
+        Updater.UpdateIfPossible();
+
         BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
 
         Exiting?.Invoke();
@@ -95,12 +97,12 @@ internal static class Program
 
     private static void GrabAttention(Process process)
     {
-        var processHandle = process.MainWindowHandle;
+        /*var processHandle = process.MainWindowHandle;
         if (WindowsUtils.IsIconic(processHandle))
             WindowsUtils.ShowWindow(processHandle, 9);
 
         WindowsUtils.SetForegroundWindow(processHandle);
-        WindowsUtils.BringWindowToTop(processHandle);
+        WindowsUtils.BringWindowToTop(processHandle);*/
     }
 
     // Avalonia configuration, don't remove; also used by visual designer.
