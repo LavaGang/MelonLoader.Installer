@@ -1,6 +1,9 @@
 <Project>
     <PropertyGroup>
         <Version>4.1.0</Version>
+        <TargetFrameworks>net9.0;net9.0-windows</TargetFrameworks>
+        <TargetFramework Condition="'$(RuntimeIdentifier.StartsWith(`win-`))' != 'true'">net9.0</TargetFramework>
+        <TargetFramework Condition="'$(RuntimeIdentifier.StartsWith(`win-`))' == 'true'">net9.0-windows</TargetFramework>
 
         <!-- Sets the default identifiers. They can be overridden -->
         <RuntimeIdentifier Condition="'$([MSBuild]::IsOSUnixLike())' == 'false'">win-x64</RuntimeIdentifier>
