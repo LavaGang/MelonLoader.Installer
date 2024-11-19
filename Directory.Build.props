@@ -2,6 +2,12 @@
     <PropertyGroup>
         <Version>4.1.0</Version>
 
+        <!-- Sets the default identifiers. They can be overridden -->
+        <RuntimeIdentifier Condition="'$([MSBuild]::IsOSUnixLike())' == 'false'">win-x64</RuntimeIdentifier>
+        <RuntimeIdentifier Condition="'$([MSBuild]::IsOSUnixLike())' == 'true'">linux-x64</RuntimeIdentifier>
+
+        <RuntimeIdentifiers>win-x64;linux-x64</RuntimeIdentifiers>
+
         <Nullable>enable</Nullable>
         <AvaloniaVersion>11.2.1</AvaloniaVersion>
     </PropertyGroup>
