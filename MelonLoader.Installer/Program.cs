@@ -21,6 +21,8 @@ internal static class Program
     [STAThread]
     private static void Main(string[] args)
     {
+        SetupCrashLogging();
+        
         if (!Directory.Exists(Config.CacheDir))
             Directory.CreateDirectory(Config.CacheDir);
 
@@ -57,6 +59,30 @@ internal static class Program
         
         processLock.Dispose();
         File.Delete(processLockPath);
+    }
+
+    private static void SetupCrashLogging()
+    {
+        AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
+    }
+
+    private static void OnUnhandledException(object sender, UnhandledExceptionEventArgs e)
+    {
+        if (!e.IsTerminating)
+            return;
+        
+        if (e.ExceptionObject is Exception ex)
+            LogCrashException(ex);
+    }
+
+    public static void LogCrashException(Exception ex)
+    {
+        try
+        {
+            var logPath = Path.Combine(Path.GetDirectoryName(Environment.ProcessPath)!, "melonloader-installer-crash.log");
+            File.WriteAllText(logPath, ex.ToString());
+        }
+        catch { }
     }
 
     private static bool CheckProcessLock()

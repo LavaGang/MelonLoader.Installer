@@ -12,7 +12,14 @@ public partial class DialogBox : Window
     public DialogBox()
         => InitializeComponent();
 
-    public static void ShowError(string message)
+    protected override void OnClosed(EventArgs e)
+    {
+        base.OnClosed(e);
+        
+        OnCancel?.Invoke();
+    }
+
+    public static void ShowError(string message, Action? onClose = null)
     {
         new DialogBox
         {
@@ -21,7 +28,8 @@ public partial class DialogBox : Window
             {
                 Message = message,
                 IsError = true
-            }
+            },
+            OnCancel = onClose
         }.Open();
     }
 
@@ -98,13 +106,17 @@ public partial class DialogBox : Window
 
     private void ConfirmHandler(object sender, RoutedEventArgs args)
     {
-        Close();
         OnConfirm?.Invoke();
+        OnConfirm = null;
+        OnCancel = null;
+        Close();
     }
 
     private void CancelHandler(object sender, RoutedEventArgs args)
     {
-        Close();
         OnCancel?.Invoke();
+        OnConfirm = null;
+        OnCancel = null;
+        Close();
     }
 }

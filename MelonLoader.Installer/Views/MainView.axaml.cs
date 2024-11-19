@@ -27,10 +27,29 @@ public partial class MainView : UserControl
 
     private void InitServicesAsync()
     {
-        MLManager.Init();
-        GameManager.Init();
+        try
+        {
+            MLManager.Init();
+            GameManager.Init();
+        }
+        catch (Exception ex)
+        {
+            Dispatcher.UIThread.Post(() => CrashException(ex));
+            return;
+        }
 
         Dispatcher.UIThread.Post(Init);
+    }
+
+    private void CrashException(Exception ex)
+    {
+        Program.LogCrashException(ex);
+
+        DialogBox.ShowError("""
+                            An error has occurred while loading the game library!
+                            Please report this issue in the official Discord server in the #ml-support channel.
+                            Include the crash log named 'melonloader-installer-crash.log', located next to the executable.
+                            """, () => MainWindow.Instance.Close());
     }
 
     private void Init()
