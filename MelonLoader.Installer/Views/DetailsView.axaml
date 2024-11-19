@@ -6,17 +6,19 @@
     mc:Ignorable="d" d:DesignWidth="450" d:DesignHeight="650"
     x:Class="MelonLoader.Installer.Views.DetailsView"
     x:DataType="vm:DetailsViewModel">
-    <Grid RowDefinitions="auto, *, 80, 60, auto, *, 80, auto, 2*, auto, auto, 30, 70, auto, *">
+    <Grid RowDefinitions="Auto, *">
         <Button Grid.Row="0" IsEnabled="{Binding !Installing}" Click="BackClickHandler"
-            FontSize="20" Background="Transparent" Content="←" FontWeight="Bold" Foreground="Gray"
-            HorizontalContentAlignment="Center" />
+                FontSize="20" Background="Transparent" Content="←" FontWeight="Bold" Foreground="Gray"
+                HorizontalContentAlignment="Center" />
+        
+        <Grid Grid.Row="1" RowDefinitions="auto, *, 80, 60, auto, *, 80, auto, 2*, auto, auto, 30, 70, auto, auto, *" IsVisible="{Binding !LinuxInstructions}">
         <Border Grid.Row="2" ClipToBounds="True" CornerRadius="20" HorizontalAlignment="Center">
             <Image Source="{Binding Game.Icon}" />
         </Border>
         <TextBlock Grid.Row="3" HorizontalAlignment="Center" VerticalAlignment="Center"
             FontSize="22" Text="{Binding Game.Name}" />
         <Grid Grid.Row="4" ColumnDefinitions="*, auto">
-            <TextBox Grid.Column="0" Foreground="Gray" Text="{Binding Game.Path}" IsReadOnly="True"
+            <TextBox Grid.Column="0" Foreground="Gray" Text="{Binding Game.Dir}" IsReadOnly="True"
                 Focusable="False" SelectionBrush="#222" Background="Transparent" BorderThickness="0" />
             <Button Click="OpenDirHandler" Grid.Column="1" Margin="3">📂</Button>
         </Grid>
@@ -55,6 +57,27 @@
                 <TextBlock Name="InstallStatus" HorizontalAlignment="Center"
                     VerticalAlignment="Center" Opacity="0.7" FontSize="14" />
             </Grid>
+        </Grid>
+        
+        <TextBlock Name="ShowLinuxInstructions" Grid.Row="14" Tapped="ShowLinuxInstructionsHandler" HorizontalAlignment="Center" Foreground="Gray" TextDecorations="Underline" FontSize="13" Cursor="Hand">
+            How do I start MelonLoader?
+        </TextBlock>
+    </Grid>
+        <Grid Grid.Row="1" Margin="30" RowDefinitions="auto, *" IsVisible="{Binding LinuxInstructions}">
+            <TextBlock Grid.Row="0" FontSize="25" Margin="0 0 0 20">Linux Launch Instructions</TextBlock>
+                    <StackPanel Orientation="Vertical" IsVisible="{Binding !Game.IsLinux}" Grid.Row="1">
+                        <TextBlock TextWrapping="Wrap">In order to start MelonLoader under Wine, you'll need to export the following variable:</TextBlock>
+                        <TextBox Margin="0 4 0 10" BorderBrush="Transparent" IsReadOnly="True">WINEDLLOVERRIDES="version=n,b"</TextBox>
+                        <TextBlock TextWrapping="Wrap">On Steam, you can set the launch options to:</TextBlock>
+                        <TextBox Margin="0 4 0 10" BorderBrush="Transparent" IsReadOnly="True">WINEDLLOVERRIDES="version=n,b" %command%"</TextBox>
+                    </StackPanel>
+                    <StackPanel Orientation="Vertical" IsVisible="{Binding Game.IsLinux}" Grid.Row="1">
+                        <TextBlock TextWrapping="Wrap">In order to start MelonLoader, you'll need to export the following variables:</TextBlock>
+                        <TextBox Name="LdLibPathVar" Margin="0 4 0 0" BorderBrush="Transparent" IsReadOnly="True"/>
+                        <TextBox Name="LdPreloadVar" Margin="0 4 0 10" BorderBrush="Transparent" IsReadOnly="True">LD_PRELOAD="libversion.so"</TextBox>
+                        <TextBlock TextWrapping="Wrap">On Steam, you can set the launch options to:</TextBlock>
+                        <TextBox Name="SteamLaunchOptions" Margin="0 4 0 10" BorderBrush="Transparent" IsReadOnly="True"/>
+                    </StackPanel>
         </Grid>
     </Grid>
 </UserControl>

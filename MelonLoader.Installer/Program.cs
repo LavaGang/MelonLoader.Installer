@@ -21,8 +21,6 @@ internal static class Program
     [STAThread]
     private static void Main(string[] args)
     {
-        SetupCrashLogging();
-        
         if (!Directory.Exists(Config.CacheDir))
             Directory.CreateDirectory(Config.CacheDir);
 
@@ -53,26 +51,19 @@ internal static class Program
 
         Updater.UpdateIfPossible();
 
-        BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
+        try
+        {
+            BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
+        }
+        catch (Exception ex)
+        {
+            LogCrashException(ex);
+        }
 
         Exiting?.Invoke();
         
         processLock.Dispose();
         File.Delete(processLockPath);
-    }
-
-    private static void SetupCrashLogging()
-    {
-        AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
-    }
-
-    private static void OnUnhandledException(object sender, UnhandledExceptionEventArgs e)
-    {
-        if (!e.IsTerminating)
-            return;
-        
-        if (e.ExceptionObject is Exception ex and not TaskCanceledException)
-            LogCrashException(ex);
     }
 
     public static void LogCrashException(Exception ex)

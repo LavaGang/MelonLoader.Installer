@@ -16,6 +16,7 @@ public class GameModel(string path, string name, bool is32Bit, bool isLinux, Gam
     public string MLStatusText => mlVersion == null ? "Not Installed" : "Installed " + MLVersionText;
     public bool MLInstalled => mlVersion != null;
     public bool IsProtected => isProtected;
+    public string Dir { get; } = System.IO.Path.GetDirectoryName(path)!;
 
     public SemVersion? MLVersion
     {
@@ -46,7 +47,7 @@ public class GameModel(string path, string name, bool is32Bit, bool isLinux, Gam
             return false;
         }
 
-        var newMlVersion = Installer.MLVersion.GetMelonLoaderVersion(System.IO.Path.GetDirectoryName(path)!, out var ml86, out var mlLinux);
+        var newMlVersion = Installer.MLVersion.GetMelonLoaderVersion(Dir, out var ml86, out var mlLinux);
         if (newMlVersion != null && (ml86 != Is32Bit || mlLinux != IsLinux))
             newMlVersion = null;
         

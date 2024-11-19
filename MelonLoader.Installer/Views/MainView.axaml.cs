@@ -22,6 +22,8 @@ public partial class MainView : UserControl
         if (Model == null)
             return;
 
+        Model.Ready = false;
+
         Task.Run(InitServicesAsync);
     }
 

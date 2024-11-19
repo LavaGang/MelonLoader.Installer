@@ -18,5 +18,8 @@
         <Style Selector="ComboBox">
             <Setter Property="BorderThickness" Value="0" />
         </Style>
+        <Style Selector="TextBox">
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+        </Style>
     </Application.Styles>
 </Application>

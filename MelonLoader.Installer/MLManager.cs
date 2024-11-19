@@ -168,12 +168,11 @@ internal static class MLManager
         return true;
     }
 
-    public static bool Uninstall(string gameDir, bool removeUserFiles, [NotNullWhen(false)] out string? errorMessage)
+    public static string? Uninstall(string gameDir, bool removeUserFiles)
     {
         if (!Directory.Exists(gameDir))
         {
-            errorMessage = "The provided directory does not exist.";
-            return false;
+            return "The provided directory does not exist.";
         }
 
         foreach (var proxy in proxyNames)
@@ -194,8 +193,7 @@ internal static class MLManager
             }
             catch
             {
-                errorMessage = "Failed to uninstall MelonLoader. Ensure that the game is fully closed before trying again.";
-                return false;
+                return "Failed to uninstall MelonLoader. Ensure that the game is fully closed before trying again.";
             }
         }
 
@@ -208,8 +206,7 @@ internal static class MLManager
             }
             catch
             {
-                errorMessage = "Failed to uninstall MelonLoader. Ensure that the game is fully closed before trying again.";
-                return false;
+                return "Failed to uninstall MelonLoader. Ensure that the game is fully closed before trying again.";
             }
         }
 
@@ -222,8 +219,7 @@ internal static class MLManager
             }
             catch
             {
-                errorMessage = $"Failed to fully uninstall MelonLoader: Failed to remove dobby.";
-                return false;
+                return "Failed to fully uninstall MelonLoader: Failed to remove dobby.";
             }
         }
 
@@ -236,8 +232,7 @@ internal static class MLManager
             }
             catch
             {
-                errorMessage = $"Failed to fully uninstall MelonLoader: Failed to remove 'NOTICE.txt'.";
-                return false;
+                return "Failed to fully uninstall MelonLoader: Failed to remove 'NOTICE.txt'.";
             }
         }
 
@@ -252,8 +247,7 @@ internal static class MLManager
                 }
                 catch
                 {
-                    errorMessage = $"Failed to fully uninstall MelonLoader: Failed to remove the Mods folder.";
-                    return false;
+                    return "Failed to fully uninstall MelonLoader: Failed to remove the Mods folder.";
                 }
             }
 
@@ -266,8 +260,7 @@ internal static class MLManager
                 }
                 catch
                 {
-                    errorMessage = $"Failed to fully uninstall MelonLoader: Failed to remove the Plugins folder.";
-                    return false;
+                    return "Failed to fully uninstall MelonLoader: Failed to remove the Plugins folder.";
                 }
             }
 
@@ -280,8 +273,7 @@ internal static class MLManager
                 }
                 catch
                 {
-                    errorMessage = $"Failed to fully uninstall MelonLoader: Failed to remove the UserData folder.";
-                    return false;
+                    return "Failed to fully uninstall MelonLoader: Failed to remove the UserData folder.";
                 }
             }
 
@@ -294,14 +286,12 @@ internal static class MLManager
                 }
                 catch
                 {
-                    errorMessage = $"Failed to fully uninstall MelonLoader: Failed to remove the UserLibs folder.";
-                    return false;
+                    return "Failed to fully uninstall MelonLoader: Failed to remove the UserLibs folder.";
                 }
             }
         }
 
-        errorMessage = null;
-        return true;
+        return null;
     }
 
     public static void SetLocalZip(string zipPath, InstallProgressEventHandler? onProgress, InstallFinishedEventHandler? onFinished)
@@ -372,9 +362,10 @@ internal static class MLManager
 
         onProgress?.Invoke(0, "Uninstalling previous versions");
 
-        if (!Uninstall(gameDir, removeUserFiles, out var error))
+        var unErr = Uninstall(gameDir, removeUserFiles);
+        if (unErr != null)
         {
-            onFinished?.Invoke(error);
+            onFinished?.Invoke(unErr);
             return;
         }
 

@@ -4,6 +4,7 @@ public class DetailsViewModel(GameModel game) : ViewModelBase
 {
     private bool _installing;
     private bool _offline;
+    private bool _linuxInstructions;
 
     public GameModel Game => game;
 
@@ -26,6 +27,16 @@ public class DetailsViewModel(GameModel game) : ViewModelBase
             _offline = value;
             OnPropertyChanged();
             OnPropertyChanged(nameof(EnableSettings));
+        }
+    }
+
+    public bool LinuxInstructions
+    {
+        get => _linuxInstructions;
+        set
+        {
+            _linuxInstructions = value;
+            OnPropertyChanged();
         }
     }
 
