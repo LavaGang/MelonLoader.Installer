@@ -138,12 +138,12 @@ internal static class Program
 
     private static void GrabAttention(Process process)
     {
-        /*var processHandle = process.MainWindowHandle;
+        var processHandle = process.MainWindowHandle;
         if (WindowsUtils.IsIconic(processHandle))
             WindowsUtils.ShowWindow(processHandle, 9);
 
         WindowsUtils.SetForegroundWindow(processHandle);
-        WindowsUtils.BringWindowToTop(processHandle);*/
+        WindowsUtils.BringWindowToTop(processHandle);
     }
 #endif
 
