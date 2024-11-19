@@ -1,9 +1,10 @@
 ﻿using System.Diagnostics;
+using System.Runtime.InteropServices;
 using System.Text.Json.Nodes;
 
 namespace MelonLoader.Installer;
 
-public static class Updater
+public static partial class Updater
 {
     public static State CurrentState { get; private set; }
     public static string? LatestError { get; private set; }
@@ -94,6 +95,11 @@ public static class Updater
                 return;
             }
         }
+        
+#if LINUX
+        // Make the file executable on Unix
+        Chmod(newPath, S_IRUSR | S_IXUSR | S_IWUSR | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
+#endif
 
         Process.Start(newPath, ["-handleupdate", Environment.ProcessPath!, Environment.ProcessId.ToString()]);
 
@@ -161,6 +167,24 @@ public static class Updater
         
         return asset?["browser_download_url"]?.ToString();
     }
+    
+#if LINUX
+    // user permissions
+    const int S_IRUSR = 0x100;
+    const int S_IWUSR = 0x80;
+    const int S_IXUSR = 0x40;
+
+    // group permission
+    const int S_IRGRP = 0x20;
+    const int S_IXGRP = 0x8;
+
+    // other permissions
+    const int S_IROTH = 0x4;
+    const int S_IXOTH = 0x1;
+        
+    [LibraryImport("libc", EntryPoint = "chmod", StringMarshalling = StringMarshalling.Utf8)]
+    private static partial int Chmod(string pathname, int mode);
+#endif
 
     public enum State
     {
