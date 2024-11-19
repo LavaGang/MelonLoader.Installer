@@ -71,7 +71,7 @@ internal static class Program
         if (!e.IsTerminating)
             return;
         
-        if (e.ExceptionObject is Exception ex)
+        if (e.ExceptionObject is Exception ex and not TaskCanceledException)
             LogCrashException(ex);
     }
 
