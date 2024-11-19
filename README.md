@@ -4,19 +4,29 @@
 </p>
 
 # MelonLoader Installer
-<a href="https://github.com/LavaGang/MelonLoader.Installer/releases/latest/download/MelonLoader.Installer.exe"><img src="https://img.shields.io/github/downloads/LavaGang/MelonLoader.Installer/latest/MelonLoader.Installer.exe?style=for-the-badge&label=Download%20Latest"></a>
+<a href="https://github.com/LavaGang/MelonLoader.Installer/releases/latest/download/MelonLoader.Installer.exe"><img src="https://img.shields.io/github/downloads/LavaGang/MelonLoader.Installer/latest/MelonLoader.Installer.exe?style=for-the-badge&label=Download%20Latest%20for%20Windows"></a>
+<a href="https://github.com/LavaGang/MelonLoader.Installer/releases/latest/download/MelonLoader.Installer.Linux"><img src="https://img.shields.io/github/downloads/LavaGang/MelonLoader.Installer/latest/MelonLoader.Installer.Linux?style=for-the-badge&label=Download%20Latest%20for%20Linux"></a>
 
 The Official Dedicated Installer for [MelonLoader](https://github.com/LavaGang/MelonLoader).
 
-## Report an issue
 ### Join our official Discord server
 <a href="https://discord.gg/2Wn3N2P"><img src="https://img.shields.io/discord/663449315876012052?label=discord&style=for-the-badge&color=blueviolet"></a>
 
 ## How does it work?
 The installer should automatically list installed Unity games on your machine.
 
+### Supported game launchers on Windows
+- Steam
+- Epic Games Store
+- GOG
+
+### Supported game launchers on Linux
+- Steam
+
+### Games from unsupported launchers
 If the game you're trying to mod isn't listed, you can locate it manually by clicking on the `Add Game Manually` button.
 
+### MelonLoader Installation
 To install MelonLoader, click on the game you wish to mod. Next, select your preferred version and hit the big `Install` button.
 
 ### Nightly builds
