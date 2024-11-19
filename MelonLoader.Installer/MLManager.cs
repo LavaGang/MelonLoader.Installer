@@ -90,32 +90,13 @@ internal static class MLManager
 
             if (!SemVersion.TryParse(runName[..runVerEnd], SemVersionStyles.Any, out var runVersion))
                 continue;
-
-            try
-            {
-                resp = await InstallerUtils.Http.GetAsync(run["artifacts_url"]!.ToString()).ConfigureAwait(false);
-            }
-            catch
-            {
-                return false;
-            }
-
-            if (!resp.IsSuccessStatusCode)
-                return false;
-
-            relStr = await resp.Content.ReadAsStringAsync().ConfigureAwait(false);
-            var artifactsJson = JsonNode.Parse(relStr)!["artifacts"]!.AsArray();
-
-            var art64 = artifactsJson.FirstOrDefault(x => x!["name"]!.ToString() == "MelonLoader.Windows.x64.CI.Release");
-            var art86 = artifactsJson.FirstOrDefault(x => x!["name"]!.ToString() == "MelonLoader.Windows.x86.CI.Release");
-            var art64Linux = artifactsJson.FirstOrDefault(x => x!["name"]!.ToString() == "MelonLoader.Linux.x64.CI.Release");
-
+            
             var version = new MLVersion
             {
                 Version = runVersion,
-                DownloadUrlWin = art64 != null ? $"https://nightly.link/LavaGang/MelonLoader/suites/{run["id"]}/artifacts/{art64["id"]}" : null,
-                DownloadUrlWinX86 = art86 != null ? $"https://nightly.link/LavaGang/MelonLoader/suites/{run["id"]}/artifacts/{art86["id"]}" : null,
-                DownloadUrlLinux = art64Linux != null ? $"https://nightly.link/LavaGang/MelonLoader/suites/{run["id"]}/artifacts/{art64Linux["id"]}" : null
+                DownloadUrlWin = $"https://nightly.link/LavaGang/MelonLoader/actions/runs/{run["id"]}/MelonLoader.Windows.x64.CI.Release.zip",
+                DownloadUrlWinX86 = $"https://nightly.link/LavaGang/MelonLoader/actions/runs/{run["id"]}/MelonLoader.Windows.x86.CI.Release.zip",
+                DownloadUrlLinux = $"https://nightly.link/LavaGang/MelonLoader/actions/runs/{run["id"]}/MelonLoader.Linux.x64.CI.Release.zip"
             };
 
             if (version.DownloadUrlWin == null && version.DownloadUrlWinX86 == null && version.DownloadUrlLinux == null)
