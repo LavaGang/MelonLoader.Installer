@@ -1,7 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <OutputType>WinExe</OutputType>
-        <TargetFramework>net9.0</TargetFramework>
+        <TargetFramework Condition="'$(RuntimeIdentifier.StartsWith(`win-`))' != 'true'">net9.0</TargetFramework>
+        <TargetFramework Condition="'$(RuntimeIdentifier.StartsWith(`win-`))' == 'true'">net9.0-windows</TargetFramework>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
         <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
