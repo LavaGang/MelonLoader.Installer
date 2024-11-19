@@ -24,7 +24,16 @@ public class EgsLauncher : GameLauncher
 
         foreach (var item in Directory.EnumerateFiles(manifestDir, "*.item"))
         {
-            var json = JsonNode.Parse(File.ReadAllText(item));
+            JsonNode? json;
+            try
+            {
+                json = JsonNode.Parse(File.ReadAllText(item));
+            }
+            catch
+            {
+                continue;
+            }
+            
             if (json == null || (bool?)json["bIsExecutable"] != true)
                 continue;
 
