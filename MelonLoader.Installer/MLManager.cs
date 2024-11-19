@@ -17,9 +17,9 @@ internal static class MLManager
         "winmm.dll",
         "winhttp.dll",
         "MelonBootstrap.so",
-        "version.so",
-        "winmm.so",
-        "winhttp.so"
+        "libversion.so",
+        "libwinmm.so",
+        "libwinhttp.so"
     ];
 
     private static MLVersion? localBuild;
