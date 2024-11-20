@@ -1,10 +1,14 @@
 ﻿using Avalonia;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 
 namespace MelonLoader.Installer;
 
 internal static class Program
 {
+    private delegate string dWineGetVersion();
+    private static dWineGetVersion wineGetVersion;
+
     private static FileStream processLock = null!;
     private static readonly string processLockPath = Path.Combine(Config.CacheDir, "process.lock");
 
@@ -21,6 +25,10 @@ internal static class Program
     [STAThread]
     private static void Main(string[] args)
     {
+#if WINDOWS
+        SetupWineCheck();
+#endif
+
         if (!Directory.Exists(Config.CacheDir))
             Directory.CreateDirectory(Config.CacheDir);
 
@@ -131,9 +139,9 @@ internal static class Program
     }
 
 #if WINDOWS
+
     internal static void GrabAttention()
         => GrabAttention(Process.GetCurrentProcess());
-
     private static void GrabAttention(Process process)
     {
         var processHandle = process.MainWindowHandle;
@@ -143,6 +151,27 @@ internal static class Program
         WindowsUtils.SetForegroundWindow(processHandle);
         WindowsUtils.BringWindowToTop(processHandle);
     }
+
+    internal static bool IsUnderWineOrSteamProton()
+        => wineGetVersion != null;
+    private static void SetupWineCheck()
+    {
+        try
+        {
+            IntPtr dll = NativeLibrary.Load("ntdll");
+            if (dll == IntPtr.Zero)
+                return;
+
+            IntPtr wine_get_version_proc = NativeLibrary.GetExport(dll, "wine_get_version");
+            if (wine_get_version_proc == IntPtr.Zero)
+                return;
+
+            wineGetVersion = (dWineGetVersion)Marshal.GetDelegateForFunctionPointer(wine_get_version_proc, typeof(dWineGetVersion));
+        }
+        catch
+        { }
+    }
+
 #endif
 
     // Avalonia configuration, don't remove; also used by visual designer.

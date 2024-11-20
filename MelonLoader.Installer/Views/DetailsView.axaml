@@ -59,7 +59,7 @@
             </Grid>
         </Grid>
         
-        <TextBlock Name="ShowLinuxInstructions" Grid.Row="14" Tapped="ShowLinuxInstructionsHandler" HorizontalAlignment="Center" Foreground="Gray" TextDecorations="Underline" FontSize="13" Cursor="Hand">
+        <TextBlock Name="ShowLinuxInstructions" Grid.Row="14" Tapped="ShowLinuxInstructionsHandler" HorizontalAlignment="Center" Foreground="Gray" TextDecorations="Underline" FontSize="13" Cursor="Hand" IsVisible="False">
             How do I start MelonLoader?
         </TextBlock>
     </Grid>

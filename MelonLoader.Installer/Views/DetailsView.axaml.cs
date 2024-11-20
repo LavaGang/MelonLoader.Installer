@@ -5,6 +5,7 @@ using Avalonia.Platform.Storage;
 using Avalonia.Threading;
 using MelonLoader.Installer.ViewModels;
 using System.ComponentModel;
+using System.Runtime.InteropServices;
 
 namespace MelonLoader.Installer.Views;
 
@@ -159,12 +160,14 @@ public partial class DetailsView : UserControl
 
         var wasReinstall = Model.Game.MLInstalled;
         Model.Game.ValidateGame();
-        
-#if LINUX
-        ShowLinuxInstructions.IsVisible = Model.Game.MLInstalled;
-#endif
 
         Model.Installing = false;
+
+#if LINUX
+        ShowLinuxInstructions.IsVisible = Model.Game.MLInstalled;
+#elif WINDOWS
+        ShowLinuxInstructions.IsVisible = Program.IsUnderWineOrSteamProton() && Model.Game.MLInstalled;
+#endif
 
         if (errorMessage != null)
         {
