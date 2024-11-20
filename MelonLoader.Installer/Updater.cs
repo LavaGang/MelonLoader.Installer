@@ -6,33 +6,22 @@ namespace MelonLoader.Installer;
 
 public static partial class Updater
 {
-    public static State CurrentState { get; private set; }
-    public static string? LatestError { get; private set; }
-
+    public static volatile bool IsUpdating;
     public static event InstallProgressEventHandler? Progress;
-    public static event InstallFinishedEventHandler? Finished;
 
-    public static bool UpdateIfPossible()
+    public static async Task<Task?> UpdateIfPossible()
     {
         // Don't auto-update on CI builds
         if (Program.Version.Revision > 0)
-            return false;
+            return null;
 
-        var downloadUrl = CheckForUpdateAsync().GetAwaiter().GetResult();
+        var downloadUrl = await CheckForUpdateAsync();
         if (downloadUrl == null)
-            return false;
+            return null;
 
-        CurrentState = State.Updating;
+        IsUpdating = true;
 
-        _ = UpdateAsync(downloadUrl);
-        return true;
-    }
-
-    private static void Finish(string? errorMessage)
-    {
-        CurrentState = State.Finished;
-        LatestError = errorMessage;
-        Finished?.Invoke(errorMessage);
+        return Task.Run(() => UpdateAsync(downloadUrl));
     }
 
     public static bool WaitAndRemoveApp(string originalPath, int prevPID)
@@ -91,8 +80,7 @@ public static partial class Updater
             var result = await InstallerUtils.DownloadFileAsync(downloadUrl, newStr, (progress, newStatus) => Progress?.Invoke(progress, newStatus));
             if (result != null)
             {
-                Finish("Failed to download the latest installer version: " + result);
-                return;
+                throw new Exception("Failed to download the latest installer version: " + result);
             }
         }
         
@@ -103,7 +91,7 @@ public static partial class Updater
 
         Process.Start(newPath, ["-handleupdate", Environment.ProcessPath!, Environment.ProcessId.ToString()]);
 
-        Finish(null);
+        IsUpdating = false;
     }
 
 #if WINDOWS
@@ -185,11 +173,4 @@ public static partial class Updater
     [LibraryImport("libc", EntryPoint = "chmod", StringMarshalling = StringMarshalling.Utf8)]
     private static partial int Chmod(string pathname, int mode);
 #endif
-
-    public enum State
-    {
-        None,
-        Updating,
-        Finished
-    }
 }

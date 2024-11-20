@@ -15,32 +15,22 @@ public partial class MainWindow : Window
 
         InitializeComponent();
 
-        if (Updater.CurrentState == Updater.State.Updating)
-        {
-            Updater.Finished += (errorMessage) => Dispatcher.UIThread.Post(() => OnUpdateFinished(errorMessage));
-            Content = new UpdaterView();
-            return;
-        }
-
-        if (Updater.CurrentState == Updater.State.Finished)
-        {
-            OnUpdateFinished(Updater.LatestError);
-            return;
-        }
-
         ShowMainView();
     }
 
-    private void OnUpdateFinished(string? errorMessage)
+    public async Task HandleUpdate(Task updaterTask)
     {
-        if (errorMessage != null)
+        try
         {
-            DialogBox.ShowError(errorMessage);
-            ShowMainView();
-            return;
+            Content = new UpdaterView();
+            await updaterTask;
+            Close();
         }
-
-        Close();
+        catch (Exception ex)
+        {
+            DialogBox.ShowError(ex.Message);
+            ShowMainView();
+        }
     }
 
     protected override void IsVisibleChanged(AvaloniaPropertyChangedEventArgs e)
@@ -60,7 +50,7 @@ public partial class MainWindow : Window
 
     protected override void OnClosing(WindowClosingEventArgs e)
     {
-        if (Updater.CurrentState == Updater.State.Updating || Content is DetailsView { Model.Installing: true })
+        if (Updater.IsUpdating || Content is DetailsView { Model.Installing: true })
             e.Cancel = true;
 
         base.OnClosing(e);

@@ -1,6 +1,5 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Interactivity;
-using Avalonia.Threading;
 using MelonLoader.Installer.ViewModels;
 using System.Collections.Specialized;
 
@@ -17,7 +16,7 @@ public partial class MainView : UserControl
         InitializeComponent();
     }
 
-    protected override void OnDataContextChanged(EventArgs e)
+    protected override async void OnDataContextChanged(EventArgs e)
     {
         base.OnDataContextChanged(e);
 
@@ -26,39 +25,23 @@ public partial class MainView : UserControl
 
         Model.Ready = false;
 
-        Task.Run(InitServicesAsync);
-    }
-
-    private void InitServicesAsync()
-    {
         try
         {
-            MLManager.Init();
-            GameManager.Init();
+            var checkUpdate = Task.Run(Updater.UpdateIfPossible);
+            var otherInit = Task.WhenAll(Task.Run(MLManager.Init), Task.Factory.StartNew(GameManager.Init, TaskCreationOptions.LongRunning));
+            if (await checkUpdate is { } updateTask)
+            {
+                _ = MainWindow.Instance.HandleUpdate(updateTask);
+                return;
+            }
+            await otherInit;
         }
         catch (Exception ex)
         {
-            Dispatcher.UIThread.Post(() => CrashException(ex));
-            return;
+            CrashException(ex);
         }
 
-        Dispatcher.UIThread.Post(Init);
-    }
-
-    private void CrashException(Exception ex)
-    {
-        Program.LogCrashException(ex);
-
-        DialogBox.ShowError("""
-                            An error has occurred while loading the game library!
-                            Please report this issue in the official Discord server in the #ml-support channel.
-                            Include the crash log named 'melonloader-installer-crash.log', located next to the executable.
-                            """, () => MainWindow.Instance.Close());
-    }
-
-    private void Init()
-    {
-        Model!.Ready = true;
+        Model.Ready = true;
 
         OnGameListUpdate(null, null);
         GameManager.Games.CollectionChanged += OnGameListUpdate;
@@ -71,6 +54,19 @@ public partial class MainView : UserControl
                                  Please note that this build will not auto-update, so it's recommended to use a stable release instead.
                                  """);
         }
+    }
+    
+    
+
+    private static void CrashException(Exception ex)
+    {
+        Program.LogCrashException(ex);
+
+        DialogBox.ShowError("""
+                            An error has occurred while loading the game library!
+                            Please report this issue in the official Discord server in the #ml-support channel.
+                            Include the crash log named 'melonloader-installer-crash.log', located next to the executable.
+                            """, () => MainWindow.Instance.Close());
     }
 
     protected override void OnUnloaded(RoutedEventArgs e)
