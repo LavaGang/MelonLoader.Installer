@@ -4,6 +4,8 @@ using System.Text.Json.Nodes;
 
 namespace MelonLoader.Installer.GameLaunchers;
 
+#pragma warning disable CA1416
+
 public class EgsLauncher : GameLauncher
 {
     private static readonly string? manifestDir;

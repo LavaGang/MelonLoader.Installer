@@ -7,7 +7,7 @@ namespace MelonLoader.Installer;
 internal static class Program
 {
     private delegate string dWineGetVersion();
-    private static dWineGetVersion wineGetVersion;
+    private static dWineGetVersion? wineGetVersion;
 
     private static FileStream processLock = null!;
     private static readonly string processLockPath = Path.Combine(Config.CacheDir, "process.lock");

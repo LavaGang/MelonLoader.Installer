@@ -3,6 +3,8 @@ using Microsoft.Win32;
 
 namespace MelonLoader.Installer.GameLaunchers;
 
+#pragma warning disable CA1416
+
 public class GogLauncher : GameLauncher
 {
     private static readonly RegistryKey? gamesKey;

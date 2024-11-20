@@ -4,6 +4,8 @@ using Microsoft.Win32;
 
 namespace MelonLoader.Installer.GameLaunchers;
 
+#pragma warning disable CA1416
+
 public class SteamLauncher : GameLauncher
 {
     private static readonly string? steamPath;
