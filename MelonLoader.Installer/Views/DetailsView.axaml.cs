@@ -41,6 +41,16 @@ public partial class DetailsView : UserControl
 
         if (Model == null)
             return;
+        
+#if LINUX
+        if (Model.Game.IsLinux)
+        {
+            LdLibPathVar.Text = $"LD_LIBRARY_PATH=\"{Model.Game.Dir}:$LD_LIBRARY_PATH\"";
+            SteamLaunchOptions.Text = $"{LdLibPathVar.Text} {LdPreloadVar.Text} %command%";
+        }
+        
+        ShowLinuxInstructions.IsVisible = Model.Game.MLInstalled;
+#endif
 
         Model.Game.PropertyChanged += PropertyChangedHandler;
 
@@ -63,7 +73,7 @@ public partial class DetailsView : UserControl
         if (Model == null)
             return;
 
-        var en = MLManager.Versions.Where(x => (Model.Game.Is32Bit ? x.DownloadX86Url : x.DownloadUrl) != null);
+        var en = MLManager.Versions.Where(x => (Model.Game.IsLinux ? x.DownloadUrlLinux : (Model.Game.Is32Bit ? x.DownloadUrlWinX86 : x.DownloadUrlWin)) != null);
         if (NightlyCheck.IsChecked != true)
             en = en.Where(x => !x.Version.IsPrerelease || x.IsLocalPath);
 
@@ -73,7 +83,16 @@ public partial class DetailsView : UserControl
 
     private void BackClickHandler(object sender, RoutedEventArgs args)
     {
-        if (Model != null && Model.Installing)
+        if (Model == null)
+            return;
+        
+        if (Model.LinuxInstructions)
+        {
+            Model.LinuxInstructions = false;
+            return;
+        }
+        
+        if (Model.Installing)
             return;
 
         MainWindow.Instance.ShowMainView();
@@ -116,9 +135,10 @@ public partial class DetailsView : UserControl
         }
 
         Model.Installing = true;
+        ShowLinuxInstructions.IsVisible = false;
 
         _ = MLManager.InstallAsync(Path.GetDirectoryName(Model.Game.Path)!, Model.Game.MLInstalled && !KeepFilesCheck.IsChecked!.Value,
-            (MLVersion)VersionCombobox.SelectedItem!, Model.Game.Is32Bit,
+            (MLVersion)VersionCombobox.SelectedItem!, Model.Game.IsLinux, Model.Game.Is32Bit,
             (progress, newStatus) => Dispatcher.UIThread.Post(() => OnInstallProgress(progress, newStatus)),
             (errorMessage) => Dispatcher.UIThread.Post(() => OnInstallFinished(errorMessage)));
     }
@@ -139,10 +159,12 @@ public partial class DetailsView : UserControl
 
         var wasReinstall = Model.Game.MLInstalled;
         Model.Game.ValidateGame();
+        
+#if LINUX
+        ShowLinuxInstructions.IsVisible = Model.Game.MLInstalled;
+#endif
 
         Model.Installing = false;
-        NightlyCheck.IsEnabled = true;
-        VersionCombobox.IsEnabled = true;
 
         if (errorMessage != null)
         {
@@ -150,7 +172,7 @@ public partial class DetailsView : UserControl
             return;
         }
 
-        DialogBox.ShowNotice("Success!", $"{(wasReinstall ? "Reinstall" : "Install")} was Successful!");
+        DialogBox.ShowNotice("Success!", $"Successfully {(Model.Game.MLInstalled ? (wasReinstall ? "reinstalled" : "installed") : "uninstalled")} MelonLoader!");
     }
 
     private void OpenDirHandler(object sender, RoutedEventArgs args)
@@ -158,7 +180,7 @@ public partial class DetailsView : UserControl
         if (Model == null)
             return;
 
-        TopLevel.GetTopLevel(this)!.Launcher.LaunchDirectoryInfoAsync(new(Path.GetDirectoryName(Model.Game.Path)!));
+        TopLevel.GetTopLevel(this)!.Launcher.LaunchDirectoryInfoAsync(new(Model.Game.Dir));
     }
 
     private void UninstallHandler(object sender, RoutedEventArgs args)
@@ -172,15 +194,9 @@ public partial class DetailsView : UserControl
         if (!Model.Game.MLInstalled)
             return;
 
-        if (!MLManager.Uninstall(Path.GetDirectoryName(Model.Game.Path)!, !KeepFilesCheck.IsChecked!.Value, out var error))
-        {
-            DialogBox.ShowError(error);
-            Model.Game.ValidateGame();
-            return;
-        }
-
-        Model.Game.ValidateGame();
-        DialogBox.ShowNotice("Success!", "Uninstall was Successful!");
+        var error = MLManager.Uninstall(Model.Game.Dir, !KeepFilesCheck.IsChecked!.Value);
+        
+        OnInstallFinished(error);
     }
 
     private async void SelectZipHandler(object sender, TappedEventArgs args)
@@ -208,6 +224,7 @@ public partial class DetailsView : UserControl
         var path = files[0].Path.LocalPath;
 
         Model.Installing = true;
+        ShowLinuxInstructions.IsVisible = false;
 
         _ = Task.Run(() => MLManager.SetLocalZip(path,
             (progress, newStatus) => Dispatcher.UIThread.Post(() => OnInstallProgress(progress, newStatus)),
@@ -216,14 +233,22 @@ public partial class DetailsView : UserControl
                 if (errorMessage == null)
                 {
                     var ver = MLManager.Versions[0];
-                    if ((Model.Game.Is32Bit ? ver.DownloadX86Url : ver.DownloadUrl) == null)
+                    if ((Model.Game.IsLinux ? ver.DownloadUrlLinux : (Model.Game.Is32Bit ? ver.DownloadUrlWinX86 : ver.DownloadUrlWin)) == null)
                     {
-                        DialogBox.ShowError($"The selected version does not support the architechture of the current game: {(Model.Game.Is32Bit ? "x86" : "x64")}");
+                        DialogBox.ShowError($"The selected version does not support the architechture of the current game: {(Model.Game.IsLinux ? "linux" : "win")}-{(Model.Game.Is32Bit ? "x86" : "x64")}");
                     }
                 }
 
                 OnInstallFinished(errorMessage);
                 UpdateVersionList();
             })));
+    }
+
+    private void ShowLinuxInstructionsHandler(object sender, TappedEventArgs args)
+    {
+        if (Model == null)
+            return;
+        
+        Model.LinuxInstructions = true;
     }
 }

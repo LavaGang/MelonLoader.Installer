@@ -27,7 +27,15 @@ public partial class GameControl : UserControl
 
         var mlInstalled = Model.MLVersion != null;
 
-        IconsPanel.IsVisible = mlInstalled || Model.Launcher != null;
+        var showWine =
+#if LINUX
+            !Model.IsLinux;
+#else
+            false;
+#endif
+
+        IconsPanel.IsVisible = mlInstalled || Model.Launcher != null || showWine;
+        WineIcon.IsVisible = showWine;
         MLIcon.IsVisible = mlInstalled;
         if (Model.Launcher != null)
         {

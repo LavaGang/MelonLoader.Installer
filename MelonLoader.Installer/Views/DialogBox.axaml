@@ -15,10 +15,10 @@
     Height="100"
     SizeToContent="WidthAndHeight"
     RenderOptions.BitmapInterpolationMode="HighQuality">
-    <Grid ColumnDefinitions="auto" RowDefinitions="60, 30, auto">
+    <Grid ColumnDefinitions="auto" RowDefinitions="60, auto, auto">
         <Image IsVisible="{Binding !IsError}" Grid.Column="0" Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Center" Source="/Assets/icon.ico" />
         <Image IsVisible="{Binding IsError}" Grid.Column="0" Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Center" Source="/Assets/error.png" />
-        <TextBlock Grid.Column="0" Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="15" Text="{Binding Message}" />
+        <TextBlock Grid.Column="0" Grid.Row="1" Margin="0 10" VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center" FontSize="15" Text="{Binding Message}" />
         <Grid IsVisible="{Binding !IsConfirmation}" Grid.Column="0" Grid.Row="2" VerticalAlignment="Bottom" HorizontalAlignment="Center" ColumnDefinitions="60, 60, 60" RowDefinitions="60">
             <Button Grid.Column="1" Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Center" Click="ConfirmHandler">OK</Button>
         </Grid>

@@ -6,6 +6,7 @@ namespace MelonLoader.Installer;
 internal static class Program
 {
     private static FileStream processLock = null!;
+    private static readonly string processLockPath = Path.Combine(Config.CacheDir, "process.lock");
 
     public static event Action? Exiting;
 
@@ -40,35 +41,57 @@ internal static class Program
             }
         }
 
+#if WINDOWS
         if (Updater.CheckLegacyUpdate())
             return;
+#endif
 
         if (!CheckProcessLock())
             return;
 
         Updater.UpdateIfPossible();
 
-        BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
+        try
+        {
+            BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
+        }
+        catch (Exception ex)
+        {
+            LogCrashException(ex);
+        }
 
         Exiting?.Invoke();
+        
+        processLock.Dispose();
+        File.Delete(processLockPath);
+    }
+
+    public static void LogCrashException(Exception ex)
+    {
+        try
+        {
+            var logPath = Path.Combine(Path.GetDirectoryName(Environment.ProcessPath)!, "melonloader-installer-crash.log");
+            File.WriteAllText(logPath, ex.ToString());
+        }
+        catch { }
     }
 
     private static bool CheckProcessLock()
     {
-        var lockFile = Path.Combine(Config.CacheDir, "process.lock");
-        if (File.Exists(lockFile))
+        if (File.Exists(processLockPath))
         {
+#if WINDOWS
             // Try to delete the lock. It will fail if it's used by another instance.
             try
             {
-                File.Delete(lockFile);
+                File.Delete(processLockPath);
             }
             catch
             {
                 try
                 {
                     // Try to set focus on the existing instance.
-                    var procIdRaw = File.ReadAllBytes(lockFile);
+                    var procIdRaw = File.ReadAllBytes(processLockPath);
                     if (procIdRaw.Length != sizeof(int))
                         return false;
 
@@ -77,33 +100,52 @@ internal static class Program
                     GrabAttention(proc);
                     return false;
                 }
-                catch { return false; }
+                catch 
+                {
+                    return false; 
+                }
             }
+#else
+            var procIdRaw = File.ReadAllBytes(processLockPath);
+            if (procIdRaw.Length == sizeof(int))
+            {
+                var procId = BitConverter.ToInt32(procIdRaw);
+
+                try
+                {
+                    Process.GetProcessById(procId);
+                    return false;
+                }
+                catch { }
+            }
+#endif
         }
 
-        processLock = File.Create(lockFile);
+        processLock = File.Open(processLockPath, FileMode.Create, FileAccess.Write, FileShare.Read);
         processLock.Write(BitConverter.GetBytes(Environment.ProcessId));
         processLock.Flush();
-        processLock.Dispose();
-        processLock = File.OpenRead(lockFile);
 
+#if WINDOWS
         GrabAttention();
+#endif
 
         return true;
     }
 
+#if WINDOWS
     internal static void GrabAttention()
         => GrabAttention(Process.GetCurrentProcess());
 
     private static void GrabAttention(Process process)
     {
-        /*var processHandle = process.MainWindowHandle;
+        var processHandle = process.MainWindowHandle;
         if (WindowsUtils.IsIconic(processHandle))
             WindowsUtils.ShowWindow(processHandle, 9);
 
         WindowsUtils.SetForegroundWindow(processHandle);
-        WindowsUtils.BringWindowToTop(processHandle);*/
+        WindowsUtils.BringWindowToTop(processHandle);
     }
+#endif
 
     // Avalonia configuration, don't remove; also used by visual designer.
     public static AppBuilder BuildAvaloniaApp()

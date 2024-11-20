@@ -1,4 +1,5 @@
-﻿using Avalonia.Controls;
+﻿using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Threading;
 using MelonLoader.Installer.ViewModels;
 
@@ -11,8 +12,6 @@ public partial class MainWindow : Window
     public MainWindow()
     {
         Instance = this;
-
-        Activated += OnActivation;
 
         InitializeComponent();
 
@@ -44,20 +43,24 @@ public partial class MainWindow : Window
         Close();
     }
 
-    private static void OnActivation(object? sender, EventArgs e)
+    protected override void IsVisibleChanged(AvaloniaPropertyChangedEventArgs e)
     {
-        if (sender is not Window window)
-            return;
+        base.IsVisibleChanged(e);
 
-        window.Topmost = true;
-        window.Topmost = false;
+        if (!IsVisible)
+            return;
+        
+        Topmost = true;
+        Topmost = false;
+#if WINDOWS
         Program.GrabAttention();
-        window.Focus();
+#endif
+        Focus();
     }
 
     protected override void OnClosing(WindowClosingEventArgs e)
     {
-        if (Updater.CurrentState == Updater.State.Updating || (Content is DetailsView view && view.Model != null && view.Model.Installing))
+        if (Updater.CurrentState == Updater.State.Updating || Content is DetailsView { Model.Installing: true })
             e.Cancel = true;
 
         base.OnClosing(e);

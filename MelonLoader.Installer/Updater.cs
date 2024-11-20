@@ -1,9 +1,10 @@
 ﻿using System.Diagnostics;
+using System.Runtime.InteropServices;
 using System.Text.Json.Nodes;
 
 namespace MelonLoader.Installer;
 
-public static class Updater
+public static partial class Updater
 {
     public static State CurrentState { get; private set; }
     public static string? LatestError { get; private set; }
@@ -79,9 +80,13 @@ public static class Updater
 
     private static async Task UpdateAsync(string downloadUrl)
     {
-        var newPath = Path.GetTempFileName() + ".exe";
+        var newPath = Path.GetTempFileName()
+#if WINDOWS
+                      + ".exe"
+#endif
+                      ;
 
-        using (var newStr = File.Create(newPath))
+        await using (var newStr = File.OpenWrite(newPath))
         {
             var result = await InstallerUtils.DownloadFileAsync(downloadUrl, newStr, (progress, newStatus) => Progress?.Invoke(progress, newStatus));
             if (result != null)
@@ -90,12 +95,18 @@ public static class Updater
                 return;
             }
         }
+        
+#if LINUX
+        // Make the file executable on Unix
+        Chmod(newPath, S_IRUSR | S_IXUSR | S_IWUSR | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
+#endif
 
         Process.Start(newPath, ["-handleupdate", Environment.ProcessPath!, Environment.ProcessId.ToString()]);
 
         Finish(null);
     }
 
+#if WINDOWS
     public static bool CheckLegacyUpdate()
     {
         if (!Environment.ProcessPath!.EndsWith(".tmp.exe", StringComparison.OrdinalIgnoreCase))
@@ -112,6 +123,7 @@ public static class Updater
         HandleUpdate(final, prevProc.FirstOrDefault()?.Id ?? 0);
         return true;
     }
+#endif
 
     private static async Task<string?> CheckForUpdateAsync()
     {
@@ -145,12 +157,34 @@ public static class Updater
         if (currentVer == null || currentVer >= latestVer)
             return null;
 
-        var asset = json["assets"]?.AsArray().FirstOrDefault(x => x!["name"]!.ToString().EndsWith(".exe"));
-        if (asset == null)
-            return null;
-
-        return asset["browser_download_url"]?.ToString();
+        var asset = json["assets"]?.AsArray().FirstOrDefault(x => x!["name"]!.ToString().EndsWith(
+#if WINDOWS
+            ".exe"
+#else
+            ".Linux"
+#endif
+            ));
+        
+        return asset?["browser_download_url"]?.ToString();
     }
+    
+#if LINUX
+    // user permissions
+    const int S_IRUSR = 0x100;
+    const int S_IWUSR = 0x80;
+    const int S_IXUSR = 0x40;
+
+    // group permission
+    const int S_IRGRP = 0x20;
+    const int S_IXGRP = 0x8;
+
+    // other permissions
+    const int S_IROTH = 0x4;
+    const int S_IXOTH = 0x1;
+        
+    [LibraryImport("libc", EntryPoint = "chmod", StringMarshalling = StringMarshalling.Utf8)]
+    private static partial int Chmod(string pathname, int mode);
+#endif
 
     public enum State
     {

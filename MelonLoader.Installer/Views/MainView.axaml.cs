@@ -8,6 +8,8 @@ namespace MelonLoader.Installer.Views;
 
 public partial class MainView : UserControl
 {
+    private static bool showedNotice;
+    
     public MainViewModel? Model => (MainViewModel?)DataContext;
 
     public MainView()
@@ -22,15 +24,36 @@ public partial class MainView : UserControl
         if (Model == null)
             return;
 
+        Model.Ready = false;
+
         Task.Run(InitServicesAsync);
     }
 
     private void InitServicesAsync()
     {
-        MLManager.Init();
-        GameManager.Init();
+        try
+        {
+            MLManager.Init();
+            GameManager.Init();
+        }
+        catch (Exception ex)
+        {
+            Dispatcher.UIThread.Post(() => CrashException(ex));
+            return;
+        }
 
         Dispatcher.UIThread.Post(Init);
+    }
+
+    private void CrashException(Exception ex)
+    {
+        Program.LogCrashException(ex);
+
+        DialogBox.ShowError("""
+                            An error has occurred while loading the game library!
+                            Please report this issue in the official Discord server in the #ml-support channel.
+                            Include the crash log named 'melonloader-installer-crash.log', located next to the executable.
+                            """, () => MainWindow.Instance.Close());
     }
 
     private void Init()
@@ -39,6 +62,15 @@ public partial class MainView : UserControl
 
         OnGameListUpdate(null, null);
         GameManager.Games.CollectionChanged += OnGameListUpdate;
+
+        if (!showedNotice && Program.Version.Revision > 0)
+        {
+            showedNotice = true;
+            DialogBox.ShowNotice("""
+                                 You're currently using a bleeding-edge CI build.
+                                 Please note that this build will not auto-update, so it's recommended to use a stable release instead.
+                                 """);
+        }
     }
 
     protected override void OnUnloaded(RoutedEventArgs e)

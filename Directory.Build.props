@@ -1,6 +1,15 @@
 <Project>
     <PropertyGroup>
-        <Version>4.0.1</Version>
+        <Version>4.1.0</Version>
+
+        <!-- Sets the default identifiers. They can be overridden -->
+        <RuntimeIdentifiers>win-x64;linux-x64</RuntimeIdentifiers>
+        <RuntimeIdentifier Condition="'$([MSBuild]::IsOSUnixLike())' == 'false'">win-x64</RuntimeIdentifier>
+        <RuntimeIdentifier Condition="'$([MSBuild]::IsOSUnixLike())' == 'true'">linux-x64</RuntimeIdentifier>
+
+        <TargetFrameworks>net9.0;net9.0-windows</TargetFrameworks>
+        <TargetFramework Condition="'$(RuntimeIdentifier.StartsWith(`win-`))' != 'true'">net9.0</TargetFramework>
+        <TargetFramework Condition="'$(RuntimeIdentifier.StartsWith(`win-`))' == 'true'">net9.0-windows</TargetFramework>
 
         <Nullable>enable</Nullable>
         <AvaloniaVersion>11.2.1</AvaloniaVersion>
