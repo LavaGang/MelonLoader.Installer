@@ -6,33 +6,31 @@ namespace MelonLoader.Installer;
 
 public static partial class Updater
 {
-    public static State CurrentState { get; private set; }
-    public static string? LatestError { get; private set; }
-
+    public static volatile UpdateState State;
     public static event InstallProgressEventHandler? Progress;
-    public static event InstallFinishedEventHandler? Finished;
 
-    public static bool UpdateIfPossible()
+    public static async Task<Task?> UpdateIfPossible()
     {
+        if (State != UpdateState.None)
+            return null;
+        
         // Don't auto-update on CI builds
         if (Program.Version.Revision > 0)
-            return false;
+        {
+            State = UpdateState.AlreadyChecked;
+            return null;
+        }
 
-        var downloadUrl = CheckForUpdateAsync().GetAwaiter().GetResult();
+        var downloadUrl = await CheckForUpdateAsync();
         if (downloadUrl == null)
-            return false;
+        {
+            State = UpdateState.AlreadyChecked;
+            return null;
+        }
 
-        CurrentState = State.Updating;
+        State = UpdateState.Updating;
 
-        _ = UpdateAsync(downloadUrl);
-        return true;
-    }
-
-    private static void Finish(string? errorMessage)
-    {
-        CurrentState = State.Finished;
-        LatestError = errorMessage;
-        Finished?.Invoke(errorMessage);
+        return Task.Run(() => UpdateAsync(downloadUrl));
     }
 
     public static bool WaitAndRemoveApp(string originalPath, int prevPID)
@@ -91,8 +89,7 @@ public static partial class Updater
             var result = await InstallerUtils.DownloadFileAsync(downloadUrl, newStr, (progress, newStatus) => Progress?.Invoke(progress, newStatus));
             if (result != null)
             {
-                Finish("Failed to download the latest installer version: " + result);
-                return;
+                throw new Exception("Failed to download the latest installer version: " + result);
             }
         }
         
@@ -103,7 +100,7 @@ public static partial class Updater
 
         Process.Start(newPath, ["-handleupdate", Environment.ProcessPath!, Environment.ProcessId.ToString()]);
 
-        Finish(null);
+        State = UpdateState.Done;
     }
 
 #if WINDOWS
@@ -186,10 +183,11 @@ public static partial class Updater
     private static partial int Chmod(string pathname, int mode);
 #endif
 
-    public enum State
+    public enum UpdateState
     {
         None,
         Updating,
-        Finished
+        Done,
+        AlreadyChecked
     }
 }

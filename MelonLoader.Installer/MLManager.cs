@@ -43,23 +43,23 @@ internal static class MLManager
         }
     }
 
-    public static bool Init()
+    public static async Task<bool> Init()
     {
         if (inited)
             return true;
 
-        inited = RefreshVersions();
+        inited = await RefreshVersions();
         return inited;
     }
 
-    private static bool RefreshVersions()
+    private static Task<bool> RefreshVersions()
     {
         Versions.Clear();
 
         if (localBuild != null)
             Versions.Add(localBuild);
 
-        return GetVersionsAsync(Versions).GetAwaiter().GetResult();
+        return GetVersionsAsync(Versions);
     }
 
     private static async Task<bool> GetVersionsAsync(List<MLVersion> versions)

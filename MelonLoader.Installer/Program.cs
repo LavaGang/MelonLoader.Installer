@@ -49,8 +49,6 @@ internal static class Program
         if (!CheckProcessLock())
             return;
 
-        Updater.UpdateIfPossible();
-
         try
         {
             BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);

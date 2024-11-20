@@ -34,8 +34,8 @@ public partial class DetailsView : UserControl
             UpdateVersionInfo();
         }
     }
-
-    protected override void OnDataContextChanged(EventArgs e)
+    
+    protected override async void OnDataContextChanged(EventArgs e)
     {
         base.OnDataContextChanged(e);
 
@@ -56,7 +56,7 @@ public partial class DetailsView : UserControl
 
         UpdateVersionList();
 
-        if (!MLManager.Init())
+        if (!await MLManager.Init())
         {
             Model.Offline = true;
             DialogBox.ShowError("Failed to fetch MelonLoader releases. Ensure you're online.");

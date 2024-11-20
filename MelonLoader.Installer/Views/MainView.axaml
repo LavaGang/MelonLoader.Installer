@@ -16,7 +16,7 @@
 
     <Grid RowDefinitions="auto, auto, *, auto, auto">
         <TextBlock Grid.Row="4" VerticalAlignment="Bottom" Foreground="#AFFF"
-                   Text="{Binding Version}" />
+            Text="{Binding Version}" />
 
         <StackPanel Grid.Row="0" Height="40" Orientation="Horizontal" HorizontalAlignment="Center">
             <Image Source="/Assets/icon.ico" Margin="0 0 10 0" />
