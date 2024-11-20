@@ -56,16 +56,21 @@ public partial class MainWindow : Window
         base.OnClosing(e);
     }
 
+    public void SetViewport(UserControl view)
+    {
+        Viewport.Child = view;
+    }
+
     public void ShowMainView()
     {
-        Content = new MainView();
+        SetViewport(new MainView());
     }
 
     public void ShowDetailsView(GameModel game)
     {
-        Content = new DetailsView()
+        SetViewport(new DetailsView()
         {
             DataContext = new DetailsViewModel(game)
-        };
+        });
     }
 }

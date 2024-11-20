@@ -8,15 +8,14 @@
     x:DataType="vm:GameModel"
     Margin="0 0 0 5">
     <Button IsEnabled="{Binding !IsProtected}" Height="40" Click="ClickHandler" ToolTip.Tip="{Binding Path}" ToolTip.Placement="Bottom"
-        HorizontalAlignment="Stretch" Background="#99202030" Padding="0">
-        <Grid ColumnDefinitions="auto, *, auto" Margin="5">
+        HorizontalAlignment="Stretch" Background="#1999" Padding="0">
+        <Grid ColumnDefinitions="auto, *, auto" Margin="7 5">
             <TextBlock Grid.Column="1" Margin="8 0" VerticalAlignment="Center" FontSize="15"
                 TextTrimming="CharacterEllipsis" Text="{Binding Name}" />
             <Border Grid.Column="0" CornerRadius="8" ClipToBounds="True">
                 <Image Source="{Binding Icon}" />
             </Border>
-            <Border Name="IconsPanel" IsVisible="False" Grid.Column="2" Background="#1AAA"
-                Padding="8 5" CornerRadius="8">
+            <Border Name="IconsPanel" IsVisible="False" Grid.Column="2" Padding="0 4">
                 <StackPanel Orientation="Horizontal">
                     <Image Name="WineIcon" IsVisible="False" Margin="3 0" Source="/Assets/wine.png" />
                     <Image Name="LauncherIcon" IsVisible="False" Margin="3 0" />
