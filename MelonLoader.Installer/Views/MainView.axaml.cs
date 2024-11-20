@@ -23,8 +23,29 @@ public partial class MainView : UserControl
         if (Model == null)
             return;
 
-        Model.Ready = false;
+        // if the updater has already ran, we already did all initialization
+        if (Updater.State == Updater.UpdateState.None)
+        {
+            Model.Ready = false;
+            await DoInit();
+            Model.Ready = true;
+        }
 
+        OnGameListUpdate(null, null);
+        GameManager.Games.CollectionChanged += OnGameListUpdate;
+
+        if (!showedNotice && Program.Version.Revision > 0)
+        {
+            showedNotice = true;
+            DialogBox.ShowNotice("""
+                                 You're currently using a bleeding-edge CI build.
+                                 Please note that this build will not auto-update, so it's recommended to use a stable release instead.
+                                 """);
+        }
+    }
+
+    private static async Task DoInit()
+    {
         try
         {
             var checkUpdate = Task.Run(Updater.UpdateIfPossible);
@@ -40,23 +61,7 @@ public partial class MainView : UserControl
         {
             CrashException(ex);
         }
-
-        Model.Ready = true;
-
-        OnGameListUpdate(null, null);
-        GameManager.Games.CollectionChanged += OnGameListUpdate;
-
-        if (!showedNotice && Program.Version.Revision > 0)
-        {
-            showedNotice = true;
-            DialogBox.ShowNotice("""
-                                 You're currently using a bleeding-edge CI build.
-                                 Please note that this build will not auto-update, so it's recommended to use a stable release instead.
-                                 """);
-        }
     }
-    
-    
 
     private static void CrashException(Exception ex)
     {

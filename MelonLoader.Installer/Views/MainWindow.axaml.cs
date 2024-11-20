@@ -50,7 +50,7 @@ public partial class MainWindow : Window
 
     protected override void OnClosing(WindowClosingEventArgs e)
     {
-        if (Updater.IsUpdating || Content is DetailsView { Model.Installing: true })
+        if (Updater.State == Updater.UpdateState.Updating || Content is DetailsView { Model.Installing: true })
             e.Cancel = true;
 
         base.OnClosing(e);

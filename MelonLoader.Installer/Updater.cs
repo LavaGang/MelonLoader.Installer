@@ -6,20 +6,29 @@ namespace MelonLoader.Installer;
 
 public static partial class Updater
 {
-    public static volatile bool IsUpdating;
+    public static volatile UpdateState State;
     public static event InstallProgressEventHandler? Progress;
 
     public static async Task<Task?> UpdateIfPossible()
     {
+        if (State != UpdateState.None)
+            return null;
+        
         // Don't auto-update on CI builds
         if (Program.Version.Revision > 0)
+        {
+            State = UpdateState.AlreadyChecked;
             return null;
+        }
 
         var downloadUrl = await CheckForUpdateAsync();
         if (downloadUrl == null)
+        {
+            State = UpdateState.AlreadyChecked;
             return null;
+        }
 
-        IsUpdating = true;
+        State = UpdateState.Updating;
 
         return Task.Run(() => UpdateAsync(downloadUrl));
     }
@@ -91,7 +100,7 @@ public static partial class Updater
 
         Process.Start(newPath, ["-handleupdate", Environment.ProcessPath!, Environment.ProcessId.ToString()]);
 
-        IsUpdating = false;
+        State = UpdateState.Done;
     }
 
 #if WINDOWS
@@ -173,4 +182,12 @@ public static partial class Updater
     [LibraryImport("libc", EntryPoint = "chmod", StringMarshalling = StringMarshalling.Utf8)]
     private static partial int Chmod(string pathname, int mode);
 #endif
+
+    public enum UpdateState
+    {
+        None,
+        Updating,
+        Done,
+        AlreadyChecked
+    }
 }
