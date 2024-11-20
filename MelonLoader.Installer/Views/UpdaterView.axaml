@@ -8,7 +8,7 @@
     <Grid RowDefinitions="*, 100, 40, *, auto, 2*, auto, *">
         <Image Grid.Row="1" Source="/Assets/icon.ico" />
         <Image Grid.Row="2" Source="/Assets/ML_Text.png" />
-        <TextBlock Grid.Row="4" FontSize="24" HorizontalAlignment="Center">Updating...</TextBlock>
+        <TextBlock Grid.Row="4" FontSize="24" HorizontalAlignment="Center" Foreground="#9FFF">Updating...</TextBlock>
         <ProgressBar Grid.Row="6" Name="Progress" Height="40" Background="#4383" Foreground="#383" />
     </Grid>
 </UserControl>

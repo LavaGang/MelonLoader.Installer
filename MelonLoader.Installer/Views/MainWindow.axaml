@@ -8,8 +8,10 @@
     Icon="/Assets/icon.ico"
     Title="MelonLoader Installer"
     WindowStartupLocation="CenterScreen"
-    Background="#121217"
     CanResize="False"
-    Padding="25"
     RenderOptions.BitmapInterpolationMode="HighQuality">
+    <Grid>
+        <Image Source="/Assets/bg.png" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Stretch="UniformToFill" />
+        <Border Name="Viewport" Margin="25" />
+    </Grid>
 </Window>

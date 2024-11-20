@@ -15,17 +15,17 @@
     </Design.DataContext>
 
     <Grid RowDefinitions="auto, auto, *, auto, auto">
-        <TextBlock Grid.Row="4" VerticalAlignment="Bottom" Foreground="Gray"
-            Text="{Binding Version}" />
+        <TextBlock Grid.Row="4" VerticalAlignment="Bottom" Foreground="#AFFF"
+                   Text="{Binding Version}" />
 
         <StackPanel Grid.Row="0" Height="40" Orientation="Horizontal" HorizontalAlignment="Center">
             <Image Source="/Assets/icon.ico" Margin="0 0 10 0" />
             <Image Source="/Assets/ML_Text.png" Height="30" />
         </StackPanel>
-        <TextBlock Margin="0 20 0 0" HorizontalAlignment="Stretch" Grid.Row="1" Foreground="#7FFF"
+        <TextBlock Margin="0 20 0 0" HorizontalAlignment="Stretch" Grid.Row="1" Foreground="#AFFF"
             xml:space="preserve" TextAlignment="Center">To install MelonLoader, click on one of the games below.
 If you can't find your game on the list, add it manually.</TextBlock>
-        <Border Grid.Row="2" Background="#3223" CornerRadius="8" Margin="0 10" ClipToBounds="True">
+        <Border Grid.Row="2" Background="#0000" CornerRadius="8" Margin="0 10" ClipToBounds="True">
             <Grid>
                 <ScrollViewer>
                     <ItemsControl IsVisible="{Binding Ready}" ItemsSource="{Binding Games}" Margin="10">
