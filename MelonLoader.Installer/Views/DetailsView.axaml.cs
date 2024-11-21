@@ -153,7 +153,7 @@ public partial class DetailsView : UserControl
         MelonIcon.Opacity = progress * 0.7 + 0.3;
     }
 
-    private void OnInstallFinished(string? errorMessage)
+    private void OnInstallFinished(string? errorMessage, bool showConfirmation = true)
     {
         if (Model == null)
             return;
@@ -173,7 +173,8 @@ public partial class DetailsView : UserControl
             return;
         }
 
-        DialogBox.ShowNotice("Success!", $"Successfully {(Model.Game.MLInstalled ? (wasReinstall ? "reinstalled" : "installed") : "uninstalled")} MelonLoader!");
+        if (showConfirmation)
+            DialogBox.ShowNotice("Success!", $"Successfully {(Model.Game.MLInstalled ? (wasReinstall ? "reinstalled" : "installed") : "uninstalled")} MelonLoader!");
     }
 
     private void OpenDirHandler(object sender, RoutedEventArgs args)
@@ -240,7 +241,7 @@ public partial class DetailsView : UserControl
                     }
                 }
 
-                OnInstallFinished(errorMessage);
+                OnInstallFinished(errorMessage, false);
                 UpdateVersionList();
             })));
     }
