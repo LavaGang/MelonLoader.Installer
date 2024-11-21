@@ -27,7 +27,10 @@ public partial class MainView : UserControl
         if (Updater.State == Updater.UpdateState.None)
         {
             Model.Ready = false;
-            await DoInit();
+            if (!await DoInit())
+            {
+                return;
+            }
             Model.Ready = true;
         }
 
@@ -44,7 +47,7 @@ public partial class MainView : UserControl
         }
     }
 
-    private static async Task DoInit()
+    private static async Task<bool> DoInit()
     {
         try
         {
@@ -53,7 +56,7 @@ public partial class MainView : UserControl
             if (await checkUpdate is { } updateTask)
             {
                 _ = MainWindow.Instance.HandleUpdate(updateTask);
-                return;
+                return false;
             }
             await otherInit;
         }
@@ -61,6 +64,7 @@ public partial class MainView : UserControl
         {
             CrashException(ex);
         }
+        return true;
     }
 
     private static void CrashException(Exception ex)
