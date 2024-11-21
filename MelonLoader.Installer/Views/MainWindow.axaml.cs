@@ -22,7 +22,7 @@ public partial class MainWindow : Window
     {
         try
         {
-            Content = new UpdaterView();
+            SetViewport(new UpdaterView());
             await updaterTask;
             Close();
         }
