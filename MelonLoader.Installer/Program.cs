@@ -120,12 +120,14 @@ internal static class Program
 #endif
         }
 
-        processLock = File.Open(processLockPath, FileMode.Create, FileAccess.Write, FileShare.Read);
+        processLock = File.Create(processLockPath);
         processLock.Write(BitConverter.GetBytes(Environment.ProcessId));
         processLock.Flush();
 
 #if WINDOWS
-        GrabAttention();
+        // On Windows, we need to reopen a new stream with only read perms, otherwise other processes will fail to read it
+        processLock.Dispose();
+        processLock = File.OpenRead(processLockPath);
 #endif
 
         return true;
