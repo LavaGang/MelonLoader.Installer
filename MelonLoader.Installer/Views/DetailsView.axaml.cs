@@ -165,8 +165,6 @@ public partial class DetailsView : UserControl
 
 #if LINUX
         ShowLinuxInstructions.IsVisible = Model.Game.MLInstalled;
-#elif WINDOWS
-        ShowLinuxInstructions.IsVisible = Program.IsUnderWineOrSteamProton() && Model.Game.MLInstalled;
 #endif
 
         if (errorMessage != null)
