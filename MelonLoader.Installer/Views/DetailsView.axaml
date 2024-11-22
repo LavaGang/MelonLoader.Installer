@@ -17,7 +17,7 @@
         </Border>
         <TextBlock Grid.Row="3" HorizontalAlignment="Center" VerticalAlignment="Center"
             FontSize="22" Text="{Binding Game.Name}" />
-        <Grid Grid.Row="4" ColumnDefinitions="*, auto">
+        <Grid Grid.Row="4" ColumnDefinitions="*, auto" IsEnabled="{Binding !Installing}">
             <TextBox Grid.Column="0" Foreground="Gray" Text="{Binding Game.Dir}" IsReadOnly="True"
                 Focusable="False" SelectionBrush="#222" Background="Transparent" BorderThickness="0" />
             <Button Click="OpenDirHandler" Grid.Column="1" Margin="3">📂</Button>
@@ -32,11 +32,11 @@
         <TextBlock Grid.Row="11" Tapped="SelectZipHandler" HorizontalAlignment="Center" IsEnabled="{Binding EnableSettings}"
             Foreground="Gray" TextDecorations="Underline" FontSize="13" Cursor="Hand">Or select a
             zipped version</TextBlock>
-        <StackPanel Grid.Row="12">
+        <StackPanel Grid.Row="12" IsEnabled="{Binding !Installing}">
             <CheckBox Name="NightlyCheck" IsEnabled="{Binding EnableSettings}"
                 ToolTip.Tip="Enables bleeding-edge builds. ONLY ENABLE IF YOU KNOW WHAT YOU'RE DOING!"
                 Click="NightlyToggleHandler" HorizontalAlignment="Center">Enable Nightly builds</CheckBox>
-            <CheckBox IsEnabled="{Binding !Installing}" Name="KeepFilesCheck"
+            <CheckBox Name="KeepFilesCheck"
                 ToolTip.Tip="Keep mods, plugins, UserData, and UserLibs when uninstalling."
                 HorizontalAlignment="Center"
                 IsVisible="{Binding Game.MLInstalled}" IsChecked="True">Keep mods and settings</CheckBox>
@@ -59,7 +59,7 @@
             </Grid>
         </Grid>
         
-        <TextBlock Name="ShowLinuxInstructions" Grid.Row="14" Tapped="ShowLinuxInstructionsHandler" HorizontalAlignment="Center" Foreground="Gray" TextDecorations="Underline" FontSize="13" Cursor="Hand" IsVisible="False">
+        <TextBlock Name="ShowLinuxInstructions" IsEnabled="{Binding !Installing}" Grid.Row="14" Tapped="ShowLinuxInstructionsHandler" HorizontalAlignment="Center" Foreground="Gray" TextDecorations="Underline" FontSize="13" Cursor="Hand" IsVisible="False">
             How do I start MelonLoader?
         </TextBlock>
     </Grid>
