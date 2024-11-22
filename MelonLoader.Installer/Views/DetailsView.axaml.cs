@@ -141,7 +141,7 @@ public partial class DetailsView : UserControl
         _ = MLManager.InstallAsync(Path.GetDirectoryName(Model.Game.Path)!, Model.Game.MLInstalled && !KeepFilesCheck.IsChecked!.Value,
             (MLVersion)VersionCombobox.SelectedItem!, Model.Game.IsLinux, Model.Game.Is32Bit,
             (progress, newStatus) => Dispatcher.UIThread.Post(() => OnInstallProgress(progress, newStatus)),
-            (errorMessage) => Dispatcher.UIThread.Post(() => OnInstallFinished(errorMessage)));
+            (errorMessage) => Dispatcher.UIThread.Post(() => OnOperationFinished(errorMessage)));
     }
 
     private void OnInstallProgress(double progress, string? newStatus)
@@ -153,14 +153,14 @@ public partial class DetailsView : UserControl
         MelonIcon.Opacity = progress * 0.7 + 0.3;
     }
 
-    private void OnInstallFinished(string? errorMessage, bool showConfirmation = true)
+    private void OnOperationFinished(string? errorMessage, bool addedLocalBuild = false)
     {
         if (Model == null)
             return;
 
-        var wasReinstall = Model.Game.MLInstalled;
-        Model.Game.ValidateGame();
+        var currentMLVersion = Model.Game.MLVersion;
 
+        Model.Game.ValidateGame();
         Model.Installing = false;
 
 #if LINUX
@@ -173,8 +173,26 @@ public partial class DetailsView : UserControl
             return;
         }
 
-        if (showConfirmation)
-            DialogBox.ShowNotice("Success!", $"Successfully {(Model.Game.MLInstalled ? (wasReinstall ? "reinstalled" : "installed") : "uninstalled")} MelonLoader!");
+        if (addedLocalBuild)
+            return;
+
+        bool isReinstall = false;
+        string operationType = Model.Game.MLInstalled ? "Installed" : "Uninstalled";
+        if (Model.Game.MLInstalled 
+            && (Model.Game.MLVersion != null)
+            && (currentMLVersion != null))
+        {
+            var comp = Model.Game.MLVersion.CompareSortOrderTo(currentMLVersion);
+            isReinstall = comp == 0;
+            operationType = comp switch
+            {
+                > 0 => "Upgraded",
+                0 => "Reinstalled",
+                < 0 => "Downgraded"
+            };
+        }
+
+        DialogBox.ShowNotice("Success!", $"Successfully {operationType}{((!Model.Game.MLInstalled || isReinstall) ? string.Empty : " to")}\nMelonLoader{(Model.Game.MLInstalled ? $" v{Model.Game.MLVersion}" : string.Empty)}");
     }
 
     private void OpenDirHandler(object sender, RoutedEventArgs args)
@@ -197,8 +215,8 @@ public partial class DetailsView : UserControl
             return;
 
         var error = MLManager.Uninstall(Model.Game.Dir, !KeepFilesCheck.IsChecked!.Value);
-        
-        OnInstallFinished(error);
+
+        OnOperationFinished(error);
     }
 
     private async void SelectZipHandler(object sender, TappedEventArgs args)
@@ -241,7 +259,7 @@ public partial class DetailsView : UserControl
                     }
                 }
 
-                OnInstallFinished(errorMessage, false);
+                OnOperationFinished(errorMessage, true);
                 UpdateVersionList();
             })));
     }

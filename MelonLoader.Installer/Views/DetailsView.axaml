@@ -30,7 +30,7 @@
             Name="VersionCombobox" Grid.Row="10" Margin="5" HorizontalAlignment="Center"
             SelectedIndex="0" MaxDropDownHeight="150" />
         <TextBlock Grid.Row="11" Tapped="SelectZipHandler" HorizontalAlignment="Center" IsEnabled="{Binding EnableSettings}"
-            Foreground="Gray" TextDecorations="Underline" FontSize="13" Cursor="Hand">Or select a
+            Foreground="Gray" TextDecorations="Underline" FontSize="13" Cursor="Hand">Or add a
             zipped version</TextBlock>
         <StackPanel Grid.Row="12" IsEnabled="{Binding !Installing}">
             <CheckBox Name="NightlyCheck" IsEnabled="{Binding EnableSettings}"
