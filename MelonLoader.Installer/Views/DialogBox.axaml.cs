@@ -20,10 +20,13 @@ public partial class DialogBox : Window
     }
 
     public static void ShowError(string message, Action? onClose = null)
+        => ShowError("ERROR!", message, onClose);
+
+    public static void ShowError(string title, string message, Action? onClose = null)
     {
         new DialogBox
         {
-            Title = "Error",
+            Title = title,
             DataContext = new DialogBoxModel
             {
                 Message = message,
@@ -34,7 +37,7 @@ public partial class DialogBox : Window
     }
 
     public static void ShowNotice(string message)
-        => ShowNotice("Notice", message);
+        => ShowNotice("NOTICE", message);
 
     public static void ShowNotice(string title, string message)
     {

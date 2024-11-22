@@ -192,7 +192,7 @@ public partial class DetailsView : UserControl
             };
         }
 
-        DialogBox.ShowNotice("Success!", $"Successfully {operationType}{((!Model.Game.MLInstalled || isReinstall) ? string.Empty : " to")}\nMelonLoader{(Model.Game.MLInstalled ? $" v{Model.Game.MLVersion}" : string.Empty)}");
+        DialogBox.ShowNotice("SUCCESS!", $"Successfully {operationType}{((!Model.Game.MLInstalled || isReinstall) ? string.Empty : " to")}\nMelonLoader{(Model.Game.MLInstalled ? $" v{Model.Game.MLVersion}" : string.Empty)}");
     }
 
     private void OpenDirHandler(object sender, RoutedEventArgs args)
