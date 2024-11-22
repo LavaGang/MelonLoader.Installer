@@ -176,14 +176,14 @@ public partial class DetailsView : UserControl
         if (addedLocalBuild)
             return;
 
-        bool isReinstall = false;
+        bool isInstall = true;
         string operationType = Model.Game.MLInstalled ? "Installed" : "Uninstalled";
         if (Model.Game.MLInstalled 
             && (Model.Game.MLVersion != null)
             && (currentMLVersion != null))
         {
             var comp = Model.Game.MLVersion.CompareSortOrderTo(currentMLVersion);
-            isReinstall = comp == 0;
+            isInstall = comp == 0;
             operationType = comp switch
             {
                 > 0 => "Upgraded",
@@ -192,7 +192,7 @@ public partial class DetailsView : UserControl
             };
         }
 
-        DialogBox.ShowNotice("SUCCESS!", $"Successfully {operationType}{((!Model.Game.MLInstalled || isReinstall) ? string.Empty : " to")}\nMelonLoader{(Model.Game.MLInstalled ? $" v{Model.Game.MLVersion}" : string.Empty)}");
+        DialogBox.ShowNotice("SUCCESS!", $"Successfully {operationType}{((!Model.Game.MLInstalled || isInstall) ? string.Empty : " to")}\nMelonLoader v{(Model.Game.MLInstalled ? Model.Game.MLVersion : currentMLVersion)}");
     }
 
     private void OpenDirHandler(object sender, RoutedEventArgs args)
