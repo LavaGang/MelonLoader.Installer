@@ -35,13 +35,10 @@ To install MelonLoader, click on the game you wish to mod. Next, select your pre
 Nightly builds are bleeding-edge builds, generated right after any changes are made to the project. They can be enabled with the switch under the version selection menu.
 
 ## Contribution
-
 Contributions to this project are welcome! If you wish to contribute, please adhere to the following guidelines:
 
-### Requirements:
-Ensure you have the .NET 9.0 SDK installed on your machine. This is required to build the project.
-
 ### Building the Project:
+Ensure you have the .NET 8.0 SDK installed on your machine.  
 You can build the project locally using the following command:
 ```bash
 dotnet publish
