@@ -1,9 +1,9 @@
 name: Build Installer
 
-run-name: 4.1.0-ci.${{ github.run_number }} | ${{ github.event_name != 'workflow_dispatch' && (github.event.head_commit.message || format('`[PR]` {0}', github.event.pull_request.title)) || 'Manual Build' }}
+run-name: 4.1.1-ci.${{ github.run_number }} | ${{ github.event_name != 'workflow_dispatch' && (github.event.head_commit.message || format('`[PR]` {0}', github.event.pull_request.title)) || 'Manual Build' }}
 
 env:
-  DEVVERSION: "4.1.0"
+  DEVVERSION: "4.1.1"
 
 on:
   push:
