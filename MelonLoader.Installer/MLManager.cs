@@ -11,7 +11,7 @@ namespace MelonLoader.Installer;
 internal static class MLManager
 {
     private static bool inited;
-    public static bool IsProtonTricksInstalled;
+    public static bool IsProtonTricksInstalled = false;
     internal static readonly string[] proxyNames = 
     [
         "version.dll",
@@ -50,7 +50,9 @@ internal static class MLManager
             return true;
 
         inited = await RefreshVersions();
+        #if LINUX
         IsProtonTricksInstalled = await LinuxUtils.CheckIfProtonTricksExists();
+        #endif
         return inited;
     }
 
@@ -405,7 +407,7 @@ internal static class MLManager
 
         #if LINUX
 
-        if(IsProtonTricksInstalled && !linux){
+        if(IsProtonTricksInstalled && !linux && await LinuxUtils.CheckIfCanInstallDependencies(id)){
             await LinuxUtils.InstallProtonDependencies(id, onProgress);
         }
 

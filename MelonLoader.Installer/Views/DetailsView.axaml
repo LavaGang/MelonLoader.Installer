@@ -74,7 +74,7 @@
                     <TextBlock TextWrapping="Wrap">In order to start MelonLoader under Wine, you'll need to export the following variable:</TextBlock>
                     <TextBox Margin="0 4 0 10" BorderBrush="Transparent" IsReadOnly="True">WINEDLLOVERRIDES="version=n,b"</TextBox>
                     <TextBlock TextWrapping="Wrap">On Steam, you can set the launch options to:</TextBlock>
-                    <TextBox Margin="0 4 0 10" BorderBrush="Transparent" IsReadOnly="True">WINEDLLOVERRIDES="version=n,b" %command%"</TextBox>
+                    <TextBox Margin="0 4 0 10" BorderBrush="Transparent" IsReadOnly="True">WINEDLLOVERRIDES="version=n,b" %command%</TextBox>
                 </StackPanel>
                 <StackPanel Orientation="Vertical" IsVisible="{Binding Game.IsLinux}" Grid.Row="1">
                     <TextBlock TextWrapping="Wrap">In order to start MelonLoader, you'll need to export the following variables:</TextBlock>

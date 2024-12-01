@@ -10,7 +10,6 @@ internal static partial class LinuxUtils{
     public static event InstallProgressEventHandler? Progress;
     public static string DownloadUrlVCx64 = "https://aka.ms/vs/16/release/vc_redist.x64.exe";
     public static string DownloadUrlVCx86 = "https://aka.ms/vs/16/release/vc_redist.x86.exe";
-    public static string TempDestination = "/tmp";
     public static async Task<bool> CheckIfBinaryExists(string name){
         ProcessResult whichResult = await RunCommand("which", name);
         return !(whichResult.ErrorLevel >= 1);
@@ -22,12 +21,28 @@ internal static partial class LinuxUtils{
         }
         return true;
     }
+    public static async Task<bool> CheckIfFlatpakUsable(string appId){
+        ProcessResult flatpakResult = await RunCommand("flatpak", $"run com.github.Matoking.protontricks {appId} list");
+        return !(flatpakResult.ErrorLevel >= 1);
+    }
     public static async Task<bool> CheckIfProtonTricksExists(){
         if(await CheckIfBinaryExists("protontricks")){
             return true;
         }
         if(await CheckIfFlatpakExists("com.github.Matoking.protontricks")){
             return true;
+        }
+        return false;
+    }
+    public static async Task<bool> CheckIfCanInstallDependencies(string? appId){
+        if(appId == null){
+            return false;
+        }
+        if(await CheckIfBinaryExists("protontricks")){
+            return true;
+        }
+        if(await CheckIfFlatpakExists("com.github.Matoking.protontricks")){
+            return await CheckIfFlatpakUsable(appId);
         }
         return false;
     }
@@ -48,6 +63,7 @@ internal static partial class LinuxUtils{
         string commandLaunch = "protontricks-launch";
         string launchArgPrefix = "--appid";
         string argPrefix = "";
+        string TempDestination = "/tmp";
         if(await CheckIfFlatpakExists("com.github.Matoking.protontricks")){
             useFlatpak = true;
         }
@@ -58,14 +74,15 @@ internal static partial class LinuxUtils{
             command = "flatpak";
             commandLaunch = "flatpak";
             argPrefix = "run com.github.Matoking.protontricks ";
-            launchArgPrefix = "run com.github.Matoking.protontricks --command=protontricks-launch --appid";
+            launchArgPrefix = "run --command=protontricks-launch com.github.Matoking.protontricks --appid";
+            TempDestination = $"{Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)}/.steam";
         }
         try{
             SetProgress(0, "Install Proton dependency: vc_redistx86");
             string downloadPath = $"{TempDestination}/vc_redistx86.exe";
             DownloadFile(DownloadUrlVCx86, downloadPath);
             await RunCommand(commandLaunch, $"{launchArgPrefix} {appId} {downloadPath} /quiet");
-            File.Delete(downloadPath);
+            //File.Delete(downloadPath);
             currentTask++;
             SetProgress(0, "Install Proton dependency: vc_redistx64");
             downloadPath = $"{TempDestination}/vc_redistx64.exe";
