@@ -82,7 +82,7 @@ internal static partial class LinuxUtils{
             string downloadPath = $"{TempDestination}/vc_redistx86.exe";
             DownloadFile(DownloadUrlVCx86, downloadPath);
             await RunCommand(commandLaunch, $"{launchArgPrefix} {appId} {downloadPath} /quiet");
-            //File.Delete(downloadPath);
+            File.Delete(downloadPath);
             currentTask++;
             SetProgress(0, "Install Proton dependency: vc_redistx64");
             downloadPath = $"{TempDestination}/vc_redistx64.exe";
