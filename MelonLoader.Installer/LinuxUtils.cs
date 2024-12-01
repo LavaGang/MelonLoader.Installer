@@ -80,9 +80,6 @@ internal static partial class LinuxUtils{
         SetProgress(0, "Install Proton dependency: dotnetdesktop6");
         await RunCommand(command, $"{argPrefix}{appId} -q dotnetdesktop6");
     }
-    public static async Task AddExecutePerm(string path){
-        await RunCommand("chmod", $"+x {path}");
-    }
     public static void OpenSteamGameProperties(string appId){
         Process.Start(new ProcessStartInfo(){
             FileName = $"steam://gameproperties/{appId}",

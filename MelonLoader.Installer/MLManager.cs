@@ -407,7 +407,6 @@ internal static class MLManager
 
         if(IsProtonTricksInstalled && !linux){
             await LinuxUtils.InstallProtonDependencies(id, onProgress);
-            await LinuxUtils.AddExecutePerm($"{gameDir}/MelonLoader/Dependencies/Il2CppAssemblyGenerator/Cpp2IL/Cpp2IL");
         }
 
         #endif
