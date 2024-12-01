@@ -34,7 +34,7 @@ public class GogLauncher : GameLauncher
             if (name == null)
                 continue;
 
-            GameManager.TryAddGame(path, name, this, null, out _);
+            GameManager.TryAddGame(path, null, name, this, null, out _);
         }
     }
 }

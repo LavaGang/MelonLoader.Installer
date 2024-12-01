@@ -11,6 +11,7 @@ namespace MelonLoader.Installer;
 internal static class MLManager
 {
     private static bool inited;
+    public static bool IsProtonTricksInstalled;
     internal static readonly string[] proxyNames = 
     [
         "version.dll",
@@ -49,6 +50,7 @@ internal static class MLManager
             return true;
 
         inited = await RefreshVersions();
+        IsProtonTricksInstalled = await LinuxUtils.CheckIfProtonTricksExists();
         return inited;
     }
 
@@ -332,7 +334,7 @@ internal static class MLManager
         onFinished?.Invoke(null);
     }
 
-    public static async Task InstallAsync(string gameDir, bool removeUserFiles, MLVersion version, bool linux, bool x86, InstallProgressEventHandler? onProgress, InstallFinishedEventHandler? onFinished)
+    public static async Task InstallAsync(string gameDir, string? id, bool removeUserFiles, MLVersion version, bool linux, bool x86, InstallProgressEventHandler? onProgress, InstallFinishedEventHandler? onFinished)
     {
         var downloadUrl = linux ? (!x86 ? version.DownloadUrlLinux : null) : (x86 ? version.DownloadUrlWinX86 : version.DownloadUrlWin);
         if (downloadUrl == null)
@@ -400,6 +402,15 @@ internal static class MLManager
                 return;
             }
         }
+
+        #if LINUX
+
+        if(IsProtonTricksInstalled && !linux){
+            await LinuxUtils.InstallProtonDependencies(id, onProgress);
+            await LinuxUtils.AddExecutePerm($"{gameDir}/MelonLoader/Dependencies/Il2CppAssemblyGenerator/Cpp2IL/Cpp2IL");
+        }
+
+        #endif
 
         Directory.CreateDirectory(Path.Combine(gameDir, "Mods"));
         Directory.CreateDirectory(Path.Combine(gameDir, "Plugins"));

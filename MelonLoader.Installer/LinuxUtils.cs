@@ -11,39 +11,47 @@ internal static partial class LinuxUtils{
     public static string DownloadUrlVCx64 = "https://aka.ms/vs/16/release/vc_redist.x64.exe";
     public static string DownloadUrlVCx86 = "https://aka.ms/vs/16/release/vc_redist.x86.exe";
     public static string TempDestination = "/tmp";
-    public static bool CheckIfBinaryExists(string name){
-        ProcessResult whichResult = RunCommand("which", name);
-        if (whichResult.ErrorLevel == 1){
-            return false;
-        }
-        return true;
+    public static async Task<bool> CheckIfBinaryExists(string name){
+        ProcessResult whichResult = await RunCommand("which", name);
+        return !(whichResult.ErrorLevel >= 1);
     }
-    public static bool CheckIfFlatpakExists(string name){
-        ProcessResult flatpakResult = RunCommand("flatpak", $"info {name}");
+    public static async Task<bool> CheckIfFlatpakExists(string name){
+        ProcessResult flatpakResult = await RunCommand("flatpak", $"info {name}");
         if (flatpakResult.ErrorLevel == 1){
             return false;
         }
         return true;
     }
-    public static bool CheckIfProtonTricksExists(){
-        if(CheckIfBinaryExists("protontricks")){
+    public static async Task<bool> CheckIfProtonTricksExists(){
+        if(await CheckIfBinaryExists("protontricks")){
             return true;
         }
-        if(CheckIfFlatpakExists("com.github.Matoking.protontricks")){
+        if(await CheckIfFlatpakExists("com.github.Matoking.protontricks")){
             return true;
         }
         return false;
     }
-    public static void InstallProtonDependencies(string appId){
+    public static async Task InstallProtonDependencies(string? appId, InstallProgressEventHandler? onProgress){
+        if(appId == null){
+            //No id, probably not a steam game.
+            return;
+        }
+        var tasks = 3;
+        var currentTask = 0;
+
+        void SetProgress(double progress, string? newStatus = null)
+        {
+            onProgress?.Invoke(currentTask / (double)tasks + progress / tasks, newStatus);
+        }
         bool useFlatpak = false;
         string command = "protontricks";
         string commandLaunch = "protontricks-launch";
         string launchArgPrefix = "--appid";
         string argPrefix = "";
-        if(CheckIfFlatpakExists("com.github.Matoking.protontricks")){
+        if(await CheckIfFlatpakExists("com.github.Matoking.protontricks")){
             useFlatpak = true;
         }
-        if(CheckIfBinaryExists("protontricks")){
+        if(await CheckIfBinaryExists("protontricks")){
             useFlatpak = false;
         }
         if(useFlatpak){
@@ -53,23 +61,33 @@ internal static partial class LinuxUtils{
             launchArgPrefix = "run com.github.Matoking.protontricks --command=protontricks-launch --appid";
         }
         try{
+            SetProgress(0, "Install Proton dependency: vc_redistx86");
             string downloadPath = $"{TempDestination}/vc_redistx86.exe";
             DownloadFile(DownloadUrlVCx86, downloadPath);
-            RunCommand(commandLaunch, $"{launchArgPrefix} {appId} {downloadPath}");
+            await RunCommand(commandLaunch, $"{launchArgPrefix} {appId} {downloadPath} /quiet");
             File.Delete(downloadPath);
+            currentTask++;
+            SetProgress(0, "Install Proton dependency: vc_redistx64");
             downloadPath = $"{TempDestination}/vc_redistx64.exe";
             DownloadFile(DownloadUrlVCx64, downloadPath);
-            RunCommand(commandLaunch, $"{launchArgPrefix} {appId} {downloadPath}");
+            await RunCommand(commandLaunch, $"{launchArgPrefix} {appId} {downloadPath} /quiet");
             File.Delete(downloadPath);
         }
         catch{
             return;
         }
-        RunCommand(command, $"{argPrefix}{appId} -q dotnetdesktop6");
-        
+        currentTask++;
+        SetProgress(0, "Install Proton dependency: dotnetdesktop6");
+        await RunCommand(command, $"{argPrefix}{appId} -q dotnetdesktop6");
+    }
+    public static async Task AddExecutePerm(string path){
+        await RunCommand("chmod", $"+x {path}");
     }
     public static void OpenSteamGameProperties(string appId){
-        Process.Start($"steam://gameproperties/{appId}");
+        Process.Start(new ProcessStartInfo(){
+            FileName = $"steam://gameproperties/{appId}",
+            UseShellExecute = true
+        });
     }
     public static async void DownloadFile(string url, string destination){
         var newStr = File.OpenWrite(destination);
@@ -79,7 +97,7 @@ internal static partial class LinuxUtils{
             throw new Exception($"Failed to download {url}: " + result);
         }
     }
-    public static ProcessResult RunCommand(string command, string arguments){
+    public async static Task<ProcessResult> RunCommand(string command, string arguments){
         var escapedArgs = arguments.Replace("\"", "\\\"");
         var process = new Process{
             StartInfo = new ProcessStartInfo{
@@ -91,7 +109,7 @@ internal static partial class LinuxUtils{
             }
         };
         process.Start();
-        process.WaitForExit();
+        await process.WaitForExitAsync();
         string standardError = process.StandardError.ToString() ?? "";
         string StandardOutput = process.StandardOutput.ToString() ?? "";
         return new ProcessResult(process.ExitCode, standardError, StandardOutput);

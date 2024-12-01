@@ -71,7 +71,7 @@ public class SteamLauncher : GameLauncher
                     continue;
 
                 var iconPath = Path.Combine(steamPath, "appcache", "librarycache", id + "_icon.jpg");
-                GameManager.TryAddGame(appDir, name, this, iconPath, out _);
+                GameManager.TryAddGame(appDir, id, name, this, iconPath, out _);
             }
         }
     }
