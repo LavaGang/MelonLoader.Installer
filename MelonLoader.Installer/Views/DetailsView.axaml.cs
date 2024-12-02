@@ -151,13 +151,11 @@ public partial class DetailsView : UserControl
             MainWindow.Instance.ShowMainView();
             return;
         }
-
-        #if LINUX
-        if(Model.Game.Id != null){
+        
+        if(Model.Game.Id != null)
+        {
             MLManager.OpenSteamGameProperties(Model.Game.Id);
         }
-
-        #endif
 
     }
 

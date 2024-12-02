@@ -54,7 +54,8 @@ internal static class MLManager
         return inited;
     }
 
-    public static void OpenSteamGameProperties(string? appId){
+    public static void OpenSteamGameProperties(string? appId)
+    {
         if(appId == null){
             return;
         }
