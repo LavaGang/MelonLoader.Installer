@@ -1,4 +1,5 @@
 ﻿using Semver;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Nodes;
 
@@ -49,7 +50,20 @@ internal static class MLManager
             return true;
 
         inited = await RefreshVersions();
+
         return inited;
+    }
+
+    public static void OpenSteamGameProperties(string? appId)
+    {
+        if(appId == null){
+            return;
+        }
+        
+        Process.Start(new ProcessStartInfo(){
+            FileName = $"steam://gameproperties/{appId}",
+            UseShellExecute = true
+        });
     }
 
     private static Task<bool> RefreshVersions()
@@ -332,7 +346,7 @@ internal static class MLManager
         onFinished?.Invoke(null);
     }
 
-    public static async Task InstallAsync(string gameDir, bool removeUserFiles, MLVersion version, bool linux, bool x86, InstallProgressEventHandler? onProgress, InstallFinishedEventHandler? onFinished)
+    public static async Task InstallAsync(string gameDir, string? id, bool removeUserFiles, MLVersion version, bool linux, bool x86, InstallProgressEventHandler? onProgress, InstallFinishedEventHandler? onFinished)
     {
         var downloadUrl = linux ? (!x86 ? version.DownloadUrlLinux : null) : (x86 ? version.DownloadUrlWinX86 : version.DownloadUrlWin);
         if (downloadUrl == null)

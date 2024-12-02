@@ -47,7 +47,7 @@ public class EgsLauncher : GameLauncher
             if (name == null)
                 continue;
 
-            GameManager.TryAddGame(dir, name, this, null, out _);
+            GameManager.TryAddGame(dir, null, name, this, null, out _);
         }
     }
 }

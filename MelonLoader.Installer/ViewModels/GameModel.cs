@@ -4,9 +4,10 @@ using Semver;
 
 namespace MelonLoader.Installer.ViewModels;
 
-public class GameModel(string path, string name, bool is32Bit, bool isLinux, GameLauncher? launcher, Bitmap? icon, SemVersion? mlVersion, bool isProtected) : ViewModelBase
+public class GameModel(string path, string? id, string name, bool is32Bit, bool isLinux, GameLauncher? launcher, Bitmap? icon, SemVersion? mlVersion, bool isProtected) : ViewModelBase
 {
     public string Path => path;
+    public string? Id => id;
     public string Name => name;
     public bool Is32Bit => is32Bit;
     public bool IsLinux => isLinux;

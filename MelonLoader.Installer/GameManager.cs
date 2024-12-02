@@ -32,7 +32,7 @@ internal static class GameManager
     {
         foreach (var gamePath in Config.LoadGameList())
         {
-            TryAddGame(gamePath, null, null, null, out _);
+            TryAddGame(gamePath, null, null, null, null, out _);
         }
 
         // In case it was manually edited or if any games were removed
@@ -86,7 +86,7 @@ internal static class GameManager
         Games.Remove(game);
     }
 
-    public static GameModel? TryAddGame(string path, string? customName, GameLauncher? launcher, string? iconPath, [NotNullWhen(false)] out string? errorMessage)
+    public static GameModel? TryAddGame(string path, string? id, string? customName, GameLauncher? launcher, string? iconPath, [NotNullWhen(false)] out string? errorMessage)
     {
         if (File.Exists(path))
         {
@@ -169,7 +169,7 @@ internal static class GameManager
 
         var isProtected = Directory.Exists(Path.Combine(path, "EasyAntiCheat"));
 
-        var result = new GameModel(exe, customName ?? Path.GetFileNameWithoutExtension(exe), !is64, linux, launcher, icon, mlVersion, isProtected);
+        var result = new GameModel(exe, id, customName ?? Path.GetFileNameWithoutExtension(exe), !is64, linux, launcher, icon, mlVersion, isProtected);
         errorMessage = null;
 
         AddGameSorted(result);

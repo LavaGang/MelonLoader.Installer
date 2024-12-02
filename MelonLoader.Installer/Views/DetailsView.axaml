@@ -58,26 +58,31 @@
                     VerticalAlignment="Center" Opacity="0.7" FontSize="14" />
             </Grid>
         </Grid>
-        
+
         <TextBlock Name="ShowLinuxInstructions" IsEnabled="{Binding !Installing}" Grid.Row="14" Tapped="ShowLinuxInstructionsHandler" HorizontalAlignment="Center" Foreground="Gray" TextDecorations="Underline" FontSize="13" Cursor="Hand" IsVisible="False">
             How do I start MelonLoader?
         </TextBlock>
     </Grid>
         <Grid Grid.Row="1" Margin="30" RowDefinitions="auto, *" IsVisible="{Binding LinuxInstructions}">
             <TextBlock Grid.Row="0" FontSize="25" Margin="0 0 0 20">Linux Launch Instructions</TextBlock>
-                    <StackPanel Orientation="Vertical" IsVisible="{Binding !Game.IsLinux}" Grid.Row="1">
-                        <TextBlock TextWrapping="Wrap">In order to start MelonLoader under Wine, you'll need to export the following variable:</TextBlock>
-                        <TextBox Margin="0 4 0 10" BorderBrush="Transparent" IsReadOnly="True">WINEDLLOVERRIDES="version=n,b"</TextBox>
-                        <TextBlock TextWrapping="Wrap">On Steam, you can set the launch options to:</TextBlock>
-                        <TextBox Margin="0 4 0 10" BorderBrush="Transparent" IsReadOnly="True">WINEDLLOVERRIDES="version=n,b" %command%"</TextBox>
-                    </StackPanel>
-                    <StackPanel Orientation="Vertical" IsVisible="{Binding Game.IsLinux}" Grid.Row="1">
-                        <TextBlock TextWrapping="Wrap">In order to start MelonLoader, you'll need to export the following variables:</TextBlock>
-                        <TextBox Name="LdLibPathVar" Margin="0 4 0 0" BorderBrush="Transparent" IsReadOnly="True"/>
-                        <TextBox Name="LdPreloadVar" Margin="0 4 0 10" BorderBrush="Transparent" IsReadOnly="True">LD_PRELOAD="libversion.so"</TextBox>
-                        <TextBlock TextWrapping="Wrap">On Steam, you can set the launch options to:</TextBlock>
-                        <TextBox Name="SteamLaunchOptions" Margin="0 4 0 10" BorderBrush="Transparent" IsReadOnly="True"/>
-                    </StackPanel>
+                <StackPanel Orientation="Vertical" IsVisible="{Binding !Game.IsLinux}" Grid.Row="1">
+                    <TextBlock TextWrapping="Wrap">In order to start MelonLoader under Wine, you'll need to export the following variable:</TextBlock>
+                    <TextBox Margin="0 4 0 10" BorderBrush="Transparent" IsReadOnly="True">WINEDLLOVERRIDES="version=n,b"</TextBox>
+                    <TextBlock TextWrapping="Wrap">On Steam, you can set the launch options to:</TextBlock>
+                    <TextBox Margin="0 4 0 10" BorderBrush="Transparent" IsReadOnly="True">WINEDLLOVERRIDES="version=n,b" %command%</TextBox>
+                </StackPanel>
+                <StackPanel Orientation="Vertical" IsVisible="{Binding Game.IsLinux}" Grid.Row="1">
+                    <TextBlock TextWrapping="Wrap">In order to start MelonLoader, you'll need to export the following variables:</TextBlock>
+                    <TextBox Name="LdLibPathVar" Margin="0 4 0 0" BorderBrush="Transparent" IsReadOnly="True"/>
+                    <TextBox Name="LdPreloadVar" Margin="0 4 0 10" BorderBrush="Transparent" IsReadOnly="True">LD_PRELOAD="libversion.so"</TextBox>
+                    <TextBlock TextWrapping="Wrap">On Steam, you can set the launch options to:</TextBlock>
+                    <TextBox Name="SteamLaunchOptions" Margin="0 4 0 10" BorderBrush="Transparent" IsReadOnly="True"/>
+                </StackPanel>
+            <Button Grid.Row="2" Click="GamePropsHandler" Name="GamePropsButton"
+                HorizontalAlignment="Stretch" Background="#383" Height="40"
+                HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+                FontSize="18">Open Steam Game Properties
+            </Button>
         </Grid>
     </Grid>
 </UserControl>

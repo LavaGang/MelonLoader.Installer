@@ -42,8 +42,8 @@ public partial class DetailsView : UserControl
 
         if (Model == null)
             return;
-        
-#if LINUX
+
+        #if LINUX
         if (Model.Game.IsLinux)
         {
             LdLibPathVar.Text = $"LD_LIBRARY_PATH=\"{Model.Game.Dir}:$LD_LIBRARY_PATH\"";
@@ -51,7 +51,7 @@ public partial class DetailsView : UserControl
         }
         
         ShowLinuxInstructions.IsVisible = Model.Game.MLInstalled;
-#endif
+        #endif
 
         Model.Game.PropertyChanged += PropertyChangedHandler;
 
@@ -138,10 +138,25 @@ public partial class DetailsView : UserControl
         Model.Installing = true;
         ShowLinuxInstructions.IsVisible = false;
 
-        _ = MLManager.InstallAsync(Path.GetDirectoryName(Model.Game.Path)!, Model.Game.MLInstalled && !KeepFilesCheck.IsChecked!.Value,
+        _ = MLManager.InstallAsync(Path.GetDirectoryName(Model.Game.Path)!, Model.Game.Id, Model.Game.MLInstalled && !KeepFilesCheck.IsChecked!.Value,
             (MLVersion)VersionCombobox.SelectedItem!, Model.Game.IsLinux, Model.Game.Is32Bit,
             (progress, newStatus) => Dispatcher.UIThread.Post(() => OnInstallProgress(progress, newStatus)),
             (errorMessage) => Dispatcher.UIThread.Post(() => OnOperationFinished(errorMessage)));
+    }
+
+    private void GamePropsHandler(object sender, RoutedEventArgs args)
+    {
+        if (Model == null || !Model.Game.ValidateGame())
+        {
+            MainWindow.Instance.ShowMainView();
+            return;
+        }
+        
+        if(Model.Game.Id != null)
+        {
+            MLManager.OpenSteamGameProperties(Model.Game.Id);
+        }
+
     }
 
     private void OnInstallProgress(double progress, string? newStatus)
@@ -163,9 +178,9 @@ public partial class DetailsView : UserControl
         Model.Game.ValidateGame();
         Model.Installing = false;
 
-#if LINUX
-        ShowLinuxInstructions.IsVisible = Model.Game.MLInstalled;
-#endif
+        #if LINUX
+                ShowLinuxInstructions.IsVisible = Model.Game.MLInstalled;
+        #endif
 
         if (errorMessage != null)
         {
@@ -191,6 +206,13 @@ public partial class DetailsView : UserControl
                 < 0 => "Downgraded"
             };
         }
+
+        #if LINUX
+        if(isInstall && Model.Game.MLInstalled){
+            Model.LinuxInstructions = true;
+        }
+
+        #endif
 
         DialogBox.ShowNotice("SUCCESS!", $"Successfully {operationType}{((!Model.Game.MLInstalled || isInstall) ? string.Empty : " to")}\nMelonLoader v{(Model.Game.MLInstalled ? Model.Game.MLVersion : currentMLVersion)}");
     }

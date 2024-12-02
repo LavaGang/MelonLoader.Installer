@@ -103,7 +103,7 @@ public partial class MainView : UserControl
             return;
 
         var path = files[0].Path.LocalPath;
-        GameManager.TryAddGame(path, null, null, null, out var error);
+        GameManager.TryAddGame(path, null, null, null, null, out var error);
         if (error != null)
         {
             DialogBox.ShowError(error);
