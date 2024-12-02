@@ -1,4 +1,5 @@
 ﻿using Semver;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Nodes;
 
@@ -11,7 +12,6 @@ namespace MelonLoader.Installer;
 internal static class MLManager
 {
     private static bool inited;
-    public static bool IsProtonTricksInstalled = false;
     internal static readonly string[] proxyNames = 
     [
         "version.dll",
@@ -50,10 +50,19 @@ internal static class MLManager
             return true;
 
         inited = await RefreshVersions();
-        #if LINUX
-        IsProtonTricksInstalled = await LinuxUtils.CheckIfProtonTricksExists();
-        #endif
+
         return inited;
+    }
+
+    public static void OpenSteamGameProperties(string? appId){
+        if(appId == null){
+            return;
+        }
+        
+        Process.Start(new ProcessStartInfo(){
+            FileName = $"steam://gameproperties/{appId}",
+            UseShellExecute = true
+        });
     }
 
     private static Task<bool> RefreshVersions()
@@ -404,14 +413,6 @@ internal static class MLManager
                 return;
             }
         }
-
-        #if LINUX
-
-        if(IsProtonTricksInstalled && !linux && await LinuxUtils.CheckIfCanInstallDependencies(id)){
-            await LinuxUtils.InstallProtonDependencies(id, onProgress);
-        }
-
-        #endif
 
         Directory.CreateDirectory(Path.Combine(gameDir, "Mods"));
         Directory.CreateDirectory(Path.Combine(gameDir, "Plugins"));

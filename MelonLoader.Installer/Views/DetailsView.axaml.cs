@@ -42,7 +42,8 @@ public partial class DetailsView : UserControl
 
         if (Model == null)
             return;
-#if LINUX
+
+        #if LINUX
         if (Model.Game.IsLinux)
         {
             LdLibPathVar.Text = $"LD_LIBRARY_PATH=\"{Model.Game.Dir}:$LD_LIBRARY_PATH\"";
@@ -50,8 +51,7 @@ public partial class DetailsView : UserControl
         }
         
         ShowLinuxInstructions.IsVisible = Model.Game.MLInstalled;
-        ShowProtonTricksWarning.IsVisible = !Model.Game.MLInstalled && !MLManager.IsProtonTricksInstalled;
-#endif
+        #endif
 
         Model.Game.PropertyChanged += PropertyChangedHandler;
 
@@ -144,17 +144,21 @@ public partial class DetailsView : UserControl
             (errorMessage) => Dispatcher.UIThread.Post(() => OnOperationFinished(errorMessage)));
     }
 
-    private void GamePropsHandler(object sender, RoutedEventArgs args){
+    private void GamePropsHandler(object sender, RoutedEventArgs args)
+    {
         if (Model == null || !Model.Game.ValidateGame())
         {
             MainWindow.Instance.ShowMainView();
             return;
         }
+
         #if LINUX
         if(Model.Game.Id != null){
-            LinuxUtils.OpenSteamGameProperties(Model.Game.Id);
+            MLManager.OpenSteamGameProperties(Model.Game.Id);
         }
+
         #endif
+
     }
 
     private void OnInstallProgress(double progress, string? newStatus)
@@ -178,7 +182,6 @@ public partial class DetailsView : UserControl
 
         #if LINUX
                 ShowLinuxInstructions.IsVisible = Model.Game.MLInstalled;
-                ShowProtonTricksWarning.IsVisible = !Model.Game.MLInstalled && !MLManager.IsProtonTricksInstalled;
         #endif
 
         if (errorMessage != null)
@@ -205,11 +208,14 @@ public partial class DetailsView : UserControl
                 < 0 => "Downgraded"
             };
         }
+
         #if LINUX
         if(isInstall && Model.Game.MLInstalled){
             Model.LinuxInstructions = true;
         }
+
         #endif
+
         DialogBox.ShowNotice("SUCCESS!", $"Successfully {operationType}{((!Model.Game.MLInstalled || isInstall) ? string.Empty : " to")}\nMelonLoader v{(Model.Game.MLInstalled ? Model.Game.MLVersion : currentMLVersion)}");
     }
 

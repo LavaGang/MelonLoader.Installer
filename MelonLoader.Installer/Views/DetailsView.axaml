@@ -62,11 +62,6 @@
         <TextBlock Name="ShowLinuxInstructions" IsEnabled="{Binding !Installing}" Grid.Row="14" Tapped="ShowLinuxInstructionsHandler" HorizontalAlignment="Center" Foreground="Gray" TextDecorations="Underline" FontSize="13" Cursor="Hand" IsVisible="False">
             How do I start MelonLoader?
         </TextBlock>
-        <StackPanel Name="ShowProtonTricksWarning" Orientation="Vertical" IsVisible="false" Grid.Row="15" >
-            <TextBlock HorizontalAlignment="Center" Foreground="Gray" FontSize="13">
-                Proton tricks is missing. Proton Dependencies will be skipped.
-            </TextBlock>
-        </StackPanel>
     </Grid>
         <Grid Grid.Row="1" Margin="30" RowDefinitions="auto, *" IsVisible="{Binding LinuxInstructions}">
             <TextBlock Grid.Row="0" FontSize="25" Margin="0 0 0 20">Linux Launch Instructions</TextBlock>
