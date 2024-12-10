@@ -86,7 +86,7 @@ public static partial class Updater
 
         await using (var newStr = File.OpenWrite(newPath))
         {
-            var result = await InstallerUtils.DownloadFileAsync(downloadUrl, newStr, (progress, newStatus) => Progress?.Invoke(progress, newStatus));
+            var result = await InstallerUtils.DownloadFileAsync(downloadUrl, newStr, false, (progress, newStatus) => Progress?.Invoke(progress, newStatus));
             if (result != null)
             {
                 throw new Exception("Failed to download the latest installer version: " + result);

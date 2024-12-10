@@ -388,7 +388,7 @@ internal static class MLManager
             SetProgress(0, "Downloading MelonLoader " + version);
 
             using var bufferStr = new MemoryStream();
-            var result = await InstallerUtils.DownloadFileAsync(downloadUrl, bufferStr, SetProgress);
+            var result = await InstallerUtils.DownloadFileAsync(downloadUrl, bufferStr, true, SetProgress);
             if (result != null)
             {
                 onFinished?.Invoke("Failed to download MelonLoader: " + result);
