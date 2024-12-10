@@ -44,7 +44,7 @@ public partial class DetailsView : UserControl
             return;
         
 #if LINUX
-        if (Model.Game.IsLinux)
+        if (Model.Game.Arch == Architecture.LinuxX64)
         {
             LdLibPathVar.Text = $"LD_LIBRARY_PATH=\"{Model.Game.Dir}:$LD_LIBRARY_PATH\"";
             SteamLaunchOptions.Text = $"{LdLibPathVar.Text} {LdPreloadVar.Text} %command%";
@@ -74,7 +74,13 @@ public partial class DetailsView : UserControl
         if (Model == null)
             return;
 
-        var en = MLManager.Versions.Where(x => (Model.Game.IsLinux ? x.DownloadUrlLinux : (Model.Game.Is32Bit ? x.DownloadUrlWinX86 : x.DownloadUrlWin)) != null);
+        var en = MLManager.Versions.Where(x =>
+        Model.Game.Arch switch
+        {
+            Architecture.LinuxX64 => x.DownloadUrlLinux,
+            Architecture.WindowsX86 => x.DownloadUrlWinX86,
+            _ => x.DownloadUrlWin
+        } != null);
         if (NightlyCheck.IsChecked != true)
             en = en.Where(x => !x.Version.IsPrerelease || x.IsLocalPath);
 
@@ -139,7 +145,7 @@ public partial class DetailsView : UserControl
         ShowLinuxInstructions.IsVisible = false;
 
         _ = MLManager.InstallAsync(Path.GetDirectoryName(Model.Game.Path)!, Model.Game.MLInstalled && !KeepFilesCheck.IsChecked!.Value,
-            (MLVersion)VersionCombobox.SelectedItem!, Model.Game.IsLinux, Model.Game.Is32Bit,
+            (MLVersion)VersionCombobox.SelectedItem!, Model.Game.Arch,
             (progress, newStatus) => Dispatcher.UIThread.Post(() => OnInstallProgress(progress, newStatus)),
             (errorMessage) => Dispatcher.UIThread.Post(() => OnOperationFinished(errorMessage)));
     }
@@ -253,9 +259,16 @@ public partial class DetailsView : UserControl
                 if (errorMessage == null)
                 {
                     var ver = MLManager.Versions[0];
-                    if ((Model.Game.IsLinux ? ver.DownloadUrlLinux : (Model.Game.Is32Bit ? ver.DownloadUrlWinX86 : ver.DownloadUrlWin)) == null)
+                    var downloadUrl = Model.Game.Arch switch
                     {
-                        DialogBox.ShowError($"The selected version does not support the architechture of the current game: {(Model.Game.IsLinux ? "linux" : "win")}-{(Model.Game.Is32Bit ? "x86" : "x64")}");
+                        Architecture.LinuxX64 => ver.DownloadUrlLinux,
+                        Architecture.WindowsX64 => ver.DownloadUrlWin,
+                        Architecture.WindowsX86 => ver.DownloadUrlWinX86,
+                        _ => null
+                    };
+                    if (downloadUrl == null)
+                    {
+                        DialogBox.ShowError($"The selected version does not support the architecture of the current game: {Model.Game.Arch.GetDescription()}");
                     }
                 }
 
