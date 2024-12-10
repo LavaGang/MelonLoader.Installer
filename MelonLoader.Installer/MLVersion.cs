@@ -12,10 +12,9 @@ public class MLVersion
     public required SemVersion Version { get; init; }
     public bool IsLocalPath { get; init; }
 
-    public static SemVersion? GetMelonLoaderVersion(string gameDir, out bool x86, out bool linux)
+    public static SemVersion? GetMelonLoaderVersion(string gameDir, out Architecture architecture)
     {
-        x86 = false;
-        linux = false;
+        architecture = Architecture.Unknown;
         
         var mlDir = Path.Combine(gameDir, "MelonLoader");
         if (!Directory.Exists(mlDir))
@@ -57,17 +56,17 @@ public class MLVersion
             return null;
 
         proxyPath = Path.Combine(gameDir, proxyPath);
-
-        linux = proxyPath.EndsWith(".so");
-
-        if (linux)
+        if (proxyPath.EndsWith(".so"))
+        {
+            architecture = Architecture.LinuxX64;
             return version;
+        }
 
         try
         {
             using var proxyStr = File.OpenRead(proxyPath);
             var pe = new PEReader(proxyStr);
-            x86 = pe.PEHeaders.CoffHeader.Machine != Machine.Amd64;
+            architecture = pe.PEHeaders.CoffHeader.Machine == Machine.Amd64 ? Architecture.WindowsX64 : Architecture.WindowsX86;
             return version;
         }
         catch
