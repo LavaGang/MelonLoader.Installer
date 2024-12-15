@@ -100,7 +100,7 @@ internal static class GameManager
 
         path = Path.GetFullPath(path);
 
-        var linux = false;
+        var arch = Architecture.Unknown;
 
         var rawDataDirs = Directory.GetDirectories(path, "*_Data");
         var dataDirs = rawDataDirs.Where(x => File.Exists(x[..^5] + ".exe")).ToArray();
@@ -109,7 +109,7 @@ internal static class GameManager
             dataDirs = rawDataDirs.Where(x => File.Exists(x[..^5] + ".x86_64")).ToArray();
             if (dataDirs.Length != 0)
             {
-                linux = true;
+                arch = Architecture.LinuxX64;
             }
             else
             {
@@ -124,7 +124,7 @@ internal static class GameManager
             return null;
         }
 
-        var exe = dataDirs[0][..^5] + (linux ? ".x86_64" : ".exe");
+        var exe = dataDirs[0][..^5] + (arch == Architecture.LinuxX64 ? ".x86_64" : ".exe");
 
         if (Games.Any(x => x.Path.Equals(exe, StringComparison.OrdinalIgnoreCase)))
         {
@@ -132,13 +132,12 @@ internal static class GameManager
             return null;
         }
 
-        var is64 = true;
-        if (!linux)
+        if (arch == Architecture.Unknown)
         {
             try
             {
                 using var pe = new PEReader(File.OpenRead(exe));
-                is64 = pe.PEHeaders.CoffHeader.Machine == Machine.Amd64;
+                arch = pe.PEHeaders.CoffHeader.Machine == Machine.Amd64 ? Architecture.WindowsX64 : Architecture.WindowsX86;
             }
             catch
             {
@@ -147,8 +146,8 @@ internal static class GameManager
             }
         }
 
-        var mlVersion = MLVersion.GetMelonLoaderVersion(path, out var ml86, out var mlLinux);
-        if (mlVersion != null && (is64 == ml86 || linux != mlLinux))
+        var mlVersion = MLVersion.GetMelonLoaderVersion(path, out var mlArch);
+        if (mlVersion != null && (mlArch != arch))
             mlVersion = null;
 
         Bitmap? icon = null;
@@ -169,7 +168,7 @@ internal static class GameManager
 
         var isProtected = Directory.Exists(Path.Combine(path, "EasyAntiCheat"));
 
-        var result = new GameModel(exe, customName ?? Path.GetFileNameWithoutExtension(exe), !is64, linux, launcher, icon, mlVersion, isProtected);
+        var result = new GameModel(exe, customName ?? Path.GetFileNameWithoutExtension(exe), arch, launcher, icon, mlVersion, isProtected);
         errorMessage = null;
 
         AddGameSorted(result);

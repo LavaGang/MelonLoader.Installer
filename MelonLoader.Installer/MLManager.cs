@@ -310,7 +310,7 @@ internal static class MLManager
             return;
         }
 
-        var mlVer = MLVersion.GetMelonLoaderVersion(Config.LocalZipCache, out var x86, out var linux);
+        var mlVer = MLVersion.GetMelonLoaderVersion(Config.LocalZipCache, out var arch);
         if (mlVer == null)
         {
             onFinished?.Invoke("The selected zip archive does not contain a valid MelonLoader build.");
@@ -320,9 +320,9 @@ internal static class MLManager
         var version = new MLVersion()
         {
             Version = mlVer,
-            DownloadUrlWin = !linux ? (!x86 ? Config.LocalZipCache : null) : null,
-            DownloadUrlWinX86 = !linux ? (x86 ? Config.LocalZipCache : null) : null,
-            DownloadUrlLinux = linux ? Config.LocalZipCache : null,
+            DownloadUrlWin = arch == Architecture.WindowsX64 ? Config.LocalZipCache : null,
+            DownloadUrlWinX86 = arch == Architecture.WindowsX86 ? Config.LocalZipCache : null,
+            DownloadUrlLinux = arch == Architecture.LinuxX64 ? Config.LocalZipCache : null,
             IsLocalPath = true
         };
 
@@ -332,12 +332,19 @@ internal static class MLManager
         onFinished?.Invoke(null);
     }
 
-    public static async Task InstallAsync(string gameDir, bool removeUserFiles, MLVersion version, bool linux, bool x86, InstallProgressEventHandler? onProgress, InstallFinishedEventHandler? onFinished)
+    public static async Task InstallAsync(string gameDir, bool removeUserFiles, MLVersion version, Architecture arch, InstallProgressEventHandler? onProgress, InstallFinishedEventHandler? onFinished)
     {
-        var downloadUrl = linux ? (!x86 ? version.DownloadUrlLinux : null) : (x86 ? version.DownloadUrlWinX86 : version.DownloadUrlWin);
+        var downloadUrl = arch switch
+        {
+            Architecture.LinuxX64 => version.DownloadUrlLinux,
+            Architecture.WindowsX64 => version.DownloadUrlWin,
+            Architecture.WindowsX86 => version.DownloadUrlWinX86,
+            _ => null
+        };
+
         if (downloadUrl == null)
         {
-            onFinished?.Invoke($"The selected version does not support the selected architecture: {(linux ? "linux" : "win")}-{(x86 ? "x86" : "x64")}");
+            onFinished?.Invoke($"The selected version does not support the selected architecture: {arch.GetDescription()}");
             return;
         }
 
@@ -381,7 +388,7 @@ internal static class MLManager
             SetProgress(0, "Downloading MelonLoader " + version);
 
             using var bufferStr = new MemoryStream();
-            var result = await InstallerUtils.DownloadFileAsync(downloadUrl, bufferStr, SetProgress);
+            var result = await InstallerUtils.DownloadFileAsync(downloadUrl, bufferStr, true, SetProgress);
             if (result != null)
             {
                 onFinished?.Invoke("Failed to download MelonLoader: " + result);
