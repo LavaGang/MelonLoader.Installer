@@ -29,7 +29,7 @@ public partial class GameControl : UserControl
 
         var showWine =
 #if LINUX
-            !Model.IsLinux;
+            Model.Arch != Architecture.LinuxX64;
 #else
             false;
 #endif
