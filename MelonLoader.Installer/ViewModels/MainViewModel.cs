@@ -1,22 +1,21 @@
-﻿using System.Collections.ObjectModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using System.Collections.ObjectModel;
 
 namespace MelonLoader.Installer.ViewModels;
 
-public class MainViewModel : ViewModelBase
+public partial class MainViewModel : ViewModelBase
 {
-    private static bool _ready;
+    [ObservableProperty]
+    private bool ready;
 
-    public bool Ready
+    [ObservableProperty]
+    private string? search;
+
+    [ObservableProperty]
+    private ObservableCollection<GameModel> games = GameManager.Games;
+
+    partial void OnSearchChanged(string? value)
     {
-        get => _ready;
-        set
-        {
-            _ready = value;
-            OnPropertyChanged();
-        }
+        Games = new(GameManager.Games.Where(x => string.IsNullOrEmpty(value) || x.Name.Contains(value, StringComparison.CurrentCultureIgnoreCase)));
     }
-
-    public ObservableCollection<GameModel> Games => GameManager.Games;
-
-    public string Version => Program.VersionName;
 }
