@@ -38,9 +38,9 @@ public class GameModel(string path, string name, bool is32Bit, bool isLinux, Gam
     public bool ValidateGame()
     {
         var exeExtIdx = path.LastIndexOf('.');
-        
+
         var pathNoExt = exeExtIdx != -1 ? path[..exeExtIdx] : path;
-        
+
         if (!File.Exists(path) || !Directory.Exists(pathNoExt + "_Data"))
         {
             GameManager.RemoveGame(this);
@@ -50,10 +50,10 @@ public class GameModel(string path, string name, bool is32Bit, bool isLinux, Gam
         var newMlVersion = Installer.MLVersion.GetMelonLoaderVersion(Dir, out var ml86, out var mlLinux);
         if (newMlVersion != null && (ml86 != Is32Bit || mlLinux != IsLinux))
             newMlVersion = null;
-        
-        if (newMlVersion == MLVersion) 
+
+        if (newMlVersion == MLVersion)
             return true;
-        
+
         MLVersion = newMlVersion;
         GameManager.ResortGame(this);
 

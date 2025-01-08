@@ -5,7 +5,6 @@ using Avalonia.Platform.Storage;
 using Avalonia.Threading;
 using MelonLoader.Installer.ViewModels;
 using System.ComponentModel;
-using System.Runtime.InteropServices;
 
 namespace MelonLoader.Installer.Views;
 
@@ -35,14 +34,14 @@ public partial class DetailsView : UserControl
             UpdateVersionInfo();
         }
     }
-    
+
     protected override async void OnDataContextChanged(EventArgs e)
     {
         base.OnDataContextChanged(e);
 
         if (Model == null)
             return;
-        
+
 #if LINUX
         if (Model.Game.IsLinux)
         {
@@ -86,13 +85,13 @@ public partial class DetailsView : UserControl
     {
         if (Model == null)
             return;
-        
+
         if (Model.LinuxInstructions)
         {
             Model.LinuxInstructions = false;
             return;
         }
-        
+
         if (Model.Installing)
             return;
 
@@ -176,9 +175,9 @@ public partial class DetailsView : UserControl
         if (addedLocalBuild)
             return;
 
-        bool isInstall = true;
-        string operationType = Model.Game.MLInstalled ? "Installed" : "Uninstalled";
-        if (Model.Game.MLInstalled 
+        var isInstall = true;
+        var operationType = Model.Game.MLInstalled ? "Installed" : "Uninstalled";
+        if (Model.Game.MLInstalled
             && (Model.Game.MLVersion != null)
             && (currentMLVersion != null))
         {
@@ -268,7 +267,7 @@ public partial class DetailsView : UserControl
     {
         if (Model == null)
             return;
-        
+
         Model.LinuxInstructions = true;
     }
 }

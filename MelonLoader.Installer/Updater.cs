@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics;
-using System.Runtime.InteropServices;
 using System.Text.Json.Nodes;
 
 namespace MelonLoader.Installer;
@@ -13,7 +12,7 @@ public static partial class Updater
     {
         if (State != UpdateState.None)
             return null;
-        
+
         // Don't auto-update on CI builds
         if (Program.Version.Revision > 0)
         {
@@ -92,7 +91,7 @@ public static partial class Updater
                 throw new Exception("Failed to download the latest installer version: " + result);
             }
         }
-        
+
 #if LINUX
         // Make the file executable on Unix
         Chmod(newPath, S_IRUSR | S_IXUSR | S_IWUSR | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
@@ -161,10 +160,10 @@ public static partial class Updater
             ".Linux"
 #endif
             ));
-        
+
         return asset?["browser_download_url"]?.ToString();
     }
-    
+
 #if LINUX
     // user permissions
     const int S_IRUSR = 0x100;

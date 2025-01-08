@@ -16,7 +16,7 @@ public class MLVersion
     {
         x86 = false;
         linux = false;
-        
+
         var mlDir = Path.Combine(gameDir, "MelonLoader");
         if (!Directory.Exists(mlDir))
             return null;

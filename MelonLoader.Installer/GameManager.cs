@@ -117,7 +117,7 @@ internal static class GameManager
                 return null;
             }
         }
-        
+
         if (dataDirs.Length > 1)
         {
             errorMessage = "The selected directory contains multiple Unity games?";
