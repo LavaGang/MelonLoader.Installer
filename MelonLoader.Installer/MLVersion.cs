@@ -45,7 +45,7 @@ public class MLVersion
             var fileVersionRaw = FileVersionInfo.GetVersionInfo(mlAssemblyPath).FileVersion!;
             var fileVersion = System.Version.Parse(fileVersionRaw);
             version = SemVersion.ParsedFrom(fileVersion.Major, fileVersion.Minor, fileVersion.Build,
-                fileVersion.Revision == 0 ? string.Empty : $"ci.{fileVersion.Revision}");
+                fileVersion.Revision <= 0 ? string.Empty : $"ci.{fileVersion.Revision}");
         }
         catch
         {
