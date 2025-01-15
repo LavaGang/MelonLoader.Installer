@@ -16,7 +16,7 @@ public class GogLauncher : GameLauncher
         gamesKey = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\WOW6432Node\GOG.com\Games");
     }
 
-    public override void AddGames()
+    public override void GetAddGameTasks(List<Task> tasks)
     {
         if (gamesKey == null)
             return;
@@ -34,7 +34,7 @@ public class GogLauncher : GameLauncher
             if (name == null)
                 continue;
 
-            GameManager.TryAddGame(path, name, this, null, out _);
+            tasks.Add(Task.Run(() => GameManager.TryAddGame(path, name, this, null, out _)));
         }
     }
 }

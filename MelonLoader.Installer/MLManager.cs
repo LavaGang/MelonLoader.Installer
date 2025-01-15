@@ -9,7 +9,6 @@ namespace MelonLoader.Installer;
 
 internal static class MLManager
 {
-    private static bool inited;
     internal static readonly string[] proxyNames =
     [
         "version.dll",
@@ -24,6 +23,8 @@ internal static class MLManager
     private static MLVersion? localBuild;
 
     public static List<MLVersion> Versions { get; } = [];
+
+    public static bool RefreshedOnce { get; private set; }
 
     static MLManager()
     {
@@ -42,41 +43,31 @@ internal static class MLManager
         }
     }
 
-    public static async Task<bool> Init()
-    {
-        if (inited)
-            return true;
-
-        inited = await RefreshVersions();
-        return inited;
-    }
-
-    private static Task<bool> RefreshVersions()
+    public static async Task<string?> RefreshVersionsAsync(InstallProgressEventHandler onProgress)
     {
         Versions.Clear();
 
         if (localBuild != null)
             Versions.Add(localBuild);
 
-        return GetVersionsAsync(Versions);
-    }
+        onProgress?.Invoke(0, "Fetching MelonLoader workflow builds");
 
-    private static async Task<bool> GetVersionsAsync(List<MLVersion> versions)
-    {
         HttpResponseMessage resp;
         try
         {
-            resp = await InstallerUtils.Http.GetAsync(Config.MelonLoaderBuildWorkflowApi).ConfigureAwait(false);
+            resp = await InstallerUtils.Http.GetAsync(Config.MelonLoaderBuildWorkflowApi);
         }
-        catch
+        catch (Exception ex)
         {
-            return false;
+            return $"Failed to fetch MelonLoader workflows: {ex.Message}";
         }
 
         if (!resp.IsSuccessStatusCode)
-            return false;
+            return $"Failed to fetch MelonLoader CI versions: Status code '{resp.StatusCode}'";
 
-        var relStr = await resp.Content.ReadAsStringAsync().ConfigureAwait(false);
+        onProgress?.Invoke(0.4, "Adding MelonLoader workflow builds");
+
+        var relStr = await resp.Content.ReadAsStringAsync();
         var runsJson = JsonNode.Parse(relStr)!["workflow_runs"]!.AsArray();
 
         // All run names must follow the following format: "{SemVersion} Remaining name"
@@ -101,22 +92,26 @@ internal static class MLManager
             if (version.DownloadUrlWin == null && version.DownloadUrlWinX86 == null && version.DownloadUrlLinux == null)
                 continue;
 
-            versions.Add(version);
+            Versions.Add(version);
         }
+
+        onProgress?.Invoke(0.5, "Fetching MelonLoader releases");
 
         try
         {
-            resp = await InstallerUtils.Http.GetAsync(Config.MelonLoaderReleasesApi).ConfigureAwait(false);
+            resp = await InstallerUtils.Http.GetAsync(Config.MelonLoaderReleasesApi);
         }
-        catch
+        catch (Exception ex)
         {
-            return false;
+            return $"Failed to fetch MelonLoader releases: {ex.Message}";
         }
 
         if (!resp.IsSuccessStatusCode)
-            return false;
+            return $"Failed to fetch MelonLoader releases: Status code '{resp.StatusCode}'";
 
-        relStr = await resp.Content.ReadAsStringAsync().ConfigureAwait(false);
+        onProgress?.Invoke(0.9, "Adding MelonLoader releases");
+
+        relStr = await resp.Content.ReadAsStringAsync();
         var releasesJson = JsonNode.Parse(relStr)!.AsArray();
 
         foreach (var release in releasesJson)
@@ -142,10 +137,11 @@ internal static class MLManager
             if (version.DownloadUrlWin == null && version.DownloadUrlWinX86 == null && version.DownloadUrlLinux == null)
                 continue;
 
-            versions.Add(version);
+            Versions.Add(version);
         }
 
-        return true;
+        RefreshedOnce = true;
+        return null;
     }
 
     public static string? Uninstall(string gameDir, bool removeUserFiles)

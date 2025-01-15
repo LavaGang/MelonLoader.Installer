@@ -10,7 +10,7 @@ namespace MelonLoader.Installer.Views;
 
 public partial class DetailsView : UserControl
 {
-    public DetailsViewModel? Model => (DetailsViewModel?)DataContext;
+    public DetailsViewModel? Model => DataContext as DetailsViewModel;
 
     public DetailsView()
     {
@@ -35,7 +35,7 @@ public partial class DetailsView : UserControl
         }
     }
 
-    protected override async void OnDataContextChanged(EventArgs e)
+    protected override void OnDataContextChanged(EventArgs e)
     {
         base.OnDataContextChanged(e);
 
@@ -55,12 +55,6 @@ public partial class DetailsView : UserControl
         Model.Game.PropertyChanged += PropertyChangedHandler;
 
         UpdateVersionList();
-
-        if (!await MLManager.Init())
-        {
-            Model.Offline = true;
-            DialogBox.ShowError("Failed to fetch MelonLoader releases. Ensure you're online.");
-        }
     }
 
     private void NightlyToggleHandler(object sender, RoutedEventArgs args)
@@ -76,6 +70,11 @@ public partial class DetailsView : UserControl
         var en = MLManager.Versions.Where(x => (Model.Game.IsLinux ? x.DownloadUrlLinux : (Model.Game.Is32Bit ? x.DownloadUrlWinX86 : x.DownloadUrlWin)) != null);
         if (NightlyCheck.IsChecked != true)
             en = en.Where(x => !x.Version.IsPrerelease || x.IsLocalPath);
+
+        if (!en.Any())
+        {
+            Model.Offline = true;
+        }
 
         VersionCombobox.ItemsSource = en;
         VersionCombobox.SelectedIndex = 0;

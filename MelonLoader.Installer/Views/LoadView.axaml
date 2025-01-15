@@ -1,0 +1,12 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" Width="900" Height="700"
+             x:Class="MelonLoader.Installer.Views.LoadView">
+
+    <Grid RowDefinitions="auto, 10, auto" VerticalAlignment="Center">
+        <TextBlock Grid.Row="0" Name="Text" FontSize="24" HorizontalAlignment="Center" Foreground="#BFFF">Text</TextBlock>
+        <ProgressBar Grid.Row="2" Name="Progress" Height="20" Width="300" Background="#4111" Foreground="#383" />
+    </Grid>
+</UserControl>

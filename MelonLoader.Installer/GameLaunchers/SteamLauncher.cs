@@ -28,7 +28,7 @@ public class SteamLauncher : GameLauncher
 
     internal SteamLauncher() : base("/Assets/steam.png") { }
 
-    public override void AddGames()
+    public override void GetAddGameTasks(List<Task> tasks)
     {
         if (steamPath == null)
             return;
@@ -49,30 +49,38 @@ public class SteamLauncher : GameLauncher
             var acfs = Directory.EnumerateFiles(steamapps, "*.acf");
             foreach (var acfPath in acfs)
             {
-                VToken acf;
-                try
-                {
-                    acf = VdfConvert.Deserialize(File.ReadAllText(acfPath)).Value;
-                }
-                catch
-                {
-                    continue;
-                }
-
-                var id = ((VProperty?)acf.FirstOrDefault(x => ((VProperty)x).Key == "appid"))?.Value?.ToString();
-                var name = ((VProperty?)acf.FirstOrDefault(x => ((VProperty)x).Key == "name"))?.Value?.ToString();
-                var dirName = ((VProperty?)acf.FirstOrDefault(x => ((VProperty)x).Key == "installdir"))?.Value?.ToString();
-
-                if (id == null || name == null || dirName == null)
-                    continue;
-
-                var appDir = Path.Combine(steamapps, "common", dirName);
-                if (!Directory.Exists(appDir))
-                    continue;
-
-                var iconPath = Path.Combine(steamPath, "appcache", "librarycache", id + "_icon.jpg");
-                GameManager.TryAddGame(appDir, name, this, iconPath, out _);
+                tasks.Add(AddGameAsync(acfPath, steamapps));
             }
         }
+    }
+
+    private async Task AddGameAsync(string acfPath, string steamapps)
+    {
+        if (steamPath == null)
+            return;
+
+        VToken acf;
+        try
+        {
+            acf = VdfConvert.Deserialize(await File.ReadAllTextAsync(acfPath)).Value;
+        }
+        catch
+        {
+            return;
+        }
+
+        var id = ((VProperty?)acf.FirstOrDefault(x => ((VProperty)x).Key == "appid"))?.Value?.ToString();
+        var name = ((VProperty?)acf.FirstOrDefault(x => ((VProperty)x).Key == "name"))?.Value?.ToString();
+        var dirName = ((VProperty?)acf.FirstOrDefault(x => ((VProperty)x).Key == "installdir"))?.Value?.ToString();
+
+        if (id == null || name == null || dirName == null)
+            return;
+
+        var appDir = Path.Combine(steamapps, "common", dirName);
+        if (!Directory.Exists(appDir))
+            return;
+
+        var iconPath = Path.Combine(steamPath, "appcache", "librarycache", id + "_icon.jpg");
+        GameManager.TryAddGame(appDir, name, this, iconPath, out _);
     }
 }

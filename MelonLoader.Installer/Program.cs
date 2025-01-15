@@ -21,9 +21,6 @@ internal static class Program
     [STAThread]
     private static void Main(string[] args)
     {
-        if (!Directory.Exists(Config.CacheDir))
-            Directory.CreateDirectory(Config.CacheDir);
-
         if (args.Length >= 3)
         {
             if (!int.TryParse(args[2], out var pid))
@@ -40,11 +37,6 @@ internal static class Program
                 Updater.WaitAndRemoveApp(args[1], pid);
             }
         }
-
-#if WINDOWS
-        if (Updater.CheckLegacyUpdate())
-            return;
-#endif
 
         if (!CheckProcessLock())
             return;

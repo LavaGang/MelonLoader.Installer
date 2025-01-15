@@ -9,6 +9,8 @@ public partial class MainView : UserControl
 {
     private static bool showedNotice;
 
+    private static DateTime _lastTimeCheckedVersions;
+
     public MainViewModel? Model => (MainViewModel?)DataContext;
 
     public MainView()
@@ -23,16 +25,21 @@ public partial class MainView : UserControl
         if (Model == null)
             return;
 
-        // if the updater has already ran, we already did all initialization
-        if (Updater.State == Updater.UpdateState.None)
+        if (!GameManager.Initialized)
         {
-            Model.Ready = false;
-            if (!await DoInit())
-            {
-                return;
-            }
-            Model.Ready = true;
+            await GameManager.InitAsync(MainWindow.Instance.SetLoadStatus);
         }
+
+        if (DateTime.Now - _lastTimeCheckedVersions > TimeSpan.FromMinutes(3))
+        {
+            _lastTimeCheckedVersions = DateTime.Now;
+
+            var error = await MLManager.RefreshVersionsAsync(MainWindow.Instance.SetLoadStatus);
+            if (error != null)
+                DialogBox.ShowError(error);
+        }
+
+        MainWindow.Instance.FinishLoad();
 
         OnGameListUpdate(null, null);
         GameManager.Games.CollectionChanged += OnGameListUpdate;
@@ -42,29 +49,9 @@ public partial class MainView : UserControl
             showedNotice = true;
             DialogBox.ShowNotice("""
                                  You're currently using a bleeding-edge CI build.
-                                 Please note that this build will not auto-update, so it's recommended to use a stable release instead.
+                                 Please note that this build will not auto-update, so it's recommended to use a stable one instead.
                                  """);
         }
-    }
-
-    private static async Task<bool> DoInit()
-    {
-        try
-        {
-            var checkUpdate = Task.Run(Updater.UpdateIfPossible);
-            var otherInit = Task.WhenAll(Task.Run(MLManager.Init), Task.Factory.StartNew(GameManager.Init, TaskCreationOptions.LongRunning));
-            if (await checkUpdate is { } updateTask)
-            {
-                _ = MainWindow.Instance.HandleUpdate(updateTask);
-                return false;
-            }
-            await otherInit;
-        }
-        catch (Exception ex)
-        {
-            CrashException(ex);
-        }
-        return true;
     }
 
     private static void CrashException(Exception ex)

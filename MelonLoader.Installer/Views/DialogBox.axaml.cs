@@ -1,5 +1,6 @@
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using Avalonia.Threading;
 using MelonLoader.Installer.ViewModels;
 
 namespace MelonLoader.Installer.Views;
@@ -89,6 +90,12 @@ public partial class DialogBox : Window
 
     private void Open()
     {
+        if (!Dispatcher.UIThread.CheckAccess())
+        {
+            Dispatcher.UIThread.Invoke(Open);
+            return;
+        }
+
         BringToFront();
 
         if (MainWindow.Instance.IsVisible)
