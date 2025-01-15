@@ -2,11 +2,13 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:gif="using:Avalonia.Labs.Gif"
              mc:Ignorable="d" Width="900" Height="700"
              x:Class="MelonLoader.Installer.Views.LoadView">
 
-    <Grid RowDefinitions="auto, 10, auto" VerticalAlignment="Center">
-        <TextBlock Grid.Row="0" Name="Text" FontSize="24" HorizontalAlignment="Center" Foreground="#BFFF">Text</TextBlock>
-        <ProgressBar Grid.Row="2" Name="Progress" Height="20" Width="300" Background="#4111" Foreground="#383" />
+    <Grid RowDefinitions="100, 30, auto, 30, auto" VerticalAlignment="Center">
+        <gif:GifImage Margin="0 -200 0 0" Grid.Row="0" Stretch="Uniform" Source="avares://MelonLoader.Installer/Assets/loading-anim.gif" />
+        <TextBlock Grid.Row="4" Name="Text" FontSize="24" HorizontalAlignment="Center" Foreground="#BFFF">Text</TextBlock>
+        <ProgressBar Grid.Row="2" Name="Progress" Height="20" Width="600" Background="#4111" Foreground="#383" />
     </Grid>
 </UserControl>

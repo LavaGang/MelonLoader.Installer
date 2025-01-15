@@ -22,7 +22,7 @@ public partial class MainView : UserControl
     {
         base.OnDataContextChanged(e);
 
-        if (Model == null)
+        if (Model == null || MainWindow.Instance == null)
             return;
 
         if (!GameManager.Initialized)
@@ -30,9 +30,9 @@ public partial class MainView : UserControl
             await GameManager.InitAsync(MainWindow.Instance.SetLoadStatus);
         }
 
-        if (DateTime.Now - _lastTimeCheckedVersions > TimeSpan.FromMinutes(3))
+        if (DateTime.UtcNow - _lastTimeCheckedVersions > TimeSpan.FromMinutes(3))
         {
-            _lastTimeCheckedVersions = DateTime.Now;
+            _lastTimeCheckedVersions = DateTime.UtcNow;
 
             var error = await MLManager.RefreshVersionsAsync(MainWindow.Instance.SetLoadStatus);
             if (error != null)
@@ -52,17 +52,6 @@ public partial class MainView : UserControl
                                  Please note that this build will not auto-update, so it's recommended to use a stable one instead.
                                  """);
         }
-    }
-
-    private static void CrashException(Exception ex)
-    {
-        Program.LogCrashException(ex);
-
-        DialogBox.ShowError("""
-                            An error has occurred while loading the game library!
-                            Please report this issue in the official Discord server in the #ml-support channel.
-                            Include the crash log named 'melonloader-installer-crash.log', located next to the executable.
-                            """, () => MainWindow.Instance.Close());
     }
 
     protected override void OnUnloaded(RoutedEventArgs e)

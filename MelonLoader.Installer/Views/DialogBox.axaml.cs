@@ -21,7 +21,7 @@ public partial class DialogBox : Window
     }
 
     public static void ShowError(string message, Action? onClose = null)
-        => ShowError("ERROR!", message, onClose);
+        => ShowError("MelonLoader Installer: Error", message, onClose);
 
     public static void ShowError(string title, string message, Action? onClose = null)
     {
@@ -38,7 +38,7 @@ public partial class DialogBox : Window
     }
 
     public static void ShowNotice(string message)
-        => ShowNotice("NOTICE", message);
+        => ShowNotice("MelonLoader Installer: Notice", message);
 
     public static void ShowNotice(string title, string message)
     {
@@ -56,9 +56,9 @@ public partial class DialogBox : Window
         string message,
         Action? onConfirm = null,
         Action? onCancel = null,
-        string confirmText = "YES",
-        string cancelText = "NO")
-        => ShowConfirmation("CONFIRMATION",
+        string confirmText = "Yes",
+        string cancelText = "No")
+        => ShowConfirmation("MelonLoader Installer",
             message,
             onConfirm,
             onCancel,
@@ -70,8 +70,8 @@ public partial class DialogBox : Window
         string message,
         Action? onConfirm = null,
         Action? onCancel = null,
-        string confirmText = "YES",
-        string cancelText = "NO")
+        string confirmText = "Yes",
+        string cancelText = "No")
     {
         new DialogBox
         {

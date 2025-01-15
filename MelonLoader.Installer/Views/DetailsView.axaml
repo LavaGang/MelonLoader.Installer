@@ -3,81 +3,83 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="clr-namespace:MelonLoader.Installer.ViewModels"
-    mc:Ignorable="d" d:DesignWidth="450" d:DesignHeight="650"
+    mc:Ignorable="d" d:DesignWidth="900" d:DesignHeight="650"
     x:Class="MelonLoader.Installer.Views.DetailsView"
     x:DataType="vm:DetailsViewModel">
     <Grid RowDefinitions="Auto, *">
         <Button Grid.Row="0" IsEnabled="{Binding !Installing}" Click="BackClickHandler"
                 FontSize="20" Background="Transparent" Content="←" FontWeight="Bold" Foreground="Gray"
                 HorizontalContentAlignment="Center" />
-        
+
         <Grid Grid.Row="1" RowDefinitions="auto, *, 80, 60, auto, *, 80, auto, 2*, auto, auto, 30, 70, auto, auto, *" IsVisible="{Binding !LinuxInstructions}">
-        <Border Grid.Row="2" ClipToBounds="True" CornerRadius="20" HorizontalAlignment="Center">
-            <Image Source="{Binding Game.Icon}" />
-        </Border>
-        <TextBlock Grid.Row="3" HorizontalAlignment="Center" VerticalAlignment="Center"
-            FontSize="22" Text="{Binding Game.Name}" />
-        <Grid Grid.Row="4" ColumnDefinitions="*, auto" IsEnabled="{Binding !Installing}">
-            <TextBox Grid.Column="0" Foreground="Gray" Text="{Binding Game.Dir}" IsReadOnly="True"
-                Focusable="False" SelectionBrush="#222" Background="Transparent" BorderThickness="0" />
-            <Button Click="OpenDirHandler" Grid.Column="1" Margin="3">📂</Button>
-        </Grid>
-        <Image Name="MelonIcon" Grid.Row="6" Source="/Assets/icon.ico" />
-        <TextBlock Grid.Row="7" HorizontalAlignment="Center" FontSize="18" Foreground="#7FFF"
-            Text="{Binding Game.MLStatusText}" />
-        <TextBlock Grid.Row="9" HorizontalAlignment="Center" Foreground="#BFFF">Select a version</TextBlock>
-        <ComboBox SelectionChanged="VersionSelectHandler" IsEnabled="{Binding EnableSettings}"
-            Name="VersionCombobox" Grid.Row="10" Margin="5" HorizontalAlignment="Center"
-            SelectedIndex="0" MaxDropDownHeight="150" />
-        <TextBlock Grid.Row="11" Tapped="SelectZipHandler" HorizontalAlignment="Center" IsEnabled="{Binding EnableSettings}"
-            Foreground="Gray" TextDecorations="Underline" FontSize="13" Cursor="Hand">Or select a
-            zipped version</TextBlock>
-        <StackPanel Grid.Row="12" IsEnabled="{Binding !Installing}">
-            <CheckBox Name="NightlyCheck" IsEnabled="{Binding EnableSettings}"
-                ToolTip.Tip="Enables bleeding-edge builds. ONLY ENABLE IF YOU KNOW WHAT YOU'RE DOING!"
-                Click="NightlyToggleHandler" HorizontalAlignment="Center">Enable Nightly builds</CheckBox>
-            <CheckBox Name="KeepFilesCheck"
-                ToolTip.Tip="Keep mods, plugins, UserData, and UserLibs when uninstalling."
-                HorizontalAlignment="Center"
-                IsVisible="{Binding Game.MLInstalled}" IsChecked="True">Keep mods and settings</CheckBox>
-        </StackPanel>
-        <Grid Grid.Row="13" Margin="10" Width="300" HorizontalAlignment="Center">
-            <Grid IsVisible="{Binding !Installing}" ColumnDefinitions="*, auto">
-                <Button Click="InstallHandler" IsEnabled="{Binding !Offline}" Name="InstallButton" Grid.Column="0"
-                    HorizontalAlignment="Stretch" Background="#383" Height="40"
-                    HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
-                    FontSize="18">Install</Button>
-                <Button Click="UninstallHandler" Margin="10 0 0 0" Grid.Column="1"
-                    IsVisible="{Binding Game.MLInstalled}" HorizontalAlignment="Stretch"
-                    Background="#833" Height="40" HorizontalContentAlignment="Center"
-                    VerticalContentAlignment="Center" FontSize="18">Uninstall</Button>
+            <Border Grid.Row="2" ClipToBounds="True" CornerRadius="20" HorizontalAlignment="Center">
+                <Image Source="{Binding Game.Icon}" />
+            </Border>
+            <TextBlock Grid.Row="3" HorizontalAlignment="Center" VerticalAlignment="Center"
+                FontSize="22" Text="{Binding Game.Name}" />
+            <Grid Grid.Row="4" ColumnDefinitions="*, auto" IsEnabled="{Binding !Installing}">
+                <TextBox Grid.Column="0" Foreground="Gray" Text="{Binding Game.Dir}" IsReadOnly="True"
+                    Focusable="False" Background="Transparent" />
+                <Button Click="OpenDirHandler" Grid.Column="1" Margin="3">📂</Button>
             </Grid>
-            <Grid IsVisible="{Binding Installing}">
-                <ProgressBar Name="Progress" Height="40" Background="#4383" Foreground="#383" />
-                <TextBlock Name="InstallStatus" HorizontalAlignment="Center"
-                    VerticalAlignment="Center" Opacity="0.7" FontSize="14" />
+            <Image Name="MelonIcon" Grid.Row="6" Source="/Assets/icon.ico" />
+            <TextBlock Grid.Row="7" HorizontalAlignment="Center" FontSize="18" Foreground="#7FFF"
+                Text="{Binding Game.MLStatusText}" />
+            <TextBlock Grid.Row="9" HorizontalAlignment="Center" Foreground="#BFFF">Select a version</TextBlock>
+            <ComboBox SelectionChanged="VersionSelectHandler" IsEnabled="{Binding EnableSettings}"
+                Name="VersionCombobox" Grid.Row="10" Margin="5" HorizontalAlignment="Center"
+                SelectedIndex="0" MaxDropDownHeight="150" />
+            <TextBlock Grid.Row="11" Tapped="SelectZipHandler" HorizontalAlignment="Center" IsEnabled="{Binding EnableSettings}"
+                Foreground="Gray" TextDecorations="Underline" FontSize="13" Cursor="Hand">
+                Or select a
+                zipped version
+            </TextBlock>
+            <StackPanel Grid.Row="12" IsEnabled="{Binding !Installing}">
+                <CheckBox Name="NightlyCheck" IsEnabled="{Binding EnableSettings}"
+                    ToolTip.Tip="Enables bleeding-edge builds. ONLY ENABLE IF YOU KNOW WHAT YOU'RE DOING!"
+                    Click="NightlyToggleHandler" HorizontalAlignment="Center">Enable Nightly builds</CheckBox>
+                <CheckBox Name="KeepFilesCheck"
+                    ToolTip.Tip="Keep mods, plugins, UserData, and UserLibs when uninstalling."
+                    HorizontalAlignment="Center"
+                    IsVisible="{Binding Game.MLInstalled}" IsChecked="True">Keep mods and settings</CheckBox>
+            </StackPanel>
+            <Grid Grid.Row="13" Margin="10" Width="300" HorizontalAlignment="Center">
+                <Grid IsVisible="{Binding !Installing}" ColumnDefinitions="*, auto">
+                    <Button Click="InstallHandler" IsEnabled="{Binding !Offline}" Name="InstallButton" Grid.Column="0"
+                        HorizontalAlignment="Stretch" Background="#383" Height="40"
+                        HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+                        FontSize="18">Install</Button>
+                    <Button Click="UninstallHandler" Margin="10 0 0 0" Grid.Column="1"
+                        IsVisible="{Binding Game.MLInstalled}" HorizontalAlignment="Stretch"
+                        Background="#833" Height="40" HorizontalContentAlignment="Center"
+                        VerticalContentAlignment="Center" FontSize="18">Uninstall</Button>
+                </Grid>
+                <Grid IsVisible="{Binding Installing}">
+                    <ProgressBar Name="Progress" Height="40" Background="#4383" Foreground="#383" />
+                    <TextBlock Name="InstallStatus" HorizontalAlignment="Center"
+                        VerticalAlignment="Center" Opacity="0.7" FontSize="14" />
+                </Grid>
             </Grid>
+
+            <TextBlock Name="ShowLinuxInstructions" IsEnabled="{Binding !Installing}" Grid.Row="14" Tapped="ShowLinuxInstructionsHandler" HorizontalAlignment="Center" Foreground="Gray" TextDecorations="Underline" FontSize="13" Cursor="Hand" IsVisible="False">
+                How do I start MelonLoader?
+            </TextBlock>
         </Grid>
-        
-        <TextBlock Name="ShowLinuxInstructions" IsEnabled="{Binding !Installing}" Grid.Row="14" Tapped="ShowLinuxInstructionsHandler" HorizontalAlignment="Center" Foreground="Gray" TextDecorations="Underline" FontSize="13" Cursor="Hand" IsVisible="False">
-            How do I start MelonLoader?
-        </TextBlock>
-    </Grid>
         <Grid Grid.Row="1" Margin="30" RowDefinitions="auto, *" IsVisible="{Binding LinuxInstructions}">
             <TextBlock Grid.Row="0" FontSize="25" Margin="0 0 0 20">Linux Launch Instructions</TextBlock>
-                    <StackPanel Orientation="Vertical" IsVisible="{Binding !Game.IsLinux}" Grid.Row="1">
-                        <TextBlock TextWrapping="Wrap">In order to start MelonLoader under Wine, you'll need to export the following variable:</TextBlock>
-                        <TextBox Margin="0 4 0 10" BorderBrush="Transparent" IsReadOnly="True">WINEDLLOVERRIDES="version=n,b"</TextBox>
-                        <TextBlock TextWrapping="Wrap">On Steam, you can set the launch options to:</TextBlock>
-                        <TextBox Margin="0 4 0 10" BorderBrush="Transparent" IsReadOnly="True">WINEDLLOVERRIDES="version=n,b" %command%</TextBox>
-                    </StackPanel>
-                    <StackPanel Orientation="Vertical" IsVisible="{Binding Game.IsLinux}" Grid.Row="1">
-                        <TextBlock TextWrapping="Wrap">In order to start MelonLoader, you'll need to export the following variables:</TextBlock>
-                        <TextBox Name="LdLibPathVar" Margin="0 4 0 0" BorderBrush="Transparent" IsReadOnly="True"/>
-                        <TextBox Name="LdPreloadVar" Margin="0 4 0 10" BorderBrush="Transparent" IsReadOnly="True">LD_PRELOAD="libversion.so"</TextBox>
-                        <TextBlock TextWrapping="Wrap">On Steam, you can set the launch options to:</TextBlock>
-                        <TextBox Name="SteamLaunchOptions" Margin="0 4 0 10" BorderBrush="Transparent" IsReadOnly="True"/>
-                    </StackPanel>
+            <StackPanel Orientation="Vertical" IsVisible="{Binding !Game.IsLinux}" Grid.Row="1">
+                <TextBlock TextWrapping="Wrap">In order to start MelonLoader under Wine, you'll need to export the following variable:</TextBlock>
+                <TextBox Margin="0 4 0 10" BorderBrush="Transparent" IsReadOnly="True">WINEDLLOVERRIDES="version=n,b"</TextBox>
+                <TextBlock TextWrapping="Wrap">On Steam, you can set the launch options to:</TextBlock>
+                <TextBox Margin="0 4 0 10" BorderBrush="Transparent" IsReadOnly="True">WINEDLLOVERRIDES="version=n,b" %command%</TextBox>
+            </StackPanel>
+            <StackPanel Orientation="Vertical" IsVisible="{Binding Game.IsLinux}" Grid.Row="1">
+                <TextBlock TextWrapping="Wrap">In order to start MelonLoader, you'll need to export the following variables:</TextBlock>
+                <TextBox Name="LdLibPathVar" Margin="0 4 0 0" BorderBrush="Transparent" IsReadOnly="True"/>
+                <TextBox Name="LdPreloadVar" Margin="0 4 0 10" BorderBrush="Transparent" IsReadOnly="True">LD_PRELOAD="libversion.so"</TextBox>
+                <TextBlock TextWrapping="Wrap">On Steam, you can set the launch options to:</TextBlock>
+                <TextBox Name="SteamLaunchOptions" Margin="0 4 0 10" BorderBrush="Transparent" IsReadOnly="True"/>
+            </StackPanel>
         </Grid>
     </Grid>
 </UserControl>

@@ -3,12 +3,12 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    Width="900" Height="700"
+    MinWidth="700" MinHeight="700"
+    Width="1000" Height="700"
     x:Class="MelonLoader.Installer.Views.MainWindow"
     Icon="/Assets/icon.ico"
     Title="MelonLoader Installer"
     WindowStartupLocation="CenterScreen"
-    CanResize="False"
     RenderOptions.BitmapInterpolationMode="HighQuality">
     <Grid>
         <Image Source="/Assets/bg.png" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Stretch="UniformToFill" />

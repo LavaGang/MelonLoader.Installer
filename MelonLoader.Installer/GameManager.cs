@@ -35,7 +35,7 @@ internal static class GameManager
 
         for (var i = 0; i < tasks.Count; i++)
         {
-            contTasks[i] = tasks[i].ContinueWith((t) => onProgress?.Invoke(finishedTasks++ / tasks.Count, null));
+            contTasks[i] = tasks[i].ContinueWith((t) => onProgress?.Invoke(finishedTasks++ / (double)tasks.Count, null));
         }
 
         return Task.WhenAll(contTasks);
