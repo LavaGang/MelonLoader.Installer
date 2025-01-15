@@ -29,7 +29,7 @@
             <ComboBox SelectionChanged="VersionSelectHandler" IsEnabled="{Binding EnableSettings}"
                 Name="VersionCombobox" Grid.Row="10" Margin="5" HorizontalAlignment="Center"
                 SelectedIndex="0" MaxDropDownHeight="150" />
-            <TextBlock Grid.Row="11" Tapped="SelectZipHandler" HorizontalAlignment="Center" IsEnabled="{Binding EnableSettings}"
+            <TextBlock Grid.Row="11" Tapped="SelectZipHandler" HorizontalAlignment="Center" IsEnabled="{Binding !Installing}"
                 Foreground="Gray" TextDecorations="Underline" FontSize="13" Cursor="Hand">
                 Or select a
                 zipped version

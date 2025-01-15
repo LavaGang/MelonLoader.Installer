@@ -7,12 +7,12 @@
     x:Class="MelonLoader.Installer.Views.GameControl"
     x:DataType="vm:GameModel"
     Margin="3">
-    <Button IsEnabled="{Binding !IsProtected}" Width="300" CornerRadius="15" Height="80" Click="ClickHandler" ToolTip.Tip="{Binding Path}"
+    <Button IsEnabled="{Binding !IsProtected}" Name="MainButton" BorderBrush="#85A5" BorderThickness="1" Width="500" CornerRadius="15" Height="80" Click="ClickHandler" ToolTip.Tip="{Binding Path}"
         HorizontalAlignment="Stretch" Background="#1999" Padding="0">
-        <Grid ColumnDefinitions="auto *" RowDefinitions="* 10 *" Margin="8">
-            <TextBlock Grid.Column="1" Margin="10 0" VerticalAlignment="Center" FontSize="14"
+        <Grid ColumnDefinitions="auto *" RowDefinitions="* 15 *" Margin="8">
+            <TextBlock Grid.Column="1" VerticalAlignment="Center" FontSize="14"
                 TextTrimming="CharacterEllipsis" Text="{Binding Name}" />
-            <Border Grid.Column="0" Grid.RowSpan="3" CornerRadius="10" ClipToBounds="True">
+            <Border Grid.Column="0" Grid.RowSpan="3" CornerRadius="10" ClipToBounds="True" Margin="0 0 10 0">
                 <Image Source="{Binding Icon}" />
             </Border>
             <Border Name="IconsPanel" IsVisible="False" Grid.Column="1" Grid.Row="2" Height="20" HorizontalAlignment="Right">

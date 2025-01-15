@@ -4,11 +4,12 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     MinWidth="700" MinHeight="700"
-    Width="1000" Height="700"
+    Width="1200" Height="800"
     x:Class="MelonLoader.Installer.Views.MainWindow"
     Icon="/Assets/icon.ico"
     Title="MelonLoader Installer"
     WindowStartupLocation="CenterScreen"
+    CanResize="False"
     RenderOptions.BitmapInterpolationMode="HighQuality">
     <Grid>
         <Image Source="/Assets/bg.png" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Stretch="UniformToFill" />

@@ -71,10 +71,7 @@ public partial class DetailsView : UserControl
         if (NightlyCheck.IsChecked != true)
             en = en.Where(x => !x.Version.IsPrerelease || x.IsLocalPath);
 
-        if (!en.Any())
-        {
-            Model.Offline = true;
-        }
+        Model.Offline = !en.Any();
 
         VersionCombobox.ItemsSource = en;
         VersionCombobox.SelectedIndex = 0;
