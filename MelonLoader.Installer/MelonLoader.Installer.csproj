@@ -15,10 +15,10 @@
         <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
+        <StartupObject>MelonLoader.Installer.Program</StartupObject>
 
         <Authors>Lava Gang</Authors>
         <Company>discord.gg/2Wn3N2P</Company>
-        <StartupObject>MelonLoader.Installer.Program</StartupObject>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(RuntimeIdentifier.StartsWith(`win-`))' == 'true'">

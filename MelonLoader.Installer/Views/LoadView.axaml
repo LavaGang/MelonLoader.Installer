@@ -7,7 +7,7 @@
              x:Class="MelonLoader.Installer.Views.LoadView">
 
     <Grid RowDefinitions="100, 30, auto, 30, auto" VerticalAlignment="Center">
-        <gif:GifImage Margin="0 -200 0 0" Grid.Row="0" Stretch="Uniform" Source="avares://MelonLoader.Installer/Assets/loading-anim.gif" />
+        <gif:GifImage Name="Gif" Margin="0 -200 0 0" Grid.Row="0" Stretch="Uniform" />
         <TextBlock Grid.Row="4" Name="Text" FontSize="24" HorizontalAlignment="Center" Foreground="#BFFF">Text</TextBlock>
         <ProgressBar Grid.Row="2" Name="Progress" Height="20" Width="600" Background="#4111" Foreground="#383" />
     </Grid>
