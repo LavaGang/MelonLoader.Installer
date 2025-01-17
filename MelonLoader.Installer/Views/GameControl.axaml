@@ -8,7 +8,7 @@
     x:DataType="vm:GameModel"
     Margin="3">
     <Button IsEnabled="{Binding !IsProtected}" Name="MainButton" BorderBrush="#85A5" BorderThickness="1" Width="500" CornerRadius="15" Height="80" Click="ClickHandler" ToolTip.Tip="{Binding Path}"
-        HorizontalAlignment="Stretch" Background="#1999" Padding="0">
+        HorizontalAlignment="Stretch" Background="#3CCC" Padding="0">
         <Grid ColumnDefinitions="auto *" RowDefinitions="* 15 *" Margin="8">
             <TextBlock Grid.Column="1" VerticalAlignment="Center" FontSize="14"
                 TextTrimming="CharacterEllipsis" Text="{Binding Name}" />

@@ -187,7 +187,7 @@ public partial class DetailsView : UserControl
             };
         }
 
-        DialogBox.ShowNotice("SUCCESS!", $"Successfully {operationType}{((!Model.Game.MLInstalled || isInstall) ? string.Empty : " to")}\nMelonLoader v{(Model.Game.MLInstalled ? Model.Game.MLVersion : currentMLVersion)}");
+        DialogBox.ShowNotice("Success!", $"Successfully {operationType}{((!Model.Game.MLInstalled || isInstall) ? string.Empty : " to")}\nMelonLoader v{(Model.Game.MLInstalled ? Model.Game.MLVersion : currentMLVersion)}");
     }
 
     private void OpenDirHandler(object sender, RoutedEventArgs args)
