@@ -13,5 +13,5 @@ public abstract class GameLauncher(string iconPath)
 
     public string IconPath => iconPath;
 
-    public abstract void AddGames();
+    public abstract void GetAddGameTasks(List<Task> tasks);
 }

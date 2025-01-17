@@ -6,9 +6,6 @@ namespace MelonLoader.Installer.ViewModels;
 public partial class MainViewModel : ViewModelBase
 {
     [ObservableProperty]
-    private bool ready;
-
-    [ObservableProperty]
     private string? search;
 
     [ObservableProperty]

@@ -6,9 +6,8 @@
     <Application.Styles>
         <FluentTheme>
             <FluentTheme.Palettes>
-                <ColorPaletteResources x:Key="Dark" BaseMediumLow="#57A7" Accent="#57A7">
+                <ColorPaletteResources x:Key="Dark" Accent="#5A5" AltHigh="#222">
                 </ColorPaletteResources>
-
             </FluentTheme.Palettes>
         </FluentTheme>
         <Style Selector="Button,TextBox,ComboBox,ProgressBar">
@@ -20,6 +19,7 @@
         </Style>
         <Style Selector="TextBox">
             <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="BorderThickness" Value="0" />
         </Style>
     </Application.Styles>
 </Application>

@@ -3,8 +3,6 @@ using System.Drawing;
 
 namespace MelonLoader.Installer;
 
-#pragma warning disable CA1416
-
 internal class IconExtractor
 {
     public static Avalonia.Media.Imaging.Bitmap? GetExeIcon(string filePath)

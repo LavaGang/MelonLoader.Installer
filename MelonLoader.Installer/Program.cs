@@ -1,6 +1,14 @@
 ﻿using Avalonia;
 using System.Diagnostics;
-using System.Runtime.InteropServices;
+using System.Runtime.Versioning;
+
+[assembly: SupportedOSPlatform(
+#if WINDOWS
+    "windows"
+#elif LINUX
+    "linux"
+#endif
+)]
 
 namespace MelonLoader.Installer;
 
@@ -22,9 +30,6 @@ internal static class Program
     [STAThread]
     private static void Main(string[] args)
     {
-        if (!Directory.Exists(Config.CacheDir))
-            Directory.CreateDirectory(Config.CacheDir);
-
         if (args.Length >= 3)
         {
             if (!int.TryParse(args[2], out var pid))
@@ -42,11 +47,6 @@ internal static class Program
             }
         }
 
-#if WINDOWS
-        if (Updater.CheckLegacyUpdate())
-            return;
-#endif
-
         if (!CheckProcessLock())
             return;
 
@@ -60,7 +60,7 @@ internal static class Program
         }
 
         Exiting?.Invoke();
-        
+
         processLock.Dispose();
         File.Delete(processLockPath);
     }
@@ -99,9 +99,9 @@ internal static class Program
                     GrabAttention(proc);
                     return false;
                 }
-                catch 
+                catch
                 {
-                    return false; 
+                    return false;
                 }
             }
 #else

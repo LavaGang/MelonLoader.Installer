@@ -51,8 +51,8 @@ public static class InstallerUtils
         var buffer = new byte[1024 * 16];
         while (position < destination.Length - 1)
         {
-            var read = await content.ReadAsync(buffer, 0, buffer.Length);
-            await destination.WriteAsync(buffer, 0, read);
+            var read = await content.ReadAsync(buffer);
+            await destination.WriteAsync(buffer.AsMemory(0, read));
 
             position += read;
 

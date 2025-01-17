@@ -16,7 +16,7 @@ public class MLVersion
     {
         x86 = false;
         linux = false;
-        
+
         var mlDir = Path.Combine(gameDir, "MelonLoader");
         if (!Directory.Exists(mlDir))
             return null;
@@ -36,6 +36,7 @@ public class MLVersion
                 }
             }
         }
+
         if (mlAssemblyPath == null)
             return null;
 
@@ -45,7 +46,7 @@ public class MLVersion
             var fileVersionRaw = FileVersionInfo.GetVersionInfo(mlAssemblyPath).FileVersion!;
             var fileVersion = System.Version.Parse(fileVersionRaw);
             version = SemVersion.ParsedFrom(fileVersion.Major, fileVersion.Minor, fileVersion.Build,
-                fileVersion.Revision == 0 ? string.Empty : $"ci.{fileVersion.Revision}");
+                fileVersion.Revision <= 0 ? string.Empty : $"ci.{fileVersion.Revision}");
         }
         catch
         {

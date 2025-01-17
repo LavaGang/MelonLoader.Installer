@@ -13,12 +13,14 @@ internal static class Config
     public static string LocalZipCache { get; private set; } = Path.Combine(CacheDir, "Local Build");
     public static string GameListPath { get; private set; } = Path.Combine(CacheDir, "games.txt");
 
+    static Config()
+    {
+        Directory.CreateDirectory(CacheDir);
+    }
+
     public static string[] LoadGameList()
     {
-        if (!File.Exists(GameListPath))
-            return [];
-
-        return File.ReadAllLines(GameListPath);
+        return !File.Exists(GameListPath) ? [] : File.ReadAllLines(GameListPath);
     }
 
     public static void SaveGameList(IEnumerable<string> gamePaths)

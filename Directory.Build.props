@@ -1,6 +1,6 @@
 <Project>
     <PropertyGroup>
-        <Version>4.1.1</Version>
+        <Version>5.0.0</Version>
 		
         <TargetFramework>net8.0</TargetFramework>
 
@@ -10,6 +10,6 @@
         <RuntimeIdentifier Condition="'$([MSBuild]::IsOSUnixLike())' == 'true'">linux-x64</RuntimeIdentifier>
         
         <Nullable>enable</Nullable>
-        <AvaloniaVersion>11.2.1</AvaloniaVersion>
+        <AvaloniaVersion>11.2.3</AvaloniaVersion>
     </PropertyGroup>
 </Project>

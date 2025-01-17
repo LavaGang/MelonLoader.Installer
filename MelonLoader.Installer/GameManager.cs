@@ -9,34 +9,44 @@ namespace MelonLoader.Installer;
 
 internal static class GameManager
 {
-    private static bool inited;
+    public static bool Initialized { get; private set; }
 
     public static ObservableCollection<GameModel> Games { get; } = [];
 
-    public static void Init()
+    public static Task InitAsync(InstallProgressEventHandler onProgress)
     {
-        if (inited)
-            return;
+        if (Initialized)
+            return Task.CompletedTask;
 
-        inited = true;
+        Initialized = true;
 
+        onProgress?.Invoke(0, "Loading game library");
+
+        var finishedTasks = 0;
+        var tasks = new List<Task>();
         foreach (var launcher in GameLauncher.Launchers)
         {
-            launcher.AddGames();
+            launcher.GetAddGameTasks(tasks);
         }
 
-        LoadSavedGames();
+        GetLoadSavedGamesTasks(tasks);
+
+        var contTasks = new Task[tasks.Count];
+
+        for (var i = 0; i < tasks.Count; i++)
+        {
+            contTasks[i] = tasks[i].ContinueWith((t) => onProgress?.Invoke(finishedTasks++ / (double)tasks.Count, null));
+        }
+
+        return Task.WhenAll(contTasks);
     }
 
-    private static void LoadSavedGames()
+    private static void GetLoadSavedGamesTasks(List<Task> tasks)
     {
         foreach (var gamePath in Config.LoadGameList())
         {
-            TryAddGame(gamePath, null, null, null, out _);
+            tasks.Add(Task.Run(() => TryAddGame(gamePath, null, null, null, out _)));
         }
-
-        // In case it was manually edited or if any games were removed
-        SaveManualGameList();
     }
 
     public static void SaveManualGameList()
@@ -60,6 +70,7 @@ internal static class GameManager
                 Games.Insert(i, game);
                 return;
             }
+
             if (!gameHasMl && iHasMl)
                 continue;
 
@@ -106,7 +117,7 @@ internal static class GameManager
         var dataDirs = rawDataDirs.Where(x => File.Exists(x[..^5] + ".exe")).ToArray();
         if (dataDirs.Length == 0)
         {
-            dataDirs = rawDataDirs.Where(x => File.Exists(x[..^5] + ".x86_64")).ToArray();
+            dataDirs = [.. rawDataDirs.Where(x => File.Exists(x[..^5] + ".x86_64"))];
             if (dataDirs.Length != 0)
             {
                 linux = true;
@@ -117,7 +128,7 @@ internal static class GameManager
                 return null;
             }
         }
-        
+
         if (dataDirs.Length > 1)
         {
             errorMessage = "The selected directory contains multiple Unity games?";
@@ -126,10 +137,13 @@ internal static class GameManager
 
         var exe = dataDirs[0][..^5] + (linux ? ".x86_64" : ".exe");
 
-        if (Games.Any(x => x.Path.Equals(exe, StringComparison.OrdinalIgnoreCase)))
+        lock (Games)
         {
-            errorMessage = "Game is already listed.";
-            return null;
+            if (Games.Any(x => x.Path.Equals(exe, StringComparison.OrdinalIgnoreCase)))
+            {
+                errorMessage = "Game is already listed.";
+                return null;
+            }
         }
 
         var is64 = true;
@@ -172,7 +186,17 @@ internal static class GameManager
         var result = new GameModel(exe, customName ?? Path.GetFileNameWithoutExtension(exe), !is64, linux, launcher, icon, mlVersion, isProtected);
         errorMessage = null;
 
-        AddGameSorted(result);
+        lock (Games)
+        {
+            // We're doing it again, in case another Task managed to already add a copy of the same game at this point
+            if (Games.Any(x => x.Path.Equals(exe, StringComparison.OrdinalIgnoreCase)))
+            {
+                errorMessage = "Game is already listed.";
+                return null;
+            }
+
+            AddGameSorted(result);
+        }
 
         return result;
     }

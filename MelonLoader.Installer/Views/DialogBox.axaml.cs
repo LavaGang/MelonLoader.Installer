@@ -1,5 +1,6 @@
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using Avalonia.Threading;
 using MelonLoader.Installer.ViewModels;
 
 namespace MelonLoader.Installer.Views;
@@ -15,12 +16,12 @@ public partial class DialogBox : Window
     protected override void OnClosed(EventArgs e)
     {
         base.OnClosed(e);
-        
+
         OnCancel?.Invoke();
     }
 
     public static void ShowError(string message, Action? onClose = null)
-        => ShowError("ERROR!", message, onClose);
+        => ShowError("MelonLoader Installer: Error", message, onClose);
 
     public static void ShowError(string title, string message, Action? onClose = null)
     {
@@ -37,7 +38,7 @@ public partial class DialogBox : Window
     }
 
     public static void ShowNotice(string message)
-        => ShowNotice("NOTICE", message);
+        => ShowNotice("MelonLoader Installer: Notice", message);
 
     public static void ShowNotice(string title, string message)
     {
@@ -55,9 +56,9 @@ public partial class DialogBox : Window
         string message,
         Action? onConfirm = null,
         Action? onCancel = null,
-        string confirmText = "YES",
-        string cancelText = "NO")
-        => ShowConfirmation("CONFIRMATION",
+        string confirmText = "Yes",
+        string cancelText = "No")
+        => ShowConfirmation("MelonLoader Installer",
             message,
             onConfirm,
             onCancel,
@@ -69,8 +70,8 @@ public partial class DialogBox : Window
         string message,
         Action? onConfirm = null,
         Action? onCancel = null,
-        string confirmText = "YES",
-        string cancelText = "NO")
+        string confirmText = "Yes",
+        string cancelText = "No")
     {
         new DialogBox
         {
@@ -89,6 +90,12 @@ public partial class DialogBox : Window
 
     private void Open()
     {
+        if (!Dispatcher.UIThread.CheckAccess())
+        {
+            Dispatcher.UIThread.Invoke(Open);
+            return;
+        }
+
         BringToFront();
 
         if (MainWindow.Instance.IsVisible)

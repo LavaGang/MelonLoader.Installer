@@ -1,36 +1,51 @@
 ﻿using System.Diagnostics;
-using System.Runtime.InteropServices;
 using System.Text.Json.Nodes;
+
+#if LINUX
+using System.Runtime.InteropServices;
+#endif
 
 namespace MelonLoader.Installer;
 
 public static partial class Updater
 {
-    public static volatile UpdateState State;
-    public static event InstallProgressEventHandler? Progress;
-
-    public static async Task<Task?> UpdateIfPossible()
+    public static async Task<bool> UpdateIfPossibleAsync(InstallProgressEventHandler onProgress)
     {
-        if (State != UpdateState.None)
-            return null;
-        
         // Don't auto-update on CI builds
         if (Program.Version.Revision > 0)
-        {
-            State = UpdateState.AlreadyChecked;
-            return null;
-        }
+            return false;
+
+        onProgress?.Invoke(0, "Checking for updates");
 
         var downloadUrl = await CheckForUpdateAsync();
         if (downloadUrl == null)
+            return false;
+
+        var newPath = Path.GetTempFileName()
+#if WINDOWS
+                      + ".exe"
+#endif
+                      ;
+
+        onProgress?.Invoke(0, "Updating");
+
+        await using (var newStr = File.OpenWrite(newPath))
         {
-            State = UpdateState.AlreadyChecked;
-            return null;
+            var result = await InstallerUtils.DownloadFileAsync(downloadUrl, newStr, (progress, newStatus) => onProgress?.Invoke(progress, newStatus));
+            if (result != null)
+            {
+                throw new Exception("Failed to download the latest installer version: " + result);
+            }
         }
 
-        State = UpdateState.Updating;
+#if LINUX
+        // Make the file executable on Unix
+        Chmod(newPath, S_IRUSR | S_IXUSR | S_IWUSR | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
+#endif
 
-        return Task.Run(() => UpdateAsync(downloadUrl));
+        Process.Start(newPath, ["-handleupdate", Environment.ProcessPath!, Environment.ProcessId.ToString()]);
+
+        return true;
     }
 
     public static bool WaitAndRemoveApp(string originalPath, int prevPID)
@@ -76,52 +91,6 @@ public static partial class Updater
         Process.Start(originalPath, ["-cleanup", Environment.ProcessPath!, Environment.ProcessId.ToString()]);
     }
 
-    private static async Task UpdateAsync(string downloadUrl)
-    {
-        var newPath = Path.GetTempFileName()
-#if WINDOWS
-                      + ".exe"
-#endif
-                      ;
-
-        await using (var newStr = File.OpenWrite(newPath))
-        {
-            var result = await InstallerUtils.DownloadFileAsync(downloadUrl, newStr, (progress, newStatus) => Progress?.Invoke(progress, newStatus));
-            if (result != null)
-            {
-                throw new Exception("Failed to download the latest installer version: " + result);
-            }
-        }
-        
-#if LINUX
-        // Make the file executable on Unix
-        Chmod(newPath, S_IRUSR | S_IXUSR | S_IWUSR | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
-#endif
-
-        Process.Start(newPath, ["-handleupdate", Environment.ProcessPath!, Environment.ProcessId.ToString()]);
-
-        State = UpdateState.Done;
-    }
-
-#if WINDOWS
-    public static bool CheckLegacyUpdate()
-    {
-        if (!Environment.ProcessPath!.EndsWith(".tmp.exe", StringComparison.OrdinalIgnoreCase))
-            return false;
-
-        var dir = Path.GetDirectoryName(Environment.ProcessPath)!;
-        var name = Path.GetFileNameWithoutExtension(Environment.ProcessPath);
-        name = name.Remove(name.Length - 4) + ".exe";
-
-        var final = Path.Combine(dir, name);
-
-        var prevProc = Process.GetProcessesByName(name);
-
-        HandleUpdate(final, prevProc.FirstOrDefault()?.Id ?? 0);
-        return true;
-    }
-#endif
-
     private static async Task<string?> CheckForUpdateAsync()
     {
         HttpResponseMessage response;
@@ -161,10 +130,10 @@ public static partial class Updater
             ".Linux"
 #endif
             ));
-        
+
         return asset?["browser_download_url"]?.ToString();
     }
-    
+
 #if LINUX
     // user permissions
     const int S_IRUSR = 0x100;
@@ -182,12 +151,4 @@ public static partial class Updater
     [LibraryImport("libc", EntryPoint = "chmod", StringMarshalling = StringMarshalling.Utf8)]
     private static partial int Chmod(string pathname, int mode);
 #endif
-
-    public enum UpdateState
-    {
-        None,
-        Updating,
-        Done,
-        AlreadyChecked
-    }
 }

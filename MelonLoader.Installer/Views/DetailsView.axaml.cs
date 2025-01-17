@@ -5,13 +5,12 @@ using Avalonia.Platform.Storage;
 using Avalonia.Threading;
 using MelonLoader.Installer.ViewModels;
 using System.ComponentModel;
-using System.Runtime.InteropServices;
 
 namespace MelonLoader.Installer.Views;
 
 public partial class DetailsView : UserControl
 {
-    public DetailsViewModel? Model => (DetailsViewModel?)DataContext;
+    public DetailsViewModel? Model => DataContext as DetailsViewModel;
 
     public DetailsView()
     {
@@ -35,14 +34,14 @@ public partial class DetailsView : UserControl
             UpdateVersionInfo();
         }
     }
-    
-    protected override async void OnDataContextChanged(EventArgs e)
+
+    protected override void OnDataContextChanged(EventArgs e)
     {
         base.OnDataContextChanged(e);
 
         if (Model == null)
             return;
-        
+
 #if LINUX
         if (Model.Game.IsLinux)
         {
@@ -56,12 +55,6 @@ public partial class DetailsView : UserControl
         Model.Game.PropertyChanged += PropertyChangedHandler;
 
         UpdateVersionList();
-
-        if (!await MLManager.Init())
-        {
-            Model.Offline = true;
-            DialogBox.ShowError("Failed to fetch MelonLoader releases. Ensure you're online.");
-        }
     }
 
     private void NightlyToggleHandler(object sender, RoutedEventArgs args)
@@ -78,6 +71,8 @@ public partial class DetailsView : UserControl
         if (NightlyCheck.IsChecked != true)
             en = en.Where(x => !x.Version.IsPrerelease || x.IsLocalPath);
 
+        Model.Offline = !en.Any();
+
         VersionCombobox.ItemsSource = en;
         VersionCombobox.SelectedIndex = 0;
     }
@@ -86,13 +81,13 @@ public partial class DetailsView : UserControl
     {
         if (Model == null)
             return;
-        
+
         if (Model.LinuxInstructions)
         {
             Model.LinuxInstructions = false;
             return;
         }
-        
+
         if (Model.Installing)
             return;
 
@@ -176,9 +171,9 @@ public partial class DetailsView : UserControl
         if (addedLocalBuild)
             return;
 
-        bool isInstall = true;
-        string operationType = Model.Game.MLInstalled ? "Installed" : "Uninstalled";
-        if (Model.Game.MLInstalled 
+        var isInstall = true;
+        var operationType = Model.Game.MLInstalled ? "Installed" : "Uninstalled";
+        if (Model.Game.MLInstalled
             && (Model.Game.MLVersion != null)
             && (currentMLVersion != null))
         {
@@ -192,7 +187,7 @@ public partial class DetailsView : UserControl
             };
         }
 
-        DialogBox.ShowNotice("SUCCESS!", $"Successfully {operationType}{((!Model.Game.MLInstalled || isInstall) ? string.Empty : " to")}\nMelonLoader v{(Model.Game.MLInstalled ? Model.Game.MLVersion : currentMLVersion)}");
+        DialogBox.ShowNotice("Success!", $"Successfully {operationType}{((!Model.Game.MLInstalled || isInstall) ? string.Empty : " to")}\nMelonLoader v{(Model.Game.MLInstalled ? Model.Game.MLVersion : currentMLVersion)}");
     }
 
     private void OpenDirHandler(object sender, RoutedEventArgs args)
@@ -268,7 +263,7 @@ public partial class DetailsView : UserControl
     {
         if (Model == null)
             return;
-        
+
         Model.LinuxInstructions = true;
     }
 }

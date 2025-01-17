@@ -5,80 +5,83 @@
     xmlns:vm="clr-namespace:MelonLoader.Installer.ViewModels"
     xmlns:views="clr-namespace:MelonLoader.Installer.Views"
     xmlns:root="clr-namespace:MelonLoader.Installer"
-    mc:Ignorable="d" d:DesignWidth="450" d:DesignHeight="650"
+    mc:Ignorable="d" d:DesignWidth="900" d:DesignHeight="700"
     x:Class="MelonLoader.Installer.Views.MainView"
     x:DataType="vm:MainViewModel">
-  <Design.DataContext>
-    <!-- This only sets the DataContext for the previewer in an IDE,
+    <Design.DataContext>
+        <!-- This only sets the DataContext for the previewer in an IDE,
          to set the actual DataContext for runtime, set the DataContext property in code (look at
         App.axaml.cs) -->
-    <vm:MainViewModel />
-  </Design.DataContext>
+        <vm:MainViewModel />
+    </Design.DataContext>
 
-  <Grid RowDefinitions="auto, auto, auto, *, auto, auto">
-    <TextBlock Grid.Row="5" VerticalAlignment="Bottom" Foreground="#AFFF"
-        Text="{x:Static root:Program.VersionName}" />
+    <Grid RowDefinitions="auto, auto, auto, *, auto, auto">
+        <TextBlock Grid.Row="5" VerticalAlignment="Bottom" Foreground="#AFFF"
+            Text="{x:Static root:Program.VersionName}" />
 
-    <StackPanel Grid.Row="0" Height="40" Orientation="Horizontal" HorizontalAlignment="Center">
-      <Image Source="/Assets/icon.ico" Margin="0 0 10 0" />
-      <Image Source="/Assets/ML_Text.png" Height="30" />
-    </StackPanel>
-    <TextBlock Margin="0 20 0 0" HorizontalAlignment="Stretch" Grid.Row="1" Foreground="#AFFF"
-        xml:space="preserve" TextAlignment="Center">To install MelonLoader, click on one of the games below.
+        <StackPanel Grid.Row="0" Height="40" Orientation="Horizontal" HorizontalAlignment="Center">
+            <Image Source="/Assets/icon.ico" Margin="0 0 10 0" />
+            <Image Source="/Assets/ML_Text.png" Height="30" />
+        </StackPanel>
+        <TextBlock Margin="0 20 0 0" HorizontalAlignment="Stretch" Grid.Row="1" Foreground="#AFFF"
+            xml:space="preserve" TextAlignment="Center">To install MelonLoader, click on one of the games below.
 If you can't find your game on the list, add it manually.</TextBlock>
-    <TextBox Margin="0 20 0 0" Grid.Row="2" Watermark="Search a game..." Text="{Binding Search}"/>
-    <Border Grid.Row="3" Background="#0000" CornerRadius="8" Margin="0 10" ClipToBounds="True">
-      <Grid>
-        <ScrollViewer>
-          <ItemsControl IsVisible="{Binding Ready}" ItemsSource="{Binding Games}" Margin="10">
-            <ItemsControl.ItemTemplate>
-              <DataTemplate>
-                <views:GameControl DataContext="{Binding}" />
-              </DataTemplate>
-            </ItemsControl.ItemTemplate>
-          </ItemsControl>
-        </ScrollViewer>
-        <TextBlock Name="NoGamesText" IsVisible="False" Foreground="#3FFF" HorizontalAlignment="Center"
-            VerticalAlignment="Center" TextAlignment="Center" xml:space="preserve">
+        <StackPanel Orientation="Horizontal" Spacing="5" Margin="0 20 0 0" Grid.Row="2" HorizontalAlignment="Center">
+            <Button HorizontalAlignment="Right" Click="AddGameManuallyHandler" Height="30" Width="30" HorizontalContentAlignment="Center">+</Button>
+            <TextBox Watermark="Search..." Text="{Binding Search}" Width="500" />
+        </StackPanel>
+        <Border Grid.Row="3" Background="#0000" CornerRadius="8" Margin="0 10" ClipToBounds="True">
+            <Grid>
+                <ScrollViewer>
+                    <ItemsControl ItemsSource="{Binding Games}" Margin="10" HorizontalAlignment="Center">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <views:GameControl DataContext="{Binding}" />
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel Orientation="Horizontal" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                    </ItemsControl>
+                </ScrollViewer>
+                <TextBlock Name="NoGamesText" IsVisible="False" Foreground="#3FFF" HorizontalAlignment="Center"
+                    VerticalAlignment="Center" TextAlignment="Center" xml:space="preserve">
 No Unity games have been found on your device.
 Please add one manually using the button below.
                 </TextBlock>
-        <TextBlock Name="LoadingText" IsVisible="{Binding !Ready}" Foreground="#9FFF" FontSize="20" HorizontalAlignment="Center"
-            VerticalAlignment="Center" TextAlignment="Center">
-          Loading...
-        </TextBlock>
-      </Grid>
-    </Border>
-    <Button Grid.Row="4" IsEnabled="{Binding Ready}" HorizontalAlignment="Right" Click="AddGameManuallyHandler">Add Game Manually</Button>
-    <StackPanel Height="38" Grid.Row="4" Spacing="1" Orientation="Horizontal">
-      <Button Click="MelonWikiLink" ToolTip.Tip="MelonWiki"
-          ToolTip.Placement="RightEdgeAlignedBottom" Padding="3" CornerRadius="1000"
-          Background="Transparent">
-        <Border CornerRadius="1000" ClipToBounds="True">
-          <Image Source="/Assets/icon.ico" />
+            </Grid>
         </Border>
-      </Button>
-      <Button Click="DiscordLink" ToolTip.Tip="Official MelonLoader Discord"
-          ToolTip.Placement="RightEdgeAlignedBottom" Padding="3"
-          CornerRadius="1000" Background="Transparent">
-        <Border CornerRadius="1000" ClipToBounds="True">
-          <Image Source="/Assets/discord.png" />
-        </Border>
-      </Button>
-      <Button Click="GithubLink" ToolTip.Tip="LavaGang Github"
-          ToolTip.Placement="RightEdgeAlignedBottom" Padding="0" CornerRadius="1000"
-          Background="Transparent">
-        <Border CornerRadius="1000" ClipToBounds="True">
-          <Image Source="/Assets/github.png" />
-        </Border>
-      </Button>
-      <Button Click="TwitterLink" ToolTip.Tip="LavaGang Twitter (nobody is calling it X)"
-          ToolTip.Placement="RightEdgeAlignedBottom"
-          Padding="3" CornerRadius="1000" Background="Transparent">
-        <Border CornerRadius="1000" ClipToBounds="True">
-          <Image Source="/Assets/twitter.png" />
-        </Border>
-      </Button>
-    </StackPanel>
-  </Grid>
+        <StackPanel Height="38" Grid.Row="4" Spacing="1" Orientation="Horizontal">
+            <Button Click="MelonWikiLink" ToolTip.Tip="MelonWiki"
+                ToolTip.Placement="RightEdgeAlignedBottom" Padding="3" CornerRadius="1000"
+                Background="Transparent">
+                <Border CornerRadius="1000" ClipToBounds="True">
+                    <Image Source="/Assets/icon.ico" />
+                </Border>
+            </Button>
+            <Button Click="DiscordLink" ToolTip.Tip="Official MelonLoader Discord"
+                ToolTip.Placement="RightEdgeAlignedBottom" Padding="3"
+                CornerRadius="1000" Background="Transparent">
+                <Border CornerRadius="1000" ClipToBounds="True">
+                    <Image Source="/Assets/discord.png" />
+                </Border>
+            </Button>
+            <Button Click="GithubLink" ToolTip.Tip="LavaGang Github"
+                ToolTip.Placement="RightEdgeAlignedBottom" Padding="0" CornerRadius="1000"
+                Background="Transparent">
+                <Border CornerRadius="1000" ClipToBounds="True">
+                    <Image Source="/Assets/github.png" />
+                </Border>
+            </Button>
+            <Button Click="TwitterLink" ToolTip.Tip="LavaGang Twitter (nobody is calling it X)"
+                ToolTip.Placement="RightEdgeAlignedBottom"
+                Padding="3" CornerRadius="1000" Background="Transparent">
+                <Border CornerRadius="1000" ClipToBounds="True">
+                    <Image Source="/Assets/twitter.png" />
+                </Border>
+            </Button>
+        </StackPanel>
+    </Grid>
 </UserControl>

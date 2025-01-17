@@ -37,6 +37,7 @@ public partial class GameControl : UserControl
         IconsPanel.IsVisible = mlInstalled || Model.Launcher != null || showWine;
         WineIcon.IsVisible = showWine;
         MLIcon.IsVisible = mlInstalled;
+        MainButton.BorderThickness = mlInstalled ? new Avalonia.Thickness(1) : default;
         if (Model.Launcher != null)
         {
             LauncherIcon.Source = new Bitmap(AssetLoader.Open(new("avares://" + typeof(GameControl).Assembly.GetName().Name + Model.Launcher.IconPath)));
