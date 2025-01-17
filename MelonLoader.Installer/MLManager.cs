@@ -382,6 +382,7 @@ internal static class MLManager
                 onFinished?.Invoke("Failed to download MelonLoader: " + result);
                 return;
             }
+
             bufferStr.Seek(0, SeekOrigin.Begin);
 
             currentTask++;

@@ -20,10 +20,7 @@ internal static class Config
 
     public static string[] LoadGameList()
     {
-        if (!File.Exists(GameListPath))
-            return [];
-
-        return File.ReadAllLines(GameListPath);
+        return !File.Exists(GameListPath) ? [] : File.ReadAllLines(GameListPath);
     }
 
     public static void SaveGameList(IEnumerable<string> gamePaths)

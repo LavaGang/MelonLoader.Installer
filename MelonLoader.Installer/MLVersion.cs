@@ -36,6 +36,7 @@ public class MLVersion
                 }
             }
         }
+
         if (mlAssemblyPath == null)
             return null;
 

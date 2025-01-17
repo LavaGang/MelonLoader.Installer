@@ -70,6 +70,7 @@ internal static class GameManager
                 Games.Insert(i, game);
                 return;
             }
+
             if (!gameHasMl && iHasMl)
                 continue;
 
@@ -116,7 +117,7 @@ internal static class GameManager
         var dataDirs = rawDataDirs.Where(x => File.Exists(x[..^5] + ".exe")).ToArray();
         if (dataDirs.Length == 0)
         {
-            dataDirs = rawDataDirs.Where(x => File.Exists(x[..^5] + ".x86_64")).ToArray();
+            dataDirs = [.. rawDataDirs.Where(x => File.Exists(x[..^5] + ".x86_64"))];
             if (dataDirs.Length != 0)
             {
                 linux = true;

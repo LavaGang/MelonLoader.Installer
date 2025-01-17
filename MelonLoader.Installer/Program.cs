@@ -1,5 +1,14 @@
 ﻿using Avalonia;
 using System.Diagnostics;
+using System.Runtime.Versioning;
+
+[assembly: SupportedOSPlatform(
+#if WINDOWS
+    "windows"
+#elif LINUX
+    "linux"
+#endif
+)]
 
 namespace MelonLoader.Installer;
 

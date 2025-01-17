@@ -146,6 +146,7 @@ public partial class MainWindow : Window
         public void Dispose()
         {
             _closeLocks.Remove(this);
+            GC.SuppressFinalize(this);
         }
     }
 
