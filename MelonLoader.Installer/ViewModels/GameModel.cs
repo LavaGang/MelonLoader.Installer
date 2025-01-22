@@ -4,12 +4,12 @@ using Semver;
 
 namespace MelonLoader.Installer.ViewModels;
 
-public class GameModel(string path, string name, bool is32Bit, bool isLinux, GameLauncher? launcher, Bitmap? icon, SemVersion? mlVersion, bool isProtected) : ViewModelBase
+public class GameModel(string path, string name, Architecture architecture, GameLauncher? launcher, Bitmap? icon, SemVersion? mlVersion, bool isProtected) : ViewModelBase
 {
     public string Path => path;
     public string Name => name;
-    public bool Is32Bit => is32Bit;
-    public bool IsLinux => isLinux;
+    public Architecture Arch => architecture;
+    public bool IsLinux => architecture == Architecture.LinuxX64;
     public GameLauncher? Launcher => launcher;
     public Bitmap? Icon => icon;
     public string? MLVersionText => mlVersion != null ? 'v' + mlVersion.ToString() : null;
@@ -47,8 +47,8 @@ public class GameModel(string path, string name, bool is32Bit, bool isLinux, Gam
             return false;
         }
 
-        var newMlVersion = Installer.MLVersion.GetMelonLoaderVersion(Dir, out var ml86, out var mlLinux);
-        if (newMlVersion != null && (ml86 != Is32Bit || mlLinux != IsLinux))
+        var newMlVersion = Installer.MLVersion.GetMelonLoaderVersion(Dir, out var arch);
+        if (newMlVersion != null && arch != Arch)
             newMlVersion = null;
         
         if (newMlVersion == MLVersion) 
