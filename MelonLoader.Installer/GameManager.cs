@@ -101,6 +101,27 @@ internal static class GameManager
         path = Path.GetFullPath(path);
 
         var arch = Architecture.Unknown;
+        string unityPlayerPath = FindUnityPlayer(path);
+
+        static string FindUnityPlayer(string rootPath)
+        {
+            try
+            {
+                var files = Directory.GetFiles(rootPath, "UnityPlayer.dll", SearchOption.TopDirectoryOnly);
+                if (files.Length > 0)
+                    return files.First();
+                
+                files = Directory.GetFiles(rootPath, "UnityPlayer.so", SearchOption.TopDirectoryOnly);
+                if (files.Length > 0)
+                    return files.First();
+
+                return null;
+            }
+            catch
+            {
+                return null;
+            }
+        }
 
         var rawDataDirs = Directory.GetDirectories(path, "*_Data");
         var dataDirs = rawDataDirs.Where(x => File.Exists(x[..^5] + ".exe")).ToArray();
@@ -141,8 +162,15 @@ internal static class GameManager
             }
             catch
             {
-                errorMessage = "The game executable is invalid (possibly corrupted).";
-                return null;
+                unityPlayerPath = FindUnityPlayer(Path.GetDirectoryName(exe));
+
+                if (string.IsNullOrEmpty(unityPlayerPath))
+                {
+                    errorMessage = "The game executable is invalid (possibly corrupted).";
+                    return null;
+                }
+                var unityPlayer = new PEReader(File.OpenRead(unityPlayerPath));
+                arch = unityPlayer.PEHeaders.CoffHeader.Machine == Machine.Amd64 ? Architecture.WindowsX64 : Architecture.WindowsX86;
             }
         }
 
