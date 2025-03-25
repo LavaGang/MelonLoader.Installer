@@ -32,9 +32,6 @@ public class MetaLauncher : GameLauncher
             if (string.IsNullOrEmpty(originalPath) || !Directory.Exists(originalPath))
                 continue;
 
-            if (!originalPath.EndsWith(@"\"))
-                originalPath += @"\";
-
             var softwareDirectory = Path.Combine(originalPath, "Software");
 
             if (!Directory.Exists(softwareDirectory))
