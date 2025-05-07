@@ -55,9 +55,9 @@ public partial class DialogBox : Window
         string message,
         Action? onConfirm = null,
         Action? onCancel = null,
-        string confirmText = "YES",
-        string cancelText = "NO")
-        => ShowConfirmation("CONFIRMATION",
+        string confirmText = "Yes",
+        string cancelText = "No")
+        => ShowConfirmation("Confirmation",
             message,
             onConfirm,
             onCancel,
@@ -69,8 +69,8 @@ public partial class DialogBox : Window
         string message,
         Action? onConfirm = null,
         Action? onCancel = null,
-        string confirmText = "YES",
-        string cancelText = "NO")
+        string confirmText = "Yes",
+        string cancelText = "No")
     {
         new DialogBox
         {

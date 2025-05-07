@@ -40,6 +40,14 @@ internal static class Program
             {
                 Updater.WaitAndRemoveApp(args[1], pid);
             }
+            else if (args[0] == "-wait")
+            {
+                try
+                {
+                    Process.GetProcessById(pid).WaitForExit();
+                }
+                catch { }
+            }
         }
 
 #if WINDOWS
@@ -73,6 +81,21 @@ internal static class Program
             File.WriteAllText(logPath, ex.ToString());
         }
         catch { }
+    }
+
+    public static void RestartWithElevatedPrivileges()
+    {
+#if WINDOWS
+        Process.Start(new ProcessStartInfo("pkexec", [Environment.ProcessPath!, "-wait", Process.GetCurrentProcess().Id.ToString()])
+        {
+            UseShellExecute = true,
+            Verb = "runas"
+        });
+#else
+        Process.Start("pkexec", [Environment.ProcessPath!, "-wait", Process.GetCurrentProcess().Id.ToString()]);
+#endif
+        
+        Environment.Exit(0);
     }
 
     private static bool CheckProcessLock()
