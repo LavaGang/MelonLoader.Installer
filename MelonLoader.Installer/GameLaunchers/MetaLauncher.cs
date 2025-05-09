@@ -29,26 +29,23 @@ public class MetaLauncher : GameLauncher
             var game = gamesKey.OpenSubKey(subKeyName);
             var originalPath = (string?)game?.GetValue("OriginalPath");
 
-            if (string.IsNullOrEmpty(originalPath) || !Directory.Exists(originalPath))
+            if (!Directory.Exists(originalPath))
                 continue;
-
-            if (!originalPath.EndsWith(@"\"))
-                originalPath += @"\";
 
             var softwareDirectory = Path.Combine(originalPath, "Software");
 
             if (!Directory.Exists(softwareDirectory))
                 continue;
 
-            var exeFiles = Directory.GetFiles(softwareDirectory, "*.exe", SearchOption.AllDirectories);
-            if (exeFiles.Length == 0)
-                continue;
+              var exeFiles = Directory.GetFiles(softwareDirectory, "*.exe", SearchOption.AllDirectories);
+                if (exeFiles.Length == 0)
+                   continue;
 
-            foreach (var exe in exeFiles)
-            {
-                var gameName = Path.GetFileNameWithoutExtension(exe);
-                GameManager.TryAddGame(exe, gameName, this, null, out _);
-            }
+                foreach (var exe in exeFiles)
+                {
+                    var gameName = Path.GetFileNameWithoutExtension(exe);
+                   GameManager.TryAddGame(exe, gameName, this, null, out _);
+               }
         }
     }
 }
