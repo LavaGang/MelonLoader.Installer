@@ -85,15 +85,23 @@ internal static class Program
 
     public static void RestartWithElevatedPrivileges()
     {
-#if WINDOWS
-        Process.Start(new ProcessStartInfo(Environment.ProcessPath!, ["-wait", Environment.ProcessId.ToString()])
+        try
         {
-            UseShellExecute = true,
-            Verb = "runas"
-        });
+#if WINDOWS
+            Process.Start(new ProcessStartInfo(Environment.ProcessPath!, ["-wait", Environment.ProcessId.ToString()])
+            {
+                UseShellExecute = true,
+                Verb = "runas"
+            });
 #else
-        Process.Start("pkexec", [Environment.ProcessPath!, "-wait", Environment.ProcessId.ToString()]);
+            Process.Start("pkexec", [Environment.ProcessPath!, "-wait", Environment.ProcessId.ToString()]);
 #endif
+        }
+        catch
+        {
+            // This may happen if the user refuses to start the new process as admin
+            return;
+        }
 
         Environment.Exit(0);
     }
