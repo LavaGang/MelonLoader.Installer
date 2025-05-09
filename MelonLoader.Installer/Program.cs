@@ -86,15 +86,15 @@ internal static class Program
     public static void RestartWithElevatedPrivileges()
     {
 #if WINDOWS
-        Process.Start(new ProcessStartInfo("pkexec", [Environment.ProcessPath!, "-wait", Process.GetCurrentProcess().Id.ToString()])
+        Process.Start(new ProcessStartInfo(Environment.ProcessPath!, ["-wait", Environment.ProcessId.ToString()])
         {
             UseShellExecute = true,
             Verb = "runas"
         });
 #else
-        Process.Start("pkexec", [Environment.ProcessPath!, "-wait", Process.GetCurrentProcess().Id.ToString()]);
+        Process.Start("pkexec", [Environment.ProcessPath!, "-wait", Environment.ProcessId.ToString()]);
 #endif
-        
+
         Environment.Exit(0);
     }
 
