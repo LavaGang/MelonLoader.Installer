@@ -37,15 +37,13 @@ public class MetaLauncher : GameLauncher
             if (!Directory.Exists(softwareDirectory))
                 continue;
 
-              var exeFiles = Directory.GetFiles(softwareDirectory, "*.exe", SearchOption.AllDirectories);
-                if (exeFiles.Length == 0)
-                   continue;
+               var softwareDirectories = Directory.GetDirectories(softwareDirectory, "*", SearchOption.TopDirectoryOnly);
 
-                foreach (var exe in exeFiles)
-                {
-                    var gameName = Path.GetFileNameWithoutExtension(exe);
-                   GameManager.TryAddGame(exe, gameName, this, null, out _);
-               }
+            foreach (var directory in softwareDirectories)
+            {
+                var gameName = Path.GetFileName(directory);  
+                GameManager.TryAddGame(directory, gameName, this, null, out _);
+            }    
         }
     }
 }
