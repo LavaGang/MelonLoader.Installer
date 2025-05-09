@@ -161,7 +161,7 @@ public partial class DetailsView : UserControl
         {
             using var file = File.Create(tempPath);
         }
-        catch (UnauthorizedAccessException ex)
+        catch (UnauthorizedAccessException)
         {
             DialogBox.ShowConfirmation(
                 "The installation of MelonLoader on this game may require elevated privileges.\nWould you like to restart with elevated privileges?",
