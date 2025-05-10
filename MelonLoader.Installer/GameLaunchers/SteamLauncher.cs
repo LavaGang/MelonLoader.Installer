@@ -70,7 +70,16 @@ public class SteamLauncher : GameLauncher
                 if (!Directory.Exists(appDir))
                     continue;
 
-                var iconPath = Path.Combine(steamPath, "appcache", "librarycache", id + "_icon.jpg");
+                var iconPath = Path.Combine(steamPath, "appcache", "librarycache", id);
+                iconPath = Directory.Exists(iconPath)
+                    ? Directory.EnumerateFiles(iconPath, "*.jpg").FirstOrDefault(x =>
+                    {
+                        var fileName = Path.GetFileName(x);
+                        return !fileName.StartsWith("library") && !fileName.StartsWith("header") &&
+                               !fileName.StartsWith("logo");
+                    })
+                    : null;
+                
                 GameManager.TryAddGame(appDir, name, this, iconPath, out _);
             }
         }

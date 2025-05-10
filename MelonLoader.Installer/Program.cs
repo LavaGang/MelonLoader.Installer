@@ -40,6 +40,14 @@ internal static class Program
             {
                 Updater.WaitAndRemoveApp(args[1], pid);
             }
+            else if (args[0] == "-wait")
+            {
+                try
+                {
+                    Process.GetProcessById(pid).WaitForExit();
+                }
+                catch { }
+            }
         }
 
 #if WINDOWS
@@ -73,6 +81,29 @@ internal static class Program
             File.WriteAllText(logPath, ex.ToString());
         }
         catch { }
+    }
+
+    public static void RestartWithElevatedPrivileges()
+    {
+        try
+        {
+#if WINDOWS
+            Process.Start(new ProcessStartInfo(Environment.ProcessPath!, ["-wait", Environment.ProcessId.ToString()])
+            {
+                UseShellExecute = true,
+                Verb = "runas"
+            });
+#else
+            Process.Start("pkexec", [Environment.ProcessPath!, "-wait", Environment.ProcessId.ToString()]);
+#endif
+        }
+        catch
+        {
+            // This may happen if the user refuses to start the new process as admin
+            return;
+        }
+
+        Environment.Exit(0);
     }
 
     private static bool CheckProcessLock()

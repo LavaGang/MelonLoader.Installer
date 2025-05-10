@@ -103,11 +103,11 @@ internal static class GameManager
         var arch = Architecture.Unknown;
 
         var rawDataDirs = Directory.GetDirectories(path, "*_Data");
-        var dataDirs = rawDataDirs.Where(x => File.Exists(x[..^5] + ".exe")).ToArray();
-        if (dataDirs.Length == 0)
+        var dataDirs = rawDataDirs.Where(x => File.Exists(x[..^5] + ".exe"));
+        if (!dataDirs.Any())
         {
-            dataDirs = rawDataDirs.Where(x => File.Exists(x[..^5] + ".x86_64")).ToArray();
-            if (dataDirs.Length != 0)
+            dataDirs = rawDataDirs.Where(x => File.Exists(x[..^5] + ".x86_64"));
+            if (dataDirs.Any())
             {
                 arch = Architecture.LinuxX64;
             }
@@ -118,13 +118,13 @@ internal static class GameManager
             }
         }
         
-        if (dataDirs.Length > 1)
+        if (dataDirs.Count() > 1)
         {
             errorMessage = "The selected directory contains multiple Unity games?";
             return null;
         }
 
-        var exe = dataDirs[0][..^5] + (arch == Architecture.LinuxX64 ? ".x86_64" : ".exe");
+        var exe = dataDirs.First()[..^5] + (arch == Architecture.LinuxX64 ? ".x86_64" : ".exe");
 
         if (Games.Any(x => x.Path.Equals(exe, StringComparison.OrdinalIgnoreCase)))
         {

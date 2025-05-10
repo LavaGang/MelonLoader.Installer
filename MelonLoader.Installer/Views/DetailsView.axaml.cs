@@ -142,6 +142,9 @@ public partial class DetailsView : UserControl
             return;
         }
 
+        if (AskForElevation())
+            return;
+
         Model.Installing = true;
         ShowLinuxInstructions.IsVisible = false;
 
@@ -149,6 +152,35 @@ public partial class DetailsView : UserControl
             (MLVersion)VersionCombobox.SelectedItem!, Model.Game.Arch,
             (progress, newStatus) => Dispatcher.UIThread.Post(() => OnInstallProgress(progress, newStatus)),
             (errorMessage) => Dispatcher.UIThread.Post(() => OnOperationFinished(errorMessage)));
+    }
+    
+    public bool AskForElevation()
+    {
+        var tempPath = Path.Combine(Model!.Game.Dir, "ml.tmp");
+        try
+        {
+            using var file = File.Create(tempPath);
+        }
+        catch (UnauthorizedAccessException)
+        {
+            DialogBox.ShowConfirmation(
+                "The installation of MelonLoader on this game may require elevated privileges.\nWould you like to restart with elevated privileges?",
+                Program.RestartWithElevatedPrivileges);
+
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
+
+        try
+        {
+            File.Delete(tempPath);
+        }
+        catch { }
+        
+        return false;
     }
 
     private void OnInstallProgress(double progress, string? newStatus)
@@ -218,7 +250,7 @@ public partial class DetailsView : UserControl
             return;
         }
 
-        if (!Model.Game.MLInstalled)
+        if (!Model.Game.MLInstalled || AskForElevation())
             return;
 
         var error = MLManager.Uninstall(Model.Game.Dir, !KeepFilesCheck.IsChecked!.Value);
