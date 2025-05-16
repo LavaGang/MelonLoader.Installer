@@ -101,7 +101,7 @@ internal static class GameManager
         path = Path.GetFullPath(path);
 
         var arch = Architecture.Unknown;
- 
+
         var rawDataDirs = Directory.GetDirectories(path, "*_Data");
         var dataDirs = rawDataDirs.Where(x => File.Exists(x[..^5] + ".exe")).ToArray();
         if (dataDirs.Length == 0)
