@@ -37,12 +37,12 @@ public class MetaLauncher : GameLauncher
             if (!Directory.Exists(softwareDirectory))
                 continue;
 
-               var softwareDirectories = Directory.GetDirectories(softwareDirectory, "*", SearchOption.TopDirectoryOnly);
+            var softwareDirectories = Directory.GetDirectories(softwareDirectory);
 
             foreach (var directory in softwareDirectories)
             {
                 var gameName = Path.GetFileName(directory);  
-                GameManager.TryAddGame(directory, gameName, this, null, out _);
+                GameManager.TryAddGame(directory, null, this, null, out _);
             }    
         }
     }
