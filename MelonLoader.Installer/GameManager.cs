@@ -141,6 +141,20 @@ internal static class GameManager
             }
             catch
             {
+                var unityPlayerPath = Path.Combine(path, "UnityPlayer.dll");
+                if (File.Exists(unityPlayerPath))
+                {
+                    try
+                    {
+                        using var pe = new PEReader(File.OpenRead(unityPlayerPath));
+                        arch = pe.PEHeaders.CoffHeader.Machine == Machine.Amd64 ? Architecture.WindowsX64 : Architecture.WindowsX86;
+                    }
+                    catch { }
+                }
+            }
+
+            if (arch == Architecture.Unknown)
+            {
                 errorMessage = "The game executable is invalid (possibly corrupted).";
                 return null;
             }

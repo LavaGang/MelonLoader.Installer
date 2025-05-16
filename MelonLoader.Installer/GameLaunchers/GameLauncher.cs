@@ -7,7 +7,8 @@ public abstract class GameLauncher(string iconPath)
         new SteamLauncher(),
 #if WINDOWS
         new EgsLauncher(),
-        new GogLauncher()
+        new GogLauncher(),
+        new MetaLauncher()
 #endif
     ];
 
