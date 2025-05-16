@@ -38,7 +38,7 @@ Nightly builds are bleeding-edge builds, generated right after any changes are m
 Contributions to this project are welcome! If you wish to contribute, please adhere to the following guidelines:
 
 ### Building the Project:
-Ensure you have the .NET 8.0 SDK installed on your machine.  
+Ensure you have the .NET 9.0 SDK installed on your machine.  
 You can build the project locally using the following command:
 ```bash
 dotnet publish
