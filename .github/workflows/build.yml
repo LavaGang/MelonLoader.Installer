@@ -1,9 +1,6 @@
 name: Build Installer
 
-run-name: 4.1.2-ci.${{ github.run_number }} | ${{ github.event_name != 'workflow_dispatch' && (github.event.head_commit.message || format('`[PR]` {0}', github.event.pull_request.title)) || 'Manual Build' }}
-
-env:
-  DEVVERSION: "4.1.2"
+run-name: ${{ github.event_name != 'workflow_dispatch' && (github.event.head_commit.message || format('`[PR]` {0}', github.event.pull_request.title)) || 'Manual Build' }}
 
 on:
   push:
@@ -27,7 +24,7 @@ jobs:
         run: dotnet restore
         
       - name: Build for Windows
-        run: dotnet publish --no-restore -r win-x64 -p:Version="${{ env.DEVVERSION }}.${{ github.run_number }}"
+        run: dotnet publish --no-restore -r win-x64 -p:BuildNumber="${{ github.run_number }}"
 
       - name: Upload Artifact for Windows
         uses: actions/upload-artifact@v4
@@ -36,7 +33,7 @@ jobs:
           path: Output/win-x64/
         
       - name: Build for Linux
-        run: dotnet publish --no-restore -r linux-x64 -p:Version="${{ env.DEVVERSION }}.${{ github.run_number }}"
+        run: dotnet publish --no-restore -r linux-x64 -p:BuildNumber="${{ github.run_number }}"
 
       - name: Upload Artifact for Linux
         uses: actions/upload-artifact@v4

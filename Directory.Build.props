@@ -1,6 +1,9 @@
 <Project>
     <PropertyGroup>
-        <Version>4.1.2</Version>
+        <BaseVersion>4.1.2</BaseVersion> <!-- This should be adjusted after every release -->
+
+        <BuildNumber>0</BuildNumber>
+        <Version>$(BaseVersion).$(BuildNumber)</Version>
 		
         <TargetFramework>net9.0</TargetFramework>
 
