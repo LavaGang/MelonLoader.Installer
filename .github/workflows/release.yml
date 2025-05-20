@@ -1,0 +1,37 @@
+name: Release
+
+run-name: ${{ github.ref_name }} Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 9.0.x
+
+      - name: Restore Dependencies
+        run: dotnet restore
+        
+      - name: Build for Windows
+        run: dotnet publish --no-restore -r win-x64
+        
+      - name: Build for Linux
+        run: dotnet publish --no-restore -r linux-x64
+
+      - name: Publish release
+        uses: softprops/action-gh-release@v1
+        with:
+          body_path: RELEASE-NOTES.md
+          files: |
+            Output/win-x64/MelonLoader.Installer.exe
+            Output/linux-x64/MelonLoader.Installer.Linux
