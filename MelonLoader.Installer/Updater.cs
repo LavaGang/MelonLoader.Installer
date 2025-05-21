@@ -1,5 +1,8 @@
 ﻿using System.Diagnostics;
 using System.Text.Json.Nodes;
+#if LINUX
+using System.Runtime.InteropServices;
+#endif
 
 namespace MelonLoader.Installer;
 
