@@ -3,7 +3,6 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
 using Avalonia.Threading;
-using MelonLoader.Installer.Utils;
 using MelonLoader.Installer.ViewModels;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
@@ -301,7 +300,7 @@ public partial class DetailsView : UserControl
                     };
                     if (downloadUrl == null)
                     {
-                        DialogBox.ShowError($"The selected version does not support the architecture of the current game: {Model.Game.Arch.GetDescription()}");
+                        DialogBox.ShowError($"The selected version does not support the architecture of the current game: {Model.Game.Arch}");
                     }
                 }
 

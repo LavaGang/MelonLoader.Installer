@@ -1,5 +1,4 @@
-﻿using MelonLoader.Installer.Utils;
-using Semver;
+﻿using Semver;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Nodes;
 
@@ -345,7 +344,7 @@ internal static class MLManager
 
         if (downloadUrl == null)
         {
-            onFinished?.Invoke($"The selected version does not support the selected architecture: {arch.GetDescription()}");
+            onFinished?.Invoke($"The selected version does not support the selected architecture: {arch}");
             return;
         }
 
