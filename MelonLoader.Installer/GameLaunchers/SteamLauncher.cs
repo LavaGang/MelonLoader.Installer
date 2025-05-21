@@ -79,7 +79,7 @@ public class SteamLauncher : GameLauncher
                                !fileName.StartsWith("logo");
                     })
                     : null;
-                
+
                 GameManager.TryAddGame(appDir, name, this, iconPath, out _);
             }
         }

@@ -1,6 +1,5 @@
 ﻿using Avalonia;
 using System.Diagnostics;
-using System.Runtime.InteropServices;
 
 namespace MelonLoader.Installer;
 
@@ -68,7 +67,7 @@ internal static class Program
         }
 
         Exiting?.Invoke();
-        
+
         processLock.Dispose();
         File.Delete(processLockPath);
     }
@@ -130,9 +129,9 @@ internal static class Program
                     GrabAttention(proc);
                     return false;
                 }
-                catch 
+                catch
                 {
-                    return false; 
+                    return false;
                 }
             }
 #else

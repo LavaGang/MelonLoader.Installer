@@ -15,7 +15,7 @@ public class MLVersion
     public static SemVersion? GetMelonLoaderVersion(string gameDir, out Architecture architecture)
     {
         architecture = Architecture.Unknown;
-        
+
         var mlDir = Path.Combine(gameDir, "MelonLoader");
         if (!Directory.Exists(mlDir))
             return null;

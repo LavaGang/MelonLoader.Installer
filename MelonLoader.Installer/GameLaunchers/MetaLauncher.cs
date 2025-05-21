@@ -1,7 +1,5 @@
 ﻿#if WINDOWS
-using Avalonia.Controls;
 using Microsoft.Win32;
-using System.IO;
 
 namespace MelonLoader.Installer.GameLaunchers;
 
@@ -41,9 +39,8 @@ public class MetaLauncher : GameLauncher
 
             foreach (var directory in softwareDirectories)
             {
-                var gameName = Path.GetFileName(directory);  
                 GameManager.TryAddGame(directory, null, this, null, out _);
-            }    
+            }
         }
     }
 }

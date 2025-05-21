@@ -117,7 +117,7 @@ internal static class GameManager
                 return null;
             }
         }
-        
+
         if (dataDirs.Count() > 1)
         {
             errorMessage = "The selected directory contains multiple Unity games?";
@@ -161,7 +161,7 @@ internal static class GameManager
         }
 
         var mlVersion = MLVersion.GetMelonLoaderVersion(path, out var mlArch);
-        if (mlVersion != null && (mlArch != arch))
+        if (mlVersion != null && mlArch != arch)
             mlVersion = null;
 
         Bitmap? icon = null;

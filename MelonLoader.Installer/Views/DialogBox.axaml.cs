@@ -15,7 +15,7 @@ public partial class DialogBox : Window
     protected override void OnClosed(EventArgs e)
     {
         base.OnClosed(e);
-        
+
         OnCancel?.Invoke();
     }
 

@@ -5,7 +5,6 @@ using Avalonia.Platform.Storage;
 using Avalonia.Threading;
 using MelonLoader.Installer.ViewModels;
 using System.ComponentModel;
-using System.Runtime.InteropServices;
 
 namespace MelonLoader.Installer.Views;
 
@@ -35,14 +34,14 @@ public partial class DetailsView : UserControl
             UpdateVersionInfo();
         }
     }
-    
+
     protected override async void OnDataContextChanged(EventArgs e)
     {
         base.OnDataContextChanged(e);
 
         if (Model == null)
             return;
-        
+
 #if LINUX
         if (Model.Game.Arch == Architecture.LinuxX64)
         {
@@ -92,13 +91,13 @@ public partial class DetailsView : UserControl
     {
         if (Model == null)
             return;
-        
+
         if (Model.LinuxInstructions)
         {
             Model.LinuxInstructions = false;
             return;
         }
-        
+
         if (Model.Installing)
             return;
 
@@ -152,7 +151,7 @@ public partial class DetailsView : UserControl
             (progress, newStatus) => Dispatcher.UIThread.Post(() => OnInstallProgress(progress, newStatus)),
             (errorMessage) => Dispatcher.UIThread.Post(() => OnOperationFinished(errorMessage)));
     }
-    
+
     public bool AskForElevation()
     {
         var tempPath = Path.Combine(Model!.Game.Dir, "ml.tmp");
@@ -178,7 +177,7 @@ public partial class DetailsView : UserControl
             File.Delete(tempPath);
         }
         catch { }
-        
+
         return false;
     }
 
@@ -214,11 +213,11 @@ public partial class DetailsView : UserControl
         if (addedLocalBuild)
             return;
 
-        bool isInstall = true;
-        string operationType = Model.Game.MLInstalled ? "Installed" : "Uninstalled";
-        if (Model.Game.MLInstalled 
-            && (Model.Game.MLVersion != null)
-            && (currentMLVersion != null))
+        var isInstall = true;
+        var operationType = Model.Game.MLInstalled ? "Installed" : "Uninstalled";
+        if (Model.Game.MLInstalled
+            && Model.Game.MLVersion != null
+            && currentMLVersion != null)
         {
             var comp = Model.Game.MLVersion.CompareSortOrderTo(currentMLVersion);
             isInstall = comp == 0;
@@ -313,7 +312,7 @@ public partial class DetailsView : UserControl
     {
         if (Model == null)
             return;
-        
+
         Model.LinuxInstructions = true;
     }
 }

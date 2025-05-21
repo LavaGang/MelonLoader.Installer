@@ -1,5 +1,4 @@
 ﻿using Semver;
-using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Nodes;
 
 #if WINDOWS
@@ -11,7 +10,7 @@ namespace MelonLoader.Installer;
 internal static class MLManager
 {
     private static bool inited;
-    internal static readonly string[] proxyNames = 
+    internal static readonly string[] proxyNames =
     [
         "version.dll",
         "winmm.dll",
@@ -90,7 +89,7 @@ internal static class MLManager
 
             if (!SemVersion.TryParse(runName[..runVerEnd], SemVersionStyles.Any, out var runVersion))
                 continue;
-            
+
             var version = new MLVersion
             {
                 Version = runVersion,

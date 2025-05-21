@@ -1,6 +1,5 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Threading;
 using MelonLoader.Installer.ViewModels;
 
 namespace MelonLoader.Installer.Views;
@@ -39,7 +38,7 @@ public partial class MainWindow : Window
 
         if (!IsVisible)
             return;
-        
+
         Topmost = true;
         Topmost = false;
 #if WINDOWS

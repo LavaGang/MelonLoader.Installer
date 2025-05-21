@@ -8,7 +8,7 @@ namespace MelonLoader.Installer.Views;
 public partial class MainView : UserControl
 {
     private static bool showedNotice;
-    
+
     public MainViewModel? Model => (MainViewModel?)DataContext;
 
     public MainView()

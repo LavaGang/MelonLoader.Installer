@@ -35,7 +35,7 @@ public class EgsLauncher : GameLauncher
             {
                 continue;
             }
-            
+
             if (json == null || (bool?)json["bIsExecutable"] != true)
                 continue;
 
