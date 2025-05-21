@@ -19,6 +19,7 @@ The installer should automatically list installed Unity games on your machine.
 - Steam
 - Epic Games Store
 - GOG
+- Meta Store
 
 ### Supported game launchers on Linux
 - Steam
