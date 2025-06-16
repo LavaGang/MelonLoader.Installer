@@ -5,7 +5,7 @@ run-name: ${{ github.ref_name }} Release
 on:
   push:
     tags:
-      - 'v*.*.*'
+      - '*.*.*'
 
 jobs:
   release:
