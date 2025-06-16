@@ -1,6 +1,6 @@
 <Project>
     <PropertyGroup>
-        <BaseVersion>4.1.2</BaseVersion> <!-- This should be adjusted after every release -->
+        <BaseVersion>4.1.3</BaseVersion> <!-- This should be adjusted after every release -->
 
         <BuildNumber>0</BuildNumber>
         <Version>$(BaseVersion).$(BuildNumber)</Version>
