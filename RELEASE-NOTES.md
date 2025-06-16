@@ -9,8 +9,8 @@
 * Updated third-party dependencies. This might fix some of the existing launching issues.
 
 ## New Contributors
-* @psyellas made their first contribution in https://github.com/LavaGang/MelonLoader.Installer/pull/48
-* @nalka0 made their first contribution in https://github.com/LavaGang/MelonLoader.Installer/pull/41
-* @winterheart made their first contribution in https://github.com/LavaGang/MelonLoader.Installer/pull/39
+* [@psyellas](https://github.com/psyellas) made their first contribution in https://github.com/LavaGang/MelonLoader.Installer/pull/48
+* [@nalka0](https://github.com/nalka0) made their first contribution in https://github.com/LavaGang/MelonLoader.Installer/pull/41
+* [@winterheart](https://github.com/winterheart) made their first contribution in https://github.com/LavaGang/MelonLoader.Installer/pull/39
 
 **Full Changelog**: https://github.com/LavaGang/MelonLoader.Installer/compare/4.1.1...v4.1.2
