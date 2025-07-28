@@ -171,7 +171,7 @@ internal static class GameManager
         }
 
         // Get Installed MelonLoader Version Information
-        var mlVersion = MLVersion.GetMelonLoaderVersion(gameDir, out var mlArch, out _);
+        var mlVersion = MLVersion.GetMelonLoaderVersion(gameDir, out var mlArch, out errorMessage);
         if (mlVersion != null && mlArch != arch)
             mlVersion = null;
 
