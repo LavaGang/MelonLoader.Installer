@@ -24,6 +24,7 @@
 
     <PropertyGroup Condition="'$(RuntimeIdentifier.StartsWith(`win-`))' == 'true'">
         <DefineConstants>$(DefineConstants);WINDOWS</DefineConstants>
+        <AssemblyName>MelonLoader.Installer</AssemblyName>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(RuntimeIdentifier.StartsWith(`linux-`))' == 'true'">
@@ -38,7 +39,7 @@
     </PropertyGroup>
     <PropertyGroup Condition="'$(RuntimeIdentifier.Equals(`osx-x64`))' == 'true'">
         <DefineConstants>$(DefineConstants);OSX_X64</DefineConstants>
-        <AssemblyName>$(AssemblyName).x64</AssemblyName>
+        <PublishDir>../Output/$(RuntimeIdentifier)/$(AssemblyName).x64.app</PublishDir>
     </PropertyGroup>
 
     <ItemGroup>

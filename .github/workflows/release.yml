@@ -27,6 +27,9 @@ jobs:
         
       - name: Build for Linux
         run: dotnet publish --no-restore -r linux-x64
+        
+      - name: Build for MacOS
+        run: dotnet publish --no-restore -r osx-x64
 
       - name: Publish release
         uses: softprops/action-gh-release@v1
@@ -35,3 +38,4 @@ jobs:
           files: |
             Output/win-x64/MelonLoader.Installer.exe
             Output/linux-x64/MelonLoader.Installer.Linux
+            Output/osx-x64/MelonLoader.Installer.MacOS.x64.zip
