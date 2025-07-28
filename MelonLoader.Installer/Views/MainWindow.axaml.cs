@@ -67,9 +67,11 @@ public partial class MainWindow : Window
 
     public void ShowDetailsView(GameModel game)
     {
-        SetViewport(new DetailsView()
+        var view = new DetailsView()
         {
             DataContext = new DetailsViewModel(game)
-        });
+        };
+        view.UpdateVersionInfo();
+        SetViewport(view);
     }
 }

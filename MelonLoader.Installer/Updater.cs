@@ -35,7 +35,11 @@ public static partial class Updater
         return Task.Run(() => UpdateAsync(downloadUrl));
     }
 
-    public static bool WaitAndRemoveApp(string originalPath, int prevPID)
+    public static bool WaitAndRemoveApp(string originalPath, int prevPID
+#if OSX
+        , bool removeParentDirectory = false
+#endif
+        )
     {
         if (!File.Exists(originalPath))
             return true;
@@ -56,6 +60,24 @@ public static partial class Updater
             catch { }
         }
 
+#if OSX
+        
+        try
+        {
+            Directory.Delete(originalPath);
+            if (removeParentDirectory)
+            {
+                string parentPath = Path.GetDirectoryName(originalPath);
+                Directory.Delete(parentPath);
+            }
+        }
+        catch
+        {
+            return false;
+        }
+
+#else
+
         try
         {
             File.Delete(originalPath);
@@ -64,6 +86,8 @@ public static partial class Updater
         {
             return false;
         }
+
+#endif
 
         return true;
     }
@@ -96,8 +120,55 @@ public static partial class Updater
         }
 
 #if LINUX
-        // Make the file executable on Unix
-        Chmod(newPath, S_IRUSR | S_IXUSR | S_IWUSR | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
+
+        // Make the file executable
+        InstallerUtils.Chmod(newPath, InstallerUtils.S_IRUSR 
+            | InstallerUtils.S_IXUSR
+            | InstallerUtils.S_IWUSR 
+            | InstallerUtils.S_IRGRP 
+            | InstallerUtils.S_IXGRP 
+            | InstallerUtils.S_IROTH
+            | InstallerUtils.S_IXOTH);
+
+#elif OSX
+
+        // Extract Zip
+        var archivePath = newPath;
+        string tempFolderPath = Path.GetTempFileName();
+        using var zipStr = File.OpenRead(archivePath);
+        if (InstallerUtils.Extract(zipStr, tempFolderPath, null) == null)
+        {
+            if (File.Exists(archivePath))
+                File.Delete(archivePath);
+            if (Directory.Exists(tempFolderPath))
+                Directory.Delete(tempFolderPath);
+            throw new Exception("Failed to extract the latest installer version");
+        }
+        if (File.Exists(archivePath))
+            File.Delete(archivePath);
+
+        // Find New File
+        newPath = Path.Combine(tempFolderPath, "MelonLoader.Installer.MacOS"
+#if OSX_X64
+            + ".x64"
+#endif
+            + ".app");
+        if (!File.Exists(newPath))
+        {
+            if (Directory.Exists(tempFolderPath))
+                Directory.Delete(tempFolderPath);
+            throw new Exception("Failed to extract the latest installer version");
+        }
+
+        // Make the file executable
+        InstallerUtils.Chmod(newPath, InstallerUtils.S_IRUSR 
+            | InstallerUtils.S_IXUSR
+            | InstallerUtils.S_IWUSR 
+            | InstallerUtils.S_IRGRP 
+            | InstallerUtils.S_IXGRP 
+            | InstallerUtils.S_IROTH
+            | InstallerUtils.S_IXOTH);
+
 #endif
 
         Process.Start(newPath, ["-handleupdate", Environment.ProcessPath!, Environment.ProcessId.ToString()]);
@@ -156,34 +227,22 @@ public static partial class Updater
         if (currentVer == null || currentVer >= latestVer)
             return null;
 
-        var asset = json["assets"]?.AsArray().FirstOrDefault(x => x!["name"]!.ToString().EndsWith(
+        var asset = json["assets"]?.AsArray().FirstOrDefault((x) =>
+        {
+            string fileName = x!["name"]!.ToString();
+            return fileName.EndsWith(
 #if WINDOWS
-            ".exe"
-#else
-            ".Linux"
+                ".exe"
+#elif LINUX
+                ".Linux"
+#elif OSX_X64
+                ".MacOS.x64.zip"
 #endif
-            ));
+            );
+        });
 
         return asset?["browser_download_url"]?.ToString();
     }
-
-#if LINUX
-    // user permissions
-    const int S_IRUSR = 0x100;
-    const int S_IWUSR = 0x80;
-    const int S_IXUSR = 0x40;
-
-    // group permission
-    const int S_IRGRP = 0x20;
-    const int S_IXGRP = 0x8;
-
-    // other permissions
-    const int S_IROTH = 0x4;
-    const int S_IXOTH = 0x1;
-        
-    [LibraryImport("libc", EntryPoint = "chmod", StringMarshalling = StringMarshalling.Utf8)]
-    private static partial int Chmod(string pathname, int mode);
-#endif
 
     public enum UpdateState
     {

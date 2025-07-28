@@ -37,7 +37,11 @@ internal static class Program
 
             if (args[0] == "-cleanup")
             {
-                Updater.WaitAndRemoveApp(args[1], pid);
+                Updater.WaitAndRemoveApp(args[1], pid
+#if OSX
+                    , true
+#endif
+                    );
             }
             else if (args[0] == "-wait")
             {
@@ -59,7 +63,9 @@ internal static class Program
 
         try
         {
+
             BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
+
         }
         catch (Exception ex)
         {
@@ -76,7 +82,13 @@ internal static class Program
     {
         try
         {
-            var logPath = Path.Combine(Path.GetDirectoryName(Environment.ProcessPath)!, "melonloader-installer-crash.log");
+#if OSX
+            string logLoc = Config.CacheDir;
+#else
+            string logLoc = Path.GetDirectoryName(Environment.ProcessPath)!;
+#endif
+
+            var logPath = Path.Combine(logLoc, "melonloader-installer-crash.log");
             File.WriteAllText(logPath, ex.ToString());
         }
         catch { }
@@ -92,8 +104,10 @@ internal static class Program
                 UseShellExecute = true,
                 Verb = "runas"
             });
-#else
+#elif LINUX
             Process.Start("pkexec", [Environment.ProcessPath!, "-wait", Environment.ProcessId.ToString()]);
+#elif OSX
+            Process.Start("open", [Environment.ProcessPath!, "--args", "-wait", Environment.ProcessId.ToString()]);
 #endif
         }
         catch

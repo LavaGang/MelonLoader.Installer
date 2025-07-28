@@ -28,14 +28,15 @@ public partial class GameControl : UserControl
         var mlInstalled = Model.MLVersion != null;
 
         var showWine =
-#if LINUX
-            Model.Arch != Architecture.LinuxX64;
+#if LINUX || OSX
+            Model.IsWindows;
 #else
             false;
 #endif
 
         IconsPanel.IsVisible = mlInstalled || Model.Launcher != null || showWine;
         WineIcon.IsVisible = showWine;
+
         MLIcon.IsVisible = mlInstalled;
         if (Model.Launcher != null)
         {
@@ -57,7 +58,7 @@ public partial class GameControl : UserControl
         // For some reason DataContext becomes null if it updates, so we have to keep our own ref
         var model = Model;
 
-        if (!model.ValidateGame())
+        if (!model.Validate(out _))
             return;
 
         MainWindow.Instance.ShowDetailsView(model);

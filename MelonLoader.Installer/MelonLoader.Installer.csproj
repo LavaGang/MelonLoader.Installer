@@ -19,6 +19,7 @@
         <Authors>Lava Gang</Authors>
         <Company>discord.gg/2Wn3N2P</Company>
         <StartupObject>MelonLoader.Installer.Program</StartupObject>
+        <TargetFramework>net9.0</TargetFramework>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(RuntimeIdentifier.StartsWith(`win-`))' == 'true'">
@@ -29,6 +30,16 @@
         <DefineConstants>$(DefineConstants);LINUX</DefineConstants>
         <AssemblyName>MelonLoader.Installer.Linux</AssemblyName>
     </PropertyGroup>
+	
+    <PropertyGroup Condition="'$(RuntimeIdentifier.StartsWith(`osx-`))' == 'true'">
+        <DefineConstants>$(DefineConstants);OSX</DefineConstants>
+        <AssemblyName>MelonLoader.Installer.MacOS</AssemblyName>
+        <PublishDir>../Output/$(RuntimeIdentifier)/$(AssemblyName).app</PublishDir>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(RuntimeIdentifier.Equals(`osx-x64`))' == 'true'">
+        <DefineConstants>$(DefineConstants);OSX_X64</DefineConstants>
+        <AssemblyName>$(AssemblyName).x64</AssemblyName>
+    </PropertyGroup>
 
     <ItemGroup>
         <AvaloniaResource Include="Assets\**" />
@@ -38,7 +49,7 @@
         <!--Condition
         below is needed to remove Avalonia.Diagnostics package from build output in Release
         configuration.-->
-        <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="$(AvaloniaVersion)" />
+        <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.3.2" />
         <PackageReference Include="Avalonia" Version="$(AvaloniaVersion)" />
         <PackageReference Include="Avalonia.Themes.Fluent" Version="$(AvaloniaVersion)" />
         <PackageReference Include="Avalonia.Fonts.Inter" Version="$(AvaloniaVersion)" />
@@ -48,7 +59,7 @@
         <PackageReference Include="Gameloop.Vdf" Version="0.6.2" />
         <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
         <PackageReference Include="Semver" Version="3.0.0" />
-        <PackageReference Include="System.Drawing.Common" Version="9.0.5" />
+        <PackageReference Include="System.Drawing.Common" Version="9.0.7" />
         <PackageReference Include="System.Net.Http" Version="4.3.4" />
         <PackageReference Include="System.Private.Uri" Version="4.3.2" />
         <PackageReference Include="System.Text.RegularExpressions" Version="4.3.1" />

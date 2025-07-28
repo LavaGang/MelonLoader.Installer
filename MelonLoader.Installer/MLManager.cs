@@ -18,7 +18,8 @@ internal static class MLManager
         "MelonBootstrap.so",
         "libversion.so",
         "libwinmm.so",
-        "libwinhttp.so"
+        "libwinhttp.so",
+        "MelonBootstrap.dylib",
     ];
 
     private static MLVersion? localBuild;
@@ -95,7 +96,8 @@ internal static class MLManager
                 Version = runVersion,
                 DownloadUrlWin = $"https://nightly.link/LavaGang/MelonLoader/actions/runs/{run["id"]}/MelonLoader.Windows.x64.CI.Release.zip",
                 DownloadUrlWinX86 = $"https://nightly.link/LavaGang/MelonLoader/actions/runs/{run["id"]}/MelonLoader.Windows.x86.CI.Release.zip",
-                DownloadUrlLinux = $"https://nightly.link/LavaGang/MelonLoader/actions/runs/{run["id"]}/MelonLoader.Linux.x64.CI.Release.zip"
+                DownloadUrlLinux = $"https://nightly.link/LavaGang/MelonLoader/actions/runs/{run["id"]}/MelonLoader.Linux.x64.CI.Release.zip",
+                DownloadUrlMacOS = $"https://nightly.link/LavaGang/MelonLoader/actions/runs/{run["id"]}/MelonLoader.macOS.x64.CI.Release.zip"
             };
 
             if (version.DownloadUrlWin == null && version.DownloadUrlWinX86 == null && version.DownloadUrlLinux == null)
@@ -130,13 +132,15 @@ internal static class MLManager
             var x64Asset = release["assets"]!.AsArray().FirstOrDefault(x => x?["name"]?.ToString() == "MelonLoader.x64.zip");
             var x86Asset = release["assets"]!.AsArray().FirstOrDefault(x => x?["name"]?.ToString() == "MelonLoader.x86.zip");
             var linuxAsset = release["assets"]!.AsArray().FirstOrDefault(x => x?["name"]?.ToString() == "MelonLoader.Linux.x64.zip");
+            var macOSAsset = release["assets"]!.AsArray().FirstOrDefault(x => x?["name"]?.ToString() == "MelonLoader.macOS.x64.zip");
 
             var version = new MLVersion
             {
                 Version = relVersion,
                 DownloadUrlWin = x64Asset != null ? x64Asset["browser_download_url"]!.ToString() : null,
                 DownloadUrlWinX86 = x86Asset != null ? x86Asset["browser_download_url"]!.ToString() : null,
-                DownloadUrlLinux = linuxAsset != null ? linuxAsset["browser_download_url"]!.ToString() : null
+                DownloadUrlLinux = linuxAsset != null ? linuxAsset["browser_download_url"]!.ToString() : null,
+                DownloadUrlMacOS = macOSAsset != null ? macOSAsset["browser_download_url"]!.ToString() : null
             };
 
             if (version.DownloadUrlWin == null && version.DownloadUrlWinX86 == null && version.DownloadUrlLinux == null)
@@ -309,7 +313,7 @@ internal static class MLManager
             return;
         }
 
-        var mlVer = MLVersion.GetMelonLoaderVersion(Config.LocalZipCache, out var arch);
+        var mlVer = MLVersion.GetMelonLoaderVersion(Config.LocalZipCache, out var arch, out _);
         if (mlVer == null)
         {
             onFinished?.Invoke("The selected zip archive does not contain a valid MelonLoader build.");
@@ -322,6 +326,7 @@ internal static class MLManager
             DownloadUrlWin = arch == Architecture.WindowsX64 ? Config.LocalZipCache : null,
             DownloadUrlWinX86 = arch == Architecture.WindowsX86 ? Config.LocalZipCache : null,
             DownloadUrlLinux = arch == Architecture.LinuxX64 ? Config.LocalZipCache : null,
+            DownloadUrlMacOS = arch == Architecture.MacOSX64 ? Config.LocalZipCache : null,
             IsLocalPath = true
         };
 
@@ -335,6 +340,7 @@ internal static class MLManager
     {
         var downloadUrl = arch switch
         {
+            Architecture.MacOSX64 => version.DownloadUrlMacOS,
             Architecture.LinuxX64 => version.DownloadUrlLinux,
             Architecture.WindowsX64 => version.DownloadUrlWin,
             Architecture.WindowsX86 => version.DownloadUrlWinX86,

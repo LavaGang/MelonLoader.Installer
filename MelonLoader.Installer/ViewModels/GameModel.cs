@@ -1,5 +1,6 @@
 ﻿using Avalonia.Media.Imaging;
 using MelonLoader.Installer.GameLaunchers;
+using MelonLoader.Installer.Views;
 using Semver;
 
 namespace MelonLoader.Installer.ViewModels;
@@ -9,7 +10,9 @@ public class GameModel(string path, string name, Architecture architecture, Game
     public string Path => path;
     public string Name => name;
     public Architecture Arch => architecture;
-    public bool IsLinux => architecture == Architecture.LinuxX64;
+    public bool IsWindows => ((architecture == Architecture.WindowsX64) || (architecture == Architecture.WindowsX86));
+    public bool IsLinux => ((architecture == Architecture.LinuxX64) || (architecture == Architecture.LinuxX86));
+    public bool IsMacOS => ((architecture == Architecture.MacOSX64) || (architecture == Architecture.MacOSArm64));
     public GameLauncher? Launcher => launcher;
     public Bitmap? Icon => icon;
     public string? MLVersionText => mlVersion != null ? 'v' + mlVersion.ToString() : null;
@@ -35,22 +38,20 @@ public class GameModel(string path, string name, Architecture architecture, Game
     /// Checks if the game is still valid. Otherwise, automatically removes it from the Games list.
     /// </summary>
     /// <returns>True if the game still exists, otherwise false.</returns>
-    public bool ValidateGame()
+    public bool Validate(out string? errorMessage)
     {
-        var exeExtIdx = path.LastIndexOf('.');
+        errorMessage = null;
 
-        var pathNoExt = exeExtIdx != -1 ? path[..exeExtIdx] : path;
-
-        if (!File.Exists(path) || !Directory.Exists(pathNoExt + "_Data"))
+        string gameDir = path;
+        if (!GameManager.ValidateGame(ref gameDir, out _, out _, out errorMessage))
         {
             GameManager.RemoveGame(this);
             return false;
         }
 
-        var newMlVersion = Installer.MLVersion.GetMelonLoaderVersion(Dir, out var arch);
+        var newMlVersion = Installer.MLVersion.GetMelonLoaderVersion(gameDir, out var arch, out errorMessage);
         if (newMlVersion != null && arch != Arch)
             newMlVersion = null;
-
         if (newMlVersion == MLVersion)
             return true;
 

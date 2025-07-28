@@ -86,86 +86,97 @@ internal static class GameManager
         Games.Remove(game);
     }
 
-    public static GameModel? TryAddGame(string path, string? customName, GameLauncher? launcher, string? iconPath, [NotNullWhen(false)] out string? errorMessage)
+    public static bool ValidateGame(ref string path, out string? exe, out string? exeExt, out string? errorMessage)
     {
-        if (File.Exists(path))
+        exe = null;
+        exeExt = null;
+        errorMessage = null;
+
+        // Parse Path to Base Game Directory
+        if (File.Exists(path) || (Directory.Exists(path) && path.EndsWith(".app")))
         {
             path = Path.GetDirectoryName(path)!;
         }
         else if (!Directory.Exists(path))
         {
             errorMessage = "The selected directory does not exist.";
-            return null;
+            return false;
         }
 
+        // Make sure to get Full Path
         path = Path.GetFullPath(path);
 
-        var arch = Architecture.Unknown;
-
-        var rawDataDirs = Directory.GetDirectories(path, "*_Data");
-        var dataDirs = rawDataDirs.Where(x => File.Exists(x[..^5] + ".exe"));
+        // Validate Directory contains Applications
+        exeExt = ".app";
+        string? referenceExt = exeExt;
+        int skipCount = 4;
+        var rawDataDirs = Directory.GetDirectories(path, $"*{exeExt}");
+        var dataDirs = rawDataDirs.Where(x => Directory.Exists(x[..^skipCount] + referenceExt));
         if (!dataDirs.Any())
         {
-            dataDirs = rawDataDirs.Where(x => File.Exists(x[..^5] + ".x86_64"));
-            if (dataDirs.Any())
+            exeExt = ".exe";
+            referenceExt = exeExt;
+            skipCount = 5;
+            rawDataDirs = Directory.GetDirectories(path, "*_Data");
+            dataDirs = rawDataDirs.Where(x => File.Exists(x[..^skipCount] + referenceExt));
+            if (!dataDirs.Any())
             {
-                arch = Architecture.LinuxX64;
-            }
-            else
-            {
-                errorMessage = "The selected directory does not contain a Unity game.";
-                return null;
+                exeExt = ".x86_64";
+                referenceExt = exeExt;
+                dataDirs = rawDataDirs.Where(x => File.Exists(x[..^skipCount] + referenceExt));
+                if (!dataDirs.Any())
+                {
+                    errorMessage = "The selected directory does not contain a Unity game.";
+                    return false;
+                }
             }
         }
 
+        // Validate Directory only contains 1 Application
         if (dataDirs.Count() > 1)
         {
             errorMessage = "The selected directory contains multiple Unity games?";
+            return false;
+        }
+
+        // Get Executable and Return
+        exe = dataDirs.First()[..^skipCount] + exeExt;
+        return true;
+    }
+
+    public static GameModel? TryAddGame(string path, string? customName, GameLauncher? launcher, string? iconPath, out string? errorMessage)
+    {
+        // Validate Game
+        string gameDir = path;
+        if (!ValidateGame(ref gameDir, out var exe, out var exeExt, out errorMessage))
+        {
+            if (errorMessage == null)
+                errorMessage = "Game failed Validation.";
             return null;
         }
 
-        var exe = dataDirs.First()[..^5] + (arch == Architecture.LinuxX64 ? ".x86_64" : ".exe");
-
+        // Check for Duplicate
         if (Games.Any(x => x.Path.Equals(exe, StringComparison.OrdinalIgnoreCase)))
         {
             errorMessage = "Game is already listed.";
             return null;
         }
 
+        // Get Architecture of Game
+        Architecture arch = GetGameArchitecture(exe!, exeExt!);
         if (arch == Architecture.Unknown)
         {
-            try
-            {
-                using var pe = new PEReader(File.OpenRead(exe));
-                arch = pe.PEHeaders.CoffHeader.Machine == Machine.Amd64 ? Architecture.WindowsX64 : Architecture.WindowsX86;
-            }
-            catch
-            {
-                var unityPlayerPath = Path.Combine(path, "UnityPlayer.dll");
-                if (File.Exists(unityPlayerPath))
-                {
-                    try
-                    {
-                        using var pe = new PEReader(File.OpenRead(unityPlayerPath));
-                        arch = pe.PEHeaders.CoffHeader.Machine == Machine.Amd64 ? Architecture.WindowsX64 : Architecture.WindowsX86;
-                    }
-                    catch { }
-                }
-            }
-
-            if (arch == Architecture.Unknown)
-            {
-                errorMessage = "The game executable is invalid (possibly corrupted).";
-                return null;
-            }
+            errorMessage = "The game executable is invalid (possibly corrupted).";
+            return null;
         }
 
-        var mlVersion = MLVersion.GetMelonLoaderVersion(path, out var mlArch);
+        // Get Installed MelonLoader Version Information
+        var mlVersion = MLVersion.GetMelonLoaderVersion(gameDir, out var mlArch, out _);
         if (mlVersion != null && mlArch != arch)
             mlVersion = null;
 
+        // Get Icon
         Bitmap? icon = null;
-
         if (iconPath != null && File.Exists(iconPath))
         {
             try
@@ -174,18 +185,48 @@ internal static class GameManager
             }
             catch { }
         }
-
 #if WINDOWS
-        if (arch != Architecture.LinuxX64)
-            icon ??= IconExtractor.GetExeIcon(exe);
+        if ((arch == Architecture.WindowsX64) || (arch == Architecture.WindowsX86))
+            icon ??= IconExtractor.GetExeIcon(exe!);
 #endif
 
+        // Check for EAC Protection
         var isProtected = Directory.Exists(Path.Combine(path, "EasyAntiCheat"));
 
-        var result = new GameModel(exe, customName ?? Path.GetFileNameWithoutExtension(exe), arch, launcher, icon, mlVersion, isProtected);
+        // Create New Result
+        var result = new GameModel(exe!, (customName ?? Path.GetFileNameWithoutExtension(exe))!, arch, launcher, icon, mlVersion, isProtected);
         errorMessage = null;
-
         AddGameSorted(result);
+        return result;
+    }
+
+    private static Architecture GetGameArchitecture(string exe, string exeExt)
+    {
+        Architecture result = Architecture.Unknown;
+        switch (exeExt)
+        {
+            case ".app":
+                result = Architecture.MacOSX64;
+                break;
+
+            case ".exe":
+                result = MLVersion.ReadFromPE(exe);
+                break;
+
+            case ".x86_64":
+                result = Architecture.LinuxX64;
+                break;
+
+            default:
+                break;
+        }
+
+        if (result == Architecture.Unknown)
+        {
+            var unityPlayerPath = Path.Combine(Path.GetDirectoryName(exe)!, "UnityPlayer.dll");
+            if (File.Exists(unityPlayerPath))
+                result = MLVersion.ReadFromPE(unityPlayerPath);
+        }
 
         return result;
     }

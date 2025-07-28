@@ -1,8 +1,12 @@
-﻿using System.IO.Compression;
+﻿using Semver;
+using System.IO.Compression;
+#if LINUX || OSX
+using System.Runtime.InteropServices;
+#endif
 
 namespace MelonLoader.Installer;
 
-public static class InstallerUtils
+public static partial class InstallerUtils
 {
     public static HttpClient Http { get; }
 
@@ -96,6 +100,24 @@ public static class InstallerUtils
 
         return null;
     }
+
+#if LINUX || OSX
+    // user permissions
+    public const int S_IRUSR = 0x100;
+    public const int S_IWUSR = 0x80;
+    public const int S_IXUSR = 0x40;
+
+    // group permission
+    public const int S_IRGRP = 0x20;
+    public const int S_IXGRP = 0x8;
+
+    // other permissions
+    public const int S_IROTH = 0x4;
+    public const int S_IXOTH = 0x1;
+        
+    [LibraryImport("libc", EntryPoint = "chmod", StringMarshalling = StringMarshalling.Utf8)]
+    public static partial int Chmod(string pathname, int mode);
+#endif
 }
 
 public delegate void InstallProgressEventHandler(double progress, string? newStatus);

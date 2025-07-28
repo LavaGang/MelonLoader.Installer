@@ -62,6 +62,9 @@
         <TextBlock Name="ShowLinuxInstructions" IsEnabled="{Binding !Installing}" Grid.Row="14" Tapped="ShowLinuxInstructionsHandler" HorizontalAlignment="Center" Foreground="Gray" TextDecorations="Underline" FontSize="13" Cursor="Hand" IsVisible="False">
             How do I start MelonLoader?
         </TextBlock>
+		<TextBlock Name="ShowMacOSInstructions" IsEnabled="{Binding !Installing}" Grid.Row="14" Tapped="ShowMacOSInstructionsHandler" HorizontalAlignment="Center" Foreground="Gray" TextDecorations="Underline" FontSize="13" Cursor="Hand" IsVisible="False">
+			How do I start MelonLoader?
+		</TextBlock>
     </Grid>
         <Grid Grid.Row="1" Margin="30" RowDefinitions="auto, *" IsVisible="{Binding LinuxInstructions}">
             <TextBlock Grid.Row="0" FontSize="25" Margin="0 0 0 20">Linux Launch Instructions</TextBlock>
@@ -76,8 +79,24 @@
                         <TextBox Name="LdLibPathVar" Margin="0 4 0 0" BorderBrush="Transparent" IsReadOnly="True"/>
                         <TextBox Name="LdPreloadVar" Margin="0 4 0 10" BorderBrush="Transparent" IsReadOnly="True">LD_PRELOAD="libversion.so"</TextBox>
                         <TextBlock TextWrapping="Wrap">On Steam, you can set the launch options to:</TextBlock>
-                        <TextBox Name="SteamLaunchOptions" Margin="0 4 0 10" BorderBrush="Transparent" IsReadOnly="True"/>
+                        <TextBox Name="LdSteamLaunchOptions" Margin="0 4 0 10" BorderBrush="Transparent" IsReadOnly="True"/>
                     </StackPanel>
         </Grid>
+		<Grid Grid.Row="1" Margin="30" RowDefinitions="auto, *" IsVisible="{Binding MacOSInstructions}">
+			<TextBlock Grid.Row="0" FontSize="25" Margin="0 0 0 20">MacOS Launch Instructions</TextBlock>
+			<StackPanel Orientation="Vertical" IsVisible="{Binding !Game.IsMacOS}" Grid.Row="1">
+				<TextBlock TextWrapping="Wrap">In order to start MelonLoader under Wine, you'll need to export the following variable:</TextBlock>
+				<TextBox Margin="0 4 0 10" BorderBrush="Transparent" IsReadOnly="True">WINEDLLOVERRIDES="version=n,b"</TextBox>
+				<TextBlock TextWrapping="Wrap">On Steam, you can set the launch options to:</TextBlock>
+				<TextBox Margin="0 4 0 10" BorderBrush="Transparent" IsReadOnly="True">WINEDLLOVERRIDES="version=n,b" %command%</TextBox>
+			</StackPanel>
+			<StackPanel Orientation="Vertical" IsVisible="{Binding Game.IsMacOS}" Grid.Row="1">
+				<TextBlock TextWrapping="Wrap">In order to start MelonLoader, you'll need to export the following variables:</TextBlock>
+				<TextBox Name="DylibPathVar" Margin="0 4 0 0" BorderBrush="Transparent" IsReadOnly="True"/>
+				<TextBox Name="DylibPreloadVar" Margin="0 4 0 10" BorderBrush="Transparent" IsReadOnly="True">DYLD_INSERT_LIBRARIES="MelonBootstrap.dylib"</TextBox>
+				<TextBlock TextWrapping="Wrap">On Steam, you can set the launch options to:</TextBlock>
+				<TextBox Name="DylibSteamLaunchOptions" Margin="0 4 0 10" BorderBrush="Transparent" IsReadOnly="True"/>
+			</StackPanel>
+		</Grid>
     </Grid>
 </UserControl>

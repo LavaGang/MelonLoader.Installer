@@ -40,3 +40,12 @@ jobs:
         with:
           name: MelonLoader.Installer.Linux
           path: Output/linux-x64/
+          
+      - name: Build for MacOS
+        run: dotnet publish --no-restore -r osx-x64 -p:BuildNumber="${{ github.run_number }}"
+
+      - name: Upload Artifact for MacOS
+        uses: actions/upload-artifact@v4
+        with:
+          name: MelonLoader.Installer.MacOS.x64.zip
+          path: Output/osx-x64/

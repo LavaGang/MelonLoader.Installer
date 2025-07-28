@@ -46,10 +46,18 @@ public partial class DetailsView : UserControl
         if (Model.Game.Arch == Architecture.LinuxX64)
         {
             LdLibPathVar.Text = $"LD_LIBRARY_PATH=\"{Model.Game.Dir}:$LD_LIBRARY_PATH\"";
-            SteamLaunchOptions.Text = $"{LdLibPathVar.Text} {LdPreloadVar.Text} %command%";
+            LdSteamLaunchOptions.Text = $"{LdLibPathVar.Text} {LdPreloadVar.Text} %command%";
         }
         
         ShowLinuxInstructions.IsVisible = Model.Game.MLInstalled;
+#elif OSX
+        if (Model.Game.Arch == Architecture.MacOSX64)
+        {
+            DylibPathVar.Text = $"DYLD_LIBRARY_PATH=\"{Model.Game.Dir}:$DYLD_LIBRARY_PATH\"";
+            DylibSteamLaunchOptions.Text = $"{DylibPathVar.Text} {DylibPreloadVar.Text} %command%";
+        }
+
+        ShowMacOSInstructions.IsVisible = Model.Game.MLInstalled;
 #endif
 
         Model.Game.PropertyChanged += PropertyChangedHandler;
@@ -76,9 +84,19 @@ public partial class DetailsView : UserControl
         var en = MLManager.Versions.Where(x =>
         Model.Game.Arch switch
         {
+            Architecture.MacOSX64 => x.DownloadUrlMacOS,
             Architecture.LinuxX64 => x.DownloadUrlLinux,
+            Architecture.WindowsX64 => x.DownloadUrlWin,
             Architecture.WindowsX86 => x.DownloadUrlWinX86,
-            _ => x.DownloadUrlWin
+
+#if WINDOWS
+            _ => x.DownloadUrlWin,
+#elif LINUX
+            _ => x.DownloadUrlLinux,
+#elif OSX
+            _ => x.DownloadUrlMacOS,
+#endif
+
         } != null);
         if (NightlyCheck.IsChecked != true)
             en = en.Where(x => !x.Version.IsPrerelease || x.IsLocalPath);
@@ -95,6 +113,12 @@ public partial class DetailsView : UserControl
         if (Model.LinuxInstructions)
         {
             Model.LinuxInstructions = false;
+            return;
+        }
+
+        if (Model.MacOSInstructions)
+        {
+            Model.MacOSInstructions = false;
             return;
         }
 
@@ -134,7 +158,7 @@ public partial class DetailsView : UserControl
 
     private void InstallHandler(object sender, RoutedEventArgs args)
     {
-        if (Model == null || !Model.Game.ValidateGame())
+        if (Model == null || !Model.Game.Validate(out _))
         {
             MainWindow.Instance.ShowMainView();
             return;
@@ -145,8 +169,9 @@ public partial class DetailsView : UserControl
 
         Model.Installing = true;
         ShowLinuxInstructions.IsVisible = false;
+        ShowMacOSInstructions.IsVisible = false;
 
-        _ = MLManager.InstallAsync(Path.GetDirectoryName(Model.Game.Path)!, Model.Game.MLInstalled && !KeepFilesCheck.IsChecked!.Value,
+        _ = MLManager.InstallAsync(Model.Game.Dir, Model.Game.MLInstalled && !KeepFilesCheck.IsChecked!.Value,
             (MLVersion)VersionCombobox.SelectedItem!, Model.Game.Arch,
             (progress, newStatus) => Dispatcher.UIThread.Post(() => OnInstallProgress(progress, newStatus)),
             (errorMessage) => Dispatcher.UIThread.Post(() => OnOperationFinished(errorMessage)));
@@ -196,12 +221,13 @@ public partial class DetailsView : UserControl
             return;
 
         var currentMLVersion = Model.Game.MLVersion;
-
-        Model.Game.ValidateGame();
+        Model.Game.Validate(out errorMessage);
         Model.Installing = false;
 
 #if LINUX
         ShowLinuxInstructions.IsVisible = Model.Game.MLInstalled;
+#elif OSX
+        ShowMacOSInstructions.IsVisible = Model.Game.MLInstalled;
 #endif
 
         if (errorMessage != null)
@@ -242,7 +268,7 @@ public partial class DetailsView : UserControl
 
     private void UninstallHandler(object sender, RoutedEventArgs args)
     {
-        if (Model == null || !Model.Game.ValidateGame())
+        if (Model == null || !Model.Game.Validate(out _))
         {
             MainWindow.Instance.ShowMainView();
             return;
@@ -292,6 +318,7 @@ public partial class DetailsView : UserControl
                     var ver = MLManager.Versions[0];
                     var downloadUrl = Model.Game.Arch switch
                     {
+                        Architecture.MacOSX64 => ver.DownloadUrlMacOS,
                         Architecture.LinuxX64 => ver.DownloadUrlLinux,
                         Architecture.WindowsX64 => ver.DownloadUrlWin,
                         Architecture.WindowsX86 => ver.DownloadUrlWinX86,
@@ -314,5 +341,13 @@ public partial class DetailsView : UserControl
             return;
 
         Model.LinuxInstructions = true;
+    }
+
+    private void ShowMacOSInstructionsHandler(object sender, TappedEventArgs args)
+    {
+        if (Model == null)
+            return;
+
+        Model.MacOSInstructions = true;
     }
 }

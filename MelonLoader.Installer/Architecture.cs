@@ -13,6 +13,12 @@ public enum Architecture
     WindowsX86,
     [Description("win-x64")]
     WindowsX64,
+    [Description("linux-x86")]
+    LinuxX86,
     [Description("linux-x64")]
     LinuxX64,
+    [Description("osx-x64")]
+    MacOSX64,
+    [Description("osx-arm64")]
+    MacOSArm64,
 }

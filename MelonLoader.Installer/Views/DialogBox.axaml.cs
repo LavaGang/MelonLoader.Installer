@@ -24,6 +24,10 @@ public partial class DialogBox : Window
 
     public static void ShowError(string title, string message, Action? onClose = null)
     {
+        if (string.IsNullOrEmpty(title) || string.IsNullOrWhiteSpace(title))
+            return;
+        if (string.IsNullOrEmpty(message) || string.IsNullOrWhiteSpace(message))
+            return;
         new DialogBox
         {
             Title = title,
@@ -38,9 +42,12 @@ public partial class DialogBox : Window
 
     public static void ShowNotice(string message)
         => ShowNotice("NOTICE", message);
-
     public static void ShowNotice(string title, string message)
     {
+        if (string.IsNullOrEmpty(title) || string.IsNullOrWhiteSpace(title))
+            return;
+        if (string.IsNullOrEmpty(message) || string.IsNullOrWhiteSpace(message))
+            return;
         new DialogBox
         {
             Title = title,
@@ -72,6 +79,14 @@ public partial class DialogBox : Window
         string confirmText = "Yes",
         string cancelText = "No")
     {
+        if (string.IsNullOrEmpty(title) || string.IsNullOrWhiteSpace(title))
+            return;
+        if (string.IsNullOrEmpty(message) || string.IsNullOrWhiteSpace(message))
+            return;
+        if (string.IsNullOrEmpty(confirmText) || string.IsNullOrWhiteSpace(confirmText))
+            return;
+        if (string.IsNullOrEmpty(cancelText) || string.IsNullOrWhiteSpace(cancelText))
+            return;
         new DialogBox
         {
             Title = title,

@@ -5,6 +5,7 @@ public class DetailsViewModel(GameModel game) : ViewModelBase
     private bool _installing;
     private bool _offline;
     private bool _linuxInstructions;
+    private bool _macOSInstructions;
 
     public GameModel Game => game;
 
@@ -36,6 +37,16 @@ public class DetailsViewModel(GameModel game) : ViewModelBase
         set
         {
             _linuxInstructions = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool MacOSInstructions
+    {
+        get => _macOSInstructions;
+        set
+        {
+            _macOSInstructions = value;
             OnPropertyChanged();
         }
     }
