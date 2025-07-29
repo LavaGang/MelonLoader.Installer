@@ -1,11 +1,6 @@
 ﻿using Semver;
 using System.Diagnostics;
 using System.IO.Compression;
-
-#if LINUX
-using System.Text.RegularExpressions;
-#endif
-
 #if LINUX || OSX
 using System.Runtime.InteropServices;
 #endif
@@ -131,15 +126,15 @@ public static partial class InstallerUtils
             }
         if (string.IsNullOrEmpty(openCmd))
             return;
-        
-        var args = EscapeForShell(path);
-        ShellExecRaw($"{openCmd} \\\"{args}\\\"", waitForExit: false);
-#else
+#endif
+
         Process.Start(new ProcessStartInfo
         {
             FileName =
 #if OSX
                 "open",
+#elif LINUX
+                openCmd,
 #else
                 "explorer",
 #endif
@@ -148,35 +143,9 @@ public static partial class InstallerUtils
             UseShellExecute = false,
             CreateNoWindow = true,
         });
-#endif
     }
 
 #if LINUX
-    private static string EscapeForShell(string input) => Regex
-        .Replace(input, "(?=[`~!#&*()|;'<>])", "\\")
-        .Replace("\"", "\\\\\\\"");
-    
-    private static void ShellExecRaw(string cmd, bool waitForExit = true)
-    {
-        using (var process = Process.Start(
-                   new ProcessStartInfo
-                   {
-                       FileName = "/bin/sh",
-                       Arguments = $"-c \"{cmd}\"",
-                       RedirectStandardOutput = true,
-                       UseShellExecute = false,
-                       CreateNoWindow = true,
-                       WindowStyle = ProcessWindowStyle.Hidden
-                   }
-               ))
-        {
-            if (waitForExit)
-            {
-                process?.WaitForExit();
-            }
-        }
-    }
-
     private static bool IsCommandAvailable(string commandName)
     {
         var pathEnv = Environment.GetEnvironmentVariable("PATH");
@@ -215,7 +184,7 @@ public static partial class InstallerUtils
     [LibraryImport("libc", EntryPoint = "chmod", StringMarshalling = StringMarshalling.Utf8)]
     public static partial int Chmod(string pathname, int mode);
 #endif
-}
+    }
 
 public delegate void InstallProgressEventHandler(double progress, string? newStatus);
 
