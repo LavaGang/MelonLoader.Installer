@@ -77,7 +77,7 @@
                     <StackPanel Orientation="Vertical" IsVisible="{Binding Game.IsLinux}" Grid.Row="1">
                         <TextBlock TextWrapping="Wrap">In order to start MelonLoader, you'll need to export the following variables:</TextBlock>
                         <TextBox Name="LdLibPathVar" Margin="0 4 0 0" BorderBrush="Transparent" IsReadOnly="True"/>
-                        <TextBox Name="LdPreloadVar" Margin="0 4 0 10" BorderBrush="Transparent" IsReadOnly="True">LD_PRELOAD="libversion.so"</TextBox>
+                        <TextBox Name="LdPreloadVar" Margin="0 4 0 10" BorderBrush="Transparent" IsReadOnly="True">LD_PRELOAD="MelonLoader.Bootstrap.so:${LD_PRELOAD}"</TextBox>
                         <TextBlock TextWrapping="Wrap">On Steam, you can set the launch options to:</TextBlock>
                         <TextBox Name="LdSteamLaunchOptions" Margin="0 4 0 10" BorderBrush="Transparent" IsReadOnly="True"/>
                     </StackPanel>
@@ -93,7 +93,7 @@
 			<StackPanel Orientation="Vertical" IsVisible="{Binding Game.IsMacOS}" Grid.Row="1">
 				<TextBlock TextWrapping="Wrap">In order to start MelonLoader, you'll need to export the following variables:</TextBlock>
 				<TextBox Name="DylibPathVar" Margin="0 4 0 0" BorderBrush="Transparent" IsReadOnly="True"/>
-				<TextBox Name="DylibPreloadVar" Margin="0 4 0 10" BorderBrush="Transparent" IsReadOnly="True">DYLD_INSERT_LIBRARIES="MelonLoader.Bootstrap.dylib"</TextBox>
+				<TextBox Name="DylibPreloadVar" Margin="0 4 0 10" BorderBrush="Transparent" IsReadOnly="True">DYLD_INSERT_LIBRARIES="MelonLoader.Bootstrap.dylib:${DYLD_INSERT_LIBRARIES}"</TextBox>
 				<TextBlock TextWrapping="Wrap">On Steam, you can set the launch options to:</TextBlock>
 				<TextBox Name="DylibSteamLaunchOptions" Margin="0 4 0 10" BorderBrush="Transparent" IsReadOnly="True"/>
 			</StackPanel>
