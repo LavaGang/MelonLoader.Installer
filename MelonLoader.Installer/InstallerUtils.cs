@@ -1,5 +1,11 @@
 ﻿using Semver;
+using System.Diagnostics;
 using System.IO.Compression;
+
+#if LINUX
+using System.Text.RegularExpressions;
+#endif
+
 #if LINUX || OSX
 using System.Runtime.InteropServices;
 #endif
@@ -9,6 +15,17 @@ namespace MelonLoader.Installer;
 public static partial class InstallerUtils
 {
     public static HttpClient Http { get; }
+
+#if LINUX
+    private static string[] allOpenCmds = new string[]
+        {
+            "xdg-open",
+            "gnome-open",
+            "gio open",
+            "gvfs-open",
+            "kde-open",
+        };
+#endif
 
     static InstallerUtils()
     {
@@ -100,6 +117,86 @@ public static partial class InstallerUtils
 
         return null;
     }
+
+
+    public static void OpenFolderInExplorer(string path)
+    {
+#if LINUX
+        string openCmd = string.Empty;
+        foreach (var cmd in allOpenCmds)
+            if (IsCommandAvailable(openCmd))
+            {
+                openCmd = cmd;
+                break;
+            }
+        if (string.IsNullOrEmpty(openCmd))
+            return;
+        
+        var args = EscapeForShell(path);
+        ShellExecRaw($"{openCmd} \\\"{args}\\\"", waitForExit: false);
+#else
+        Process.Start(new ProcessStartInfo
+        {
+            FileName =
+#if OSX
+                "open",
+#else
+                "explorer",
+#endif
+
+            ArgumentList = { path },
+            UseShellExecute = false,
+            CreateNoWindow = true,
+        });
+#endif
+    }
+
+#if LINUX
+    private static string EscapeForShell(string input) => Regex
+        .Replace(input, "(?=[`~!#&*()|;'<>])", "\\")
+        .Replace("\"", "\\\\\\\"");
+    
+    private static void ShellExecRaw(string cmd, bool waitForExit = true)
+    {
+        using (var process = Process.Start(
+                   new ProcessStartInfo
+                   {
+                       FileName = "/bin/sh",
+                       Arguments = $"-c \"{cmd}\"",
+                       RedirectStandardOutput = true,
+                       UseShellExecute = false,
+                       CreateNoWindow = true,
+                       WindowStyle = ProcessWindowStyle.Hidden
+                   }
+               ))
+        {
+            if (waitForExit)
+            {
+                process?.WaitForExit();
+            }
+        }
+    }
+
+    private static bool IsCommandAvailable(string commandName)
+    {
+        var pathEnv = Environment.GetEnvironmentVariable("PATH");
+        if (string.IsNullOrEmpty(pathEnv))
+            return false;
+
+        var paths = pathEnv.Split(':');
+        foreach (var path in paths)
+        {
+            if (string.IsNullOrWhiteSpace(path))
+                continue;
+
+            var fullPath = Path.Combine(path, commandName);
+            if (File.Exists(fullPath))
+                return true;
+        }
+
+        return false;
+    }
+#endif
 
 #if LINUX || OSX
     // user permissions

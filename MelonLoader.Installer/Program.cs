@@ -76,19 +76,6 @@ internal static class Program
         File.Delete(processLockPath);
     }
 
-    public static void OpenFolderInExplorer(Visual? visual, string path)
-    {
-#if OSX
-        Process.Start(new ProcessStartInfo
-        {
-            FileName = "open",
-            ArgumentList = { path },
-            UseShellExecute = false
-        });
-#else
-        TopLevel.GetTopLevel(visual)!.Launcher.LaunchDirectoryInfoAsync(new(path));
-#endif
-    }
 
     public static void LogCrashException(Exception ex)
     {

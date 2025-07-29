@@ -264,7 +264,7 @@ public partial class DetailsView : UserControl
         if (Model == null)
             return;
 
-        Program.OpenFolderInExplorer(this, Model.Game.Dir);
+        InstallerUtils.OpenFolderInExplorer(Model.Game.Dir);
     }
 
     private void UninstallHandler(object sender, RoutedEventArgs args)

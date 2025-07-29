@@ -40,27 +40,6 @@ public partial class DialogBox : Window
         }.Open();
     }
 
-    public static void ShowErrorVisual(string message, Action<Visual?>? onClose = null)
-        => ShowErrorVisual("ERROR!", message, onClose);
-    public static void ShowErrorVisual(string title, string message, Action<Visual?>? onClose = null)
-    {
-        if (string.IsNullOrEmpty(title) || string.IsNullOrWhiteSpace(title))
-            return;
-        if (string.IsNullOrEmpty(message) || string.IsNullOrWhiteSpace(message))
-            return;
-        DialogBox box = new()
-        {
-            Title = title,
-            DataContext = new DialogBoxModel
-            {
-                Message = message,
-                IsError = true
-            },
-        };
-        box.OnCancel = () => onClose?.Invoke(box);
-        box.Open();
-    }
-
     public static void ShowNotice(string message)
         => ShowNotice("NOTICE", message);
     public static void ShowNotice(string title, string message)

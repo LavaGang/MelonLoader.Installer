@@ -72,7 +72,7 @@ public partial class MainView : UserControl
     private static void CrashException(Exception ex)
     {
         Program.LogCrashException(ex);
-        DialogBox.ShowErrorVisual("""
+        DialogBox.ShowError("""
                             An error has occurred while loading the game library!
                             Please report this issue in the official Discord server in the #ml-support channel.
                             Include the crash log named 'melonloader-installer-crash.log'
@@ -82,12 +82,12 @@ public partial class MainView : UserControl
 #else
                             + "Located next to the executable."
 #endif
-                            , (Visual? x) =>
+                            , () =>
                             {
                                 MainWindow.Instance.Close();
 
 
-                                Program.OpenFolderInExplorer(x,
+                                InstallerUtils.OpenFolderInExplorer(
 #if OSX
                                     Config.CacheDir
 #else
