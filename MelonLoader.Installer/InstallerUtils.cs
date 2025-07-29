@@ -16,9 +16,9 @@ public static partial class InstallerUtils
         {
             "xdg-open",
             "gnome-open",
-            "gio open",
             "gvfs-open",
             "kde-open",
+            "gio",
         };
 #endif
 
@@ -139,7 +139,13 @@ public static partial class InstallerUtils
                 "explorer",
 #endif
 
-            ArgumentList = { path },
+            ArgumentList = {
+#if LINUX
+                ((openCmd == "gio") ? "open" : path)
+#else
+                path
+#endif
+            },
             UseShellExecute = false,
             CreateNoWindow = true,
         });
