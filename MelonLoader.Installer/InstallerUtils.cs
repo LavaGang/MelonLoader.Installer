@@ -128,6 +128,9 @@ public static partial class InstallerUtils
             return;
 #endif
 
+
+
+
         Process.Start(new ProcessStartInfo
         {
             FileName =
@@ -141,7 +144,8 @@ public static partial class InstallerUtils
 
             ArgumentList = {
 #if LINUX
-                ((openCmd == "gio") ? "open" : path)
+                ((openCmd == "gio") ? "open" : path),
+                ((openCmd == "gio") ? path : string.Empty)
 #else
                 path
 #endif
