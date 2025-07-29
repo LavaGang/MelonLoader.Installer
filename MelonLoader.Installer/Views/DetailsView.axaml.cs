@@ -5,6 +5,7 @@ using Avalonia.Platform.Storage;
 using Avalonia.Threading;
 using MelonLoader.Installer.ViewModels;
 using System.ComponentModel;
+using System.Diagnostics;
 
 namespace MelonLoader.Installer.Views;
 
@@ -263,7 +264,7 @@ public partial class DetailsView : UserControl
         if (Model == null)
             return;
 
-        TopLevel.GetTopLevel(this)!.Launcher.LaunchDirectoryInfoAsync(new(Model.Game.Dir));
+        Program.OpenFolderInExplorer(this, Model.Game.Dir);
     }
 
     private void UninstallHandler(object sender, RoutedEventArgs args)

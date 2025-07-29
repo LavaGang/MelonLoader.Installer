@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Text.Json.Nodes;
+
 #if LINUX
 using System.Runtime.InteropServices;
 #endif
@@ -45,7 +46,7 @@ public static partial class Updater
             return true;
 
         // Make sure we're not waiting for ourselves.
-        if (prevPID == Environment.ProcessId || Path.GetFullPath(originalPath).Equals(Path.GetFullPath(Environment.ProcessPath!), StringComparison.OrdinalIgnoreCase))
+        if (prevPID == Environment.ProcessId || Path.GetFullPath(originalPath).Equals(Path.GetFullPath(Config.ProcessPath!), StringComparison.OrdinalIgnoreCase))
             return false;
 
         if (prevPID != 0)
@@ -97,9 +98,13 @@ public static partial class Updater
         if (!WaitAndRemoveApp(originalPath, prevPID))
             return;
 
-        File.Copy(Environment.ProcessPath!, originalPath, true);
+        File.Copy(Config.ProcessPath!, originalPath, true);
 
-        Process.Start(originalPath, ["-cleanup", Environment.ProcessPath!, Environment.ProcessId.ToString()]);
+#if OSX
+        Process.Start("open", [originalPath, "--args", "-cleanup", Config.ProcessPath!, Environment.ProcessId.ToString()]);
+#else
+        Process.Start(originalPath, ["-cleanup", Config.ProcessPath!, Environment.ProcessId.ToString()]);
+#endif
     }
 
     private static async Task UpdateAsync(string downloadUrl)
@@ -148,11 +153,7 @@ public static partial class Updater
             File.Delete(archivePath);
 
         // Find New File
-        newPath = Path.Combine(tempFolderPath, "MelonLoader.Installer.MacOS"
-#if OSX_X64
-            + ".x64"
-#endif
-            + ".app");
+        newPath = Path.Combine(tempFolderPath, "MelonLoader.Installer.MacOS.app");
         if (!File.Exists(newPath))
         {
             if (Directory.Exists(tempFolderPath))
@@ -168,10 +169,13 @@ public static partial class Updater
             | InstallerUtils.S_IXGRP 
             | InstallerUtils.S_IROTH
             | InstallerUtils.S_IXOTH);
-
 #endif
 
-        Process.Start(newPath, ["-handleupdate", Environment.ProcessPath!, Environment.ProcessId.ToString()]);
+#if OSX
+        Process.Start("open", [newPath, "--args", "-handleupdate", Config.ProcessPath!, Environment.ProcessId.ToString()]);
+#else
+        Process.Start(newPath, ["-handleupdate", Config.ProcessPath!, Environment.ProcessId.ToString()]);
+#endif
 
         State = UpdateState.Done;
     }
@@ -179,11 +183,11 @@ public static partial class Updater
 #if WINDOWS
     public static bool CheckLegacyUpdate()
     {
-        if (!Environment.ProcessPath!.EndsWith(".tmp.exe", StringComparison.OrdinalIgnoreCase))
+        if (!Config.ProcessPath!.EndsWith(".tmp.exe", StringComparison.OrdinalIgnoreCase))
             return false;
 
-        var dir = Path.GetDirectoryName(Environment.ProcessPath)!;
-        var name = Path.GetFileNameWithoutExtension(Environment.ProcessPath);
+        var dir = Path.GetDirectoryName(Config.ProcessPath)!;
+        var name = Path.GetFileNameWithoutExtension(Config.ProcessPath);
         name = name[..^4] + ".exe";
 
         var final = Path.Combine(dir, name);

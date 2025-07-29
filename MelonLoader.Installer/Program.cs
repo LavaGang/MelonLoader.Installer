@@ -1,4 +1,6 @@
 ﻿using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Platform.Storage;
 using System.Diagnostics;
 
 namespace MelonLoader.Installer;
@@ -78,6 +80,32 @@ internal static class Program
         File.Delete(processLockPath);
     }
 
+#if OSX
+    public static void OpenFolderInExplorer(string path)
+    {
+        Process.Start(new ProcessStartInfo
+        {
+            FileName = "open",
+            ArgumentList = { path },
+            UseShellExecute = false
+        });
+    }
+#endif
+
+    public static void OpenFolderInExplorer(Visual? visual, string path)
+    {
+#if OSX
+        Process.Start(new ProcessStartInfo
+        {
+            FileName = "open",
+            ArgumentList = { path },
+            UseShellExecute = false
+        });
+#else
+        TopLevel.GetTopLevel(visual)!.Launcher.LaunchDirectoryInfoAsync(new(path));
+#endif
+    }
+
     public static void LogCrashException(Exception ex)
     {
         try
@@ -85,7 +113,7 @@ internal static class Program
 #if OSX
             string logLoc = Config.CacheDir;
 #else
-            string logLoc = Path.GetDirectoryName(Environment.ProcessPath)!;
+            string logLoc = Path.GetDirectoryName(Config.ProcessPath)!;
 #endif
 
             var logPath = Path.Combine(logLoc, "melonloader-installer-crash.log");
@@ -99,15 +127,15 @@ internal static class Program
         try
         {
 #if WINDOWS
-            Process.Start(new ProcessStartInfo(Environment.ProcessPath!, ["-wait", Environment.ProcessId.ToString()])
+            Process.Start(new ProcessStartInfo(Config.ProcessPath!, ["-wait", Environment.ProcessId.ToString()])
             {
                 UseShellExecute = true,
                 Verb = "runas"
             });
 #elif LINUX
-            Process.Start("pkexec", [Environment.ProcessPath!, "-wait", Environment.ProcessId.ToString()]);
+            Process.Start("pkexec", [Config.ProcessPath!, "-wait", Environment.ProcessId.ToString()]);
 #elif OSX
-            Process.Start("open", [Environment.ProcessPath!, "--args", "-wait", Environment.ProcessId.ToString()]);
+            Process.Start("osascript", ["-e", "do shell script \"open '{Config.ProcessPath!}' --args -wait {Environment.ProcessId.ToString()}\" with prompt \"MelonLoader Installer\" with administrator privileges"]);
 #endif
         }
         catch

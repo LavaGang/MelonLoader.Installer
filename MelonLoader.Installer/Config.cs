@@ -13,6 +13,14 @@ internal static class Config
     public static string LocalZipCache { get; private set; } = Path.Combine(CacheDir, "Local Build");
     public static string GameListPath { get; private set; } = Path.Combine(CacheDir, "games.txt");
 
+    public static string ProcessPath { get; private set; } =
+#if OSX
+        Path.GetDirectoryName(Environment.ProcessPath)!;
+#else
+        Environment.ProcessPath!;
+#endif
+    public static string ProcessDirectory { get; private set; } = Path.GetDirectoryName(ProcessPath)!;
+
     public static string[] LoadGameList()
     {
         return !File.Exists(GameListPath) ? [] : File.ReadAllLines(GameListPath);

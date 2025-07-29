@@ -2,6 +2,7 @@
 using Avalonia.Interactivity;
 using MelonLoader.Installer.ViewModels;
 using System.Collections.Specialized;
+using System.Diagnostics;
 
 namespace MelonLoader.Installer.Views;
 
@@ -74,8 +75,21 @@ public partial class MainView : UserControl
         DialogBox.ShowError("""
                             An error has occurred while loading the game library!
                             Please report this issue in the official Discord server in the #ml-support channel.
-                            Include the crash log named 'melonloader-installer-crash.log', located next to the executable.
-                            """, () => MainWindow.Instance.Close());
+                            Include the crash log named 'melonloader-installer-crash.log'
+                            """
+#if OSX
+                            + $"Located in '{Config.CacheDir}'"
+#else
+                            + "Located next to the executable."
+#endif
+                            , () =>
+                            {
+                                MainWindow.Instance.Close();
+
+#if OSX
+                                Program.OpenFolderInExplorer(Config.CacheDir);
+#endif
+                            });
     }
 
     protected override void OnUnloaded(RoutedEventArgs e)
