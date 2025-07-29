@@ -66,10 +66,10 @@
     </ItemGroup>
 
     <ItemGroup Condition="'$(RuntimeIdentifier.StartsWith(`osx-`))' == 'true'">
-      <None Update="AppBundle/Info.plist">
+      <None Update="Info.plist">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>
-	  <None Update="AppBundle/icon.icns">
+	  <None Update="icon.icns">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>
     </ItemGroup>
