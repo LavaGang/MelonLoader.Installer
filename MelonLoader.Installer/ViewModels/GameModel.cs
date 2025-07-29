@@ -43,7 +43,8 @@ public class GameModel(string path, string name, Architecture architecture, Game
         errorMessage = null;
 
         string gameDir = path;
-        if (!GameManager.ValidateGame(ref gameDir, out _, out _, out errorMessage))
+        if (!GameManager.ValidateGame(ref gameDir, out _, out _, out errorMessage)
+            || (errorMessage != null))
         {
             GameManager.RemoveGame(this);
             return false;
@@ -52,6 +53,7 @@ public class GameModel(string path, string name, Architecture architecture, Game
         var newMlVersion = Installer.MLVersion.GetMelonLoaderVersion(gameDir, out var arch, out errorMessage);
         if (newMlVersion != null && arch != Arch)
             newMlVersion = null;
+
         if (newMlVersion == MLVersion)
             return true;
 

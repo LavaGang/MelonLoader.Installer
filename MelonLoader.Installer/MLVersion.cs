@@ -60,9 +60,7 @@ public class MLVersion
         var proxyName = MLManager.proxyNames.FirstOrDefault(x => File.Exists(Path.Combine(gameDir, x)));
         if (proxyName == null)
             return null;
-
         string proxyPath = Path.Combine(gameDir, proxyName);
-
         try
         {
             ReadArchitecture(proxyPath, out architecture);
