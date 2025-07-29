@@ -139,7 +139,12 @@ public static partial class Updater
 
         // Extract Zip
         var archivePath = newPath;
-        string tempFolderPath = Path.GetTempFileName();
+        
+        string tempFolderPath = Path.Combine(Config.CacheDir, "tmp");
+        if (Directory.Exists(tempFolderPath))
+            Directory.Delete(tempFolderPath, true);
+        Directory.CreateDirectory(tempFolderPath);
+
         using var zipStr = File.OpenRead(archivePath);
         if (InstallerUtils.Extract(zipStr, tempFolderPath, null) == null)
         {
