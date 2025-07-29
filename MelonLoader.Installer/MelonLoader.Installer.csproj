@@ -39,7 +39,6 @@
     </PropertyGroup>
     <PropertyGroup Condition="'$(RuntimeIdentifier.Equals(`osx-x64`))' == 'true'">
         <DefineConstants>$(DefineConstants);OSX_X64</DefineConstants>
-        <PublishDir>../Output/$(RuntimeIdentifier)/$(AssemblyName).x64.app</PublishDir>
     </PropertyGroup>
 
     <ItemGroup>
