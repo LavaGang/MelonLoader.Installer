@@ -36,11 +36,7 @@ public static partial class Updater
         return Task.Run(() => UpdateAsync(downloadUrl));
     }
 
-    public static bool WaitAndRemoveApp(string originalPath, int prevPID
-#if OSX
-        , bool removeParentDirectory = false
-#endif
-        )
+    public static bool WaitAndRemoveApp(string originalPath, int prevPID)
     {
         if (!File.Exists(originalPath))
             return true;
@@ -65,12 +61,10 @@ public static partial class Updater
         
         try
         {
-            Directory.Delete(originalPath);
-            if (removeParentDirectory)
-            {
-                string parentPath = Path.GetDirectoryName(originalPath);
-                Directory.Delete(parentPath);
-            }
+            Directory.Delete(originalPath, true);
+
+            string parentPath = Path.GetDirectoryName(originalPath);
+            Directory.Delete(parentPath, true);
         }
         catch
         {
@@ -98,11 +92,16 @@ public static partial class Updater
         if (!WaitAndRemoveApp(originalPath, prevPID))
             return;
 
-        File.Copy(Config.ProcessPath!, originalPath, true);
-
 #if OSX
+        if (!Directory.Exists(originalPath))
+            Directory.CreateDirectory(originalPath);
+        foreach (string filePath in Directory.GetFiles(Config.ProcessPath, "*.*",SearchOption.AllDirectories))
+            File.Copy(filePath, filePath.Replace(Config.ProcessPath, originalPath), true);
+
         Process.Start("open", [originalPath, "--args", "-cleanup", Config.ProcessPath!, Environment.ProcessId.ToString()]);
 #else
+
+        File.Copy(Config.ProcessPath!, originalPath, true);
         Process.Start(originalPath, ["-cleanup", Config.ProcessPath!, Environment.ProcessId.ToString()]);
 #endif
     }
@@ -151,7 +150,7 @@ public static partial class Updater
             if (File.Exists(archivePath))
                 File.Delete(archivePath);
             if (Directory.Exists(tempFolderPath))
-                Directory.Delete(tempFolderPath);
+                Directory.Delete(tempFolderPath, true);
             throw new Exception("Failed to extract the latest installer version");
         }
         if (File.Exists(archivePath))
@@ -162,7 +161,7 @@ public static partial class Updater
         if (!File.Exists(newPath))
         {
             if (Directory.Exists(tempFolderPath))
-                Directory.Delete(tempFolderPath);
+                Directory.Delete(tempFolderPath, true);
             throw new Exception("Failed to extract the latest installer version");
         }
 

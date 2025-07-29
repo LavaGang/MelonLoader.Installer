@@ -39,11 +39,7 @@ internal static class Program
 
             if (args[0] == "-cleanup")
             {
-                Updater.WaitAndRemoveApp(args[1], pid
-#if OSX
-                    , true
-#endif
-                    );
+                Updater.WaitAndRemoveApp(args[1], pid);
             }
             else if (args[0] == "-wait")
             {
