@@ -157,7 +157,7 @@ public static partial class Updater
             File.Delete(archivePath);
 
         // Find New File
-        newPath = Path.Combine(tempFolderPath, "MelonLoader.Installer.MacOS.app");
+        newPath = Path.Combine(tempFolderPath, "MelonLoader Installer.app");
         if (!File.Exists(newPath))
         {
             if (Directory.Exists(tempFolderPath))
