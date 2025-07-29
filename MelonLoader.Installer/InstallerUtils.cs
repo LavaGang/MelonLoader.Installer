@@ -119,7 +119,7 @@ public static partial class InstallerUtils
 #if LINUX
         string openCmd = string.Empty;
         foreach (var cmd in allOpenCmds)
-            if (IsCommandAvailable(openCmd))
+            if (IsCommandAvailable(cmd))
             {
                 openCmd = cmd;
                 break;
