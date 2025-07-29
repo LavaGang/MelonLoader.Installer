@@ -80,18 +80,6 @@ internal static class Program
         File.Delete(processLockPath);
     }
 
-#if OSX
-    public static void OpenFolderInExplorer(string path)
-    {
-        Process.Start(new ProcessStartInfo
-        {
-            FileName = "open",
-            ArgumentList = { path },
-            UseShellExecute = false
-        });
-    }
-#endif
-
     public static void OpenFolderInExplorer(Visual? visual, string path)
     {
 #if OSX

@@ -1,3 +1,4 @@
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using MelonLoader.Installer.ViewModels;
@@ -21,7 +22,6 @@ public partial class DialogBox : Window
 
     public static void ShowError(string message, Action? onClose = null)
         => ShowError("ERROR!", message, onClose);
-
     public static void ShowError(string title, string message, Action? onClose = null)
     {
         if (string.IsNullOrEmpty(title) || string.IsNullOrWhiteSpace(title))
@@ -38,6 +38,27 @@ public partial class DialogBox : Window
             },
             OnCancel = onClose
         }.Open();
+    }
+
+    public static void ShowErrorVisual(string message, Action<Visual?>? onClose = null)
+        => ShowErrorVisual("ERROR!", message, onClose);
+    public static void ShowErrorVisual(string title, string message, Action<Visual?>? onClose = null)
+    {
+        if (string.IsNullOrEmpty(title) || string.IsNullOrWhiteSpace(title))
+            return;
+        if (string.IsNullOrEmpty(message) || string.IsNullOrWhiteSpace(message))
+            return;
+        DialogBox box = new()
+        {
+            Title = title,
+            DataContext = new DialogBoxModel
+            {
+                Message = message,
+                IsError = true
+            },
+        };
+        box.OnCancel = () => onClose?.Invoke(box);
+        box.Open();
     }
 
     public static void ShowNotice(string message)
