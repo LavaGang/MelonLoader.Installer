@@ -165,7 +165,8 @@ public static partial class InstallerUtils
         var paths = pathEnv.Split(':');
         foreach (var path in paths)
         {
-            if (string.IsNullOrWhiteSpace(path))
+            if (string.IsNullOrEmpty(path)
+				|| string.IsNullOrWhiteSpace(path))
                 continue;
 
             var fullPath = Path.Combine(path, commandName);
