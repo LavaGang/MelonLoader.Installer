@@ -28,7 +28,6 @@ internal static class MLManager
     ];
 
     private static MLVersion? localBuild;
-
     public static List<MLVersion> Versions { get; } = [];
 
     static MLManager()
@@ -343,6 +342,8 @@ internal static class MLManager
 
     public static async Task InstallAsync(string gameDir, bool removeUserFiles, MLVersion version, Architecture arch, InstallProgressEventHandler? onProgress, InstallFinishedEventHandler? onFinished)
     {
+        var oldVersion = MLVersion.GetMelonLoaderVersion(gameDir, out _, out _);
+
         var downloadUrl = arch switch
         {
             Architecture.MacOSX64 => version.DownloadUrlMacOS,
@@ -418,11 +419,77 @@ internal static class MLManager
             }
         }
 
-        Directory.CreateDirectory(Path.Combine(gameDir, "Mods"));
-        Directory.CreateDirectory(Path.Combine(gameDir, "Plugins"));
-        Directory.CreateDirectory(Path.Combine(gameDir, "UserData"));
-        Directory.CreateDirectory(Path.Combine(gameDir, "UserLibs"));
+        CreateNewDirectory(Path.Combine(gameDir, "UserData"));
+        HandleMelonFolder(version, oldVersion, Path.Combine(gameDir, "UserLibs"));
+        HandleMelonFolder(version, oldVersion, Path.Combine(gameDir, "Mods"));
+        HandleMelonFolder(version, oldVersion, Path.Combine(gameDir, "Plugins"));
 
         onFinished?.Invoke(null);
+    }
+
+    private static bool CreateNewDirectory(string path)
+    {
+        if (Directory.Exists(path))
+            return false;
+        Directory.CreateDirectory(path);
+        return true;
+    }
+
+    private static void HandleMelonFolder(MLVersion newVersion, SemVersion? oldVersion, string path)
+    {
+        // Create Folder
+        if (CreateNewDirectory(path))
+            return;
+
+        // Handle Subfolders
+        FixSubfolderFunctionality(newVersion.Version, oldVersion, path);
+    }
+
+    private static readonly SemVersion? subFolderUpdateVersion_070 = SemVersion.Parse("0.7.0");
+    private static readonly SemVersion? subFolderUpdateVersion_071 = SemVersion.Parse("0.7.1");
+    private static bool ShouldHandleSubfolderFunctionality(SemVersion? newVersion, SemVersion? oldVersion)
+    {
+        // Validate Version
+        if ((newVersion == null)
+            || (oldVersion == null))
+            return false;
+
+        // Check for Melon Subfolder Functionality
+        var newVersionComp_070 = newVersion.ComparePrecedenceTo(subFolderUpdateVersion_070);
+        if (newVersionComp_070 < 0) // newVersion < 0.7.0
+            return false;
+        var newVersionComp_071 = newVersion.ComparePrecedenceTo(subFolderUpdateVersion_071);
+        if (newVersionComp_071 == 0) // newVersion == 0.7.1
+            return true;
+        var oldVersionComp_070 = oldVersion.ComparePrecedenceTo(subFolderUpdateVersion_070);
+        if (oldVersionComp_070 >= 0) // oldVersion >= 0.7.0
+            return false;
+
+        // Return true
+        return true;
+    }
+    private static void FixSubfolderFunctionality(SemVersion? newVersion, SemVersion? oldVersion, string path)
+    {
+        // Check for Subfolder Functionality
+        if (!ShouldHandleSubfolderFunctionality(newVersion, oldVersion))
+            return;
+
+        // Get Subfolders
+        var directories = Directory.GetDirectories(path, "*", SearchOption.TopDirectoryOnly);
+        foreach (var subdir in directories)
+        {
+            // Check for ~
+            string subdirName = Path.GetFileName(subdir);
+            if (subdirName.StartsWith("~"))
+                continue;
+
+            // Check for manifest.json
+            string manifestPath = Path.Combine(subdir, "manifest.json");
+            if (File.Exists(manifestPath))
+                continue;
+
+            // Rename Directory
+            Directory.Move(subdir, Path.Combine(path, $"~{subdirName}"));
+        }
     }
 }
