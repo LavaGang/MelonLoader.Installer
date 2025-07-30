@@ -127,22 +127,20 @@ public static partial class InstallerUtils
         if (string.IsNullOrEmpty(openCmd))
             return;
 #endif
-
-
-
-
-        Process.Start(new ProcessStartInfo
+        try
         {
-            FileName =
+            Process.Start(new ProcessStartInfo
+            {
+                FileName =
 #if OSX
                 "open",
 #elif LINUX
                 openCmd,
 #else
-                "explorer",
+                    "explorer",
 #endif
 
-            ArgumentList = {
+                ArgumentList = {
 #if LINUX
                 ((openCmd == "gio") ? "open" : path),
                 ((openCmd == "gio") ? path : string.Empty)
@@ -150,9 +148,11 @@ public static partial class InstallerUtils
                 path
 #endif
             },
-            UseShellExecute = false,
-            CreateNoWindow = true,
-        });
+                UseShellExecute = false,
+                CreateNoWindow = true,
+            });
+        }
+        catch { }
     }
 
 #if LINUX

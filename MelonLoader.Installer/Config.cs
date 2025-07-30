@@ -23,12 +23,24 @@ internal static class Config
 
     public static string[] LoadGameList()
     {
-        return !File.Exists(GameListPath) ? [] : File.ReadAllLines(GameListPath);
+        try
+        {
+            return !File.Exists(GameListPath) ? [] : File.ReadAllLines(GameListPath);
+        }
+        catch
+        {
+            return [];
+        }
     }
 
     public static void SaveGameList(IEnumerable<string> gamePaths)
     {
-        Directory.CreateDirectory(Path.GetDirectoryName(GameListPath)!);
-        File.WriteAllLines(GameListPath, gamePaths);
+        try
+        {
+            if (!Directory.Exists(CacheDir))
+                Directory.CreateDirectory(CacheDir);
+            File.WriteAllLines(GameListPath, gamePaths);
+        }
+        catch { }
     }
 }
