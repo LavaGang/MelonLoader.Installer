@@ -489,7 +489,27 @@ internal static class MLManager
                 continue;
 
             // Rename Directory
-            Directory.Move(subdir, Path.Combine(path, $"~{subdirName}"));
+            int moveAttempts = 0;
+            while (moveAttempts < 100)
+                try
+                {
+                    string newPath = Path.Combine(path, $"~{subdirName}{((moveAttempts == 0) ? string.Empty : $"_{moveAttempts}")}");
+                    if (Directory.Exists(newPath))
+                        moveAttempts++;
+                    else
+                    {
+                        Directory.Move(subdir, newPath);
+                        if (!Directory.Exists(newPath) 
+                            && Directory.Exists(subdir))
+                            moveAttempts++;
+                        else
+                            break;
+                    }
+                }
+                catch
+                {
+                    moveAttempts++;
+                }
         }
     }
 }
