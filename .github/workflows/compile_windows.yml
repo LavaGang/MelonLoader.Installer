@@ -1,0 +1,28 @@
+on:
+  workflow_call:
+    inputs:
+      VERSION:
+        required: true
+        type: string
+
+jobs:
+  compile_windows:
+    name: Build Windows Executables
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 9.0.x
+      - name: Restore Dependencies
+        run: dotnet restore
+
+      - name: Build Release for win-x64
+        run: dotnet publish --no-restore -r win-x64 -p:BuildNumber="${{ github.run_number }}" -p:Version="${{ inputs.VERSION }}"
+
+      - name: Upload Release for win-x64
+        uses: actions/upload-artifact@v4
+        with:
+          name: MelonLoader.Installer
+          path: Output/win-x64

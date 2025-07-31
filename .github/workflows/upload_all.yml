@@ -1,0 +1,17 @@
+on:
+  workflow_call:
+    inputs:
+      TAG:
+        required: true
+        type: string
+      RELEASE_NAME:
+        required: true
+        type: string
+
+jobs:
+  upload_github:
+    name: GitHub
+    uses: ./.github/workflows/upload_github.yml
+    with:
+      TAG: ${{ inputs.TAG }}
+      RELEASE_NAME: ${{ inputs.RELEASE_NAME }}

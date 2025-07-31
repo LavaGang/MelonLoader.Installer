@@ -1,0 +1,28 @@
+on:
+  workflow_call:
+    inputs:
+      VERSION:
+        required: true
+        type: string
+
+jobs:
+  compile_macos:
+    name: Build MacOS App Bundles
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 9.0.x
+      - name: Restore Dependencies
+        run: dotnet restore
+
+      - name: Build Release for osx-x64
+        run: dotnet publish --no-restore -r osx-x64 -p:BuildNumber="${{ github.run_number }}" -p:Version="${{ inputs.VERSION }}"
+
+      - name: Upload Release for osx-x64
+        uses: actions/upload-artifact@v4
+        with:
+          name: MelonLoader.Installer.MacOS.x64
+          path: Output/osx-x64
