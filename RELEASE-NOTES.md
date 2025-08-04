@@ -5,4 +5,4 @@
 * Fixed a crash issue due to a few unhandled exceptions
 * Updated Avalonia to 11.3.0
 
-**Full Changelog**: https://github.com/LavaGang/MelonLoader.Installer/compare/4.1.2...v4.2.0
+**Full Changelog**: [4.1.2...4.2.0](<https://github.com/LavaGang/MelonLoader.Installer/compare/4.1.2...4.2.0>)
