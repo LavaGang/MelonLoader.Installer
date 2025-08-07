@@ -38,7 +38,7 @@ jobs:
           zip -r ../MelonLoader.Installer.MacOS.x64.zip  ./
           
       - name: Create Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           body_path: RELEASE-NOTES.md
           tag: ${{ inputs.TAG }}
