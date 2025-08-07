@@ -15,6 +15,7 @@
         <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
+        <CETCompat>false</CETCompat>
 
         <Authors>Lava Gang</Authors>
         <Company>discord.gg/2Wn3N2P</Company>
