@@ -14,6 +14,6 @@
         <RuntimeIdentifier Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::OSX)))' == 'true'">osx-x64</RuntimeIdentifier>
         
         <Nullable>enable</Nullable>
-        <AvaloniaVersion>11.3.2</AvaloniaVersion>
+        <AvaloniaVersion>11.3.3</AvaloniaVersion>
     </PropertyGroup>
 </Project>
