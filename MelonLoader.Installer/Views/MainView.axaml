@@ -7,7 +7,10 @@
     xmlns:root="clr-namespace:MelonLoader.Installer"
     mc:Ignorable="d" d:DesignWidth="450" d:DesignHeight="650"
     x:Class="MelonLoader.Installer.Views.MainView"
-    x:DataType="vm:MainViewModel">
+    x:DataType="vm:MainViewModel"
+    AllowDrop="True"
+    DragDrop.Drop="OnDrop"
+    DragDrop.DragOver="OnDragOver">
   <Design.DataContext>
     <!-- This only sets the DataContext for the previewer in an IDE,
          to set the actual DataContext for runtime, set the DataContext property in code (look at
@@ -16,6 +19,22 @@
   </Design.DataContext>
 
   <Grid RowDefinitions="auto, auto, auto, *, auto, auto">
+    <!-- Drag and Drop Overlay -->
+    <Border Name="DragDropOverlay" Grid.RowSpan="6" Background="#80000000" 
+            IsVisible="False" ZIndex="1000">
+      <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="20">
+        <Border Background="#FF4444" CornerRadius="10" Padding="30" BoxShadow="0 5 20 #40000000">
+          <StackPanel Spacing="15" HorizontalAlignment="Center">
+            <TextBlock Text="🎮" FontSize="48" HorizontalAlignment="Center" />
+            <TextBlock Text="Drop game executable here" FontSize="20" FontWeight="Bold" 
+                       Foreground="White" HorizontalAlignment="Center" />
+            <TextBlock Text="Supports .exe, .app, and .x86_64 files" FontSize="14" 
+                       Foreground="#CCFFFFFF" HorizontalAlignment="Center" />
+          </StackPanel>
+        </Border>
+      </StackPanel>
+    </Border>
+
     <TextBlock Grid.Row="5" VerticalAlignment="Bottom" Foreground="#AFFF"
         Text="{x:Static root:Program.VersionName}" />
 
