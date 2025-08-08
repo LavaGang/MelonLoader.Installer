@@ -160,44 +160,9 @@ public partial class MainView : UserControl
         OpenURL(Config.Twitter);
     }
 
-    private void OnDragOver(object? sender, DragEventArgs e)
+    // Method called by MainWindow when a drop occurs
+    public async Task HandleDropAsync(DragEventArgs e)
     {
-        // Check if the dragged data contains files
-        if (e.Data.Contains(DataFormats.Files))
-        {
-            var files = e.Data.GetFiles();
-            if (files != null)
-            {
-                // Check if any of the files is a Unity game executable
-                var hasGameExecutable = files.Any(file => 
-                {
-                    var path = file.Path.LocalPath;
-                    var extension = Path.GetExtension(path).ToLowerInvariant();
-                    var fileName = Path.GetFileName(path);
-                    
-                    // Support Windows .exe, macOS .app bundles, and Linux .x86_64 executables
-                    return extension == ".exe" || 
-                           extension == ".app" || 
-                           fileName.EndsWith(".x86_64", StringComparison.OrdinalIgnoreCase);
-                });
-
-                if (hasGameExecutable)
-                {
-                    e.DragEffects = DragDropEffects.Copy;
-                    DragDropOverlay.IsVisible = true;
-                    return;
-                }
-            }
-        }
-
-        e.DragEffects = DragDropEffects.None;
-        DragDropOverlay.IsVisible = false;
-    }
-
-    private async void OnDrop(object? sender, DragEventArgs e)
-    {
-        DragDropOverlay.IsVisible = false;
-
         if (!e.Data.Contains(DataFormats.Files))
             return;
 
@@ -237,21 +202,8 @@ public partial class MainView : UserControl
             // Show a brief success notification instead of a modal dialog
             // The game will appear in the list which is visual confirmation enough
         }
-    }
-
-    protected override void OnLoaded(RoutedEventArgs e)
-    {
-        base.OnLoaded(e);
         
-        // Hide the drag drop overlay when the control loads
-        DragDropOverlay.IsVisible = false;
-    }
-
-    protected override void OnPointerExited(PointerEventArgs e)
-    {
-        base.OnPointerExited(e);
-        
-        // Hide the overlay when pointer exits the control
-        DragDropOverlay.IsVisible = false;
+        // Make method actually async by awaiting a completed task
+        await Task.CompletedTask;
     }
 }
