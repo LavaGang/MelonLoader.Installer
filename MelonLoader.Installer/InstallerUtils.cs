@@ -131,25 +131,26 @@ public static partial class InstallerUtils
         {
             Process.Start(new ProcessStartInfo
             {
+                UseShellExecute = false,
+                CreateNoWindow = true,
+
                 FileName =
 #if OSX
-                "open",
+                    "open",
 #elif LINUX
-                openCmd,
+                    openCmd,
 #else
                     "explorer",
 #endif
 
                 ArgumentList = {
 #if LINUX
-                ((openCmd == "gio") ? "open" : path),
-                ((openCmd == "gio") ? path : string.Empty)
+                    ((openCmd == "gio") ? "open" : path),
+                    ((openCmd == "gio") ? path : string.Empty)
 #else
-                path
+                    path
 #endif
-            },
-                UseShellExecute = false,
-                CreateNoWindow = true,
+                },
             });
         }
         catch { }
