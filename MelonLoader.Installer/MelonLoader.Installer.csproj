@@ -61,13 +61,4 @@
         <PackageReference Include="System.Private.Uri" Version="4.3.2" />
         <PackageReference Include="System.Text.RegularExpressions" Version="4.3.1" />
     </ItemGroup>
-
-    <ItemGroup Condition="'$(RuntimeIdentifier.StartsWith(`osx-`))' == 'true'">
-      <None Update="Info.plist">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-	  <None Update="icon.icns">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-    </ItemGroup>
 </Project>

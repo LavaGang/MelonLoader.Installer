@@ -27,22 +27,19 @@ jobs:
       - name: Create Universal Binary using lipo
         run: |
           mkdir -p "Output/osx-universal/MelonLoader Installer.app/Contents/MacOS"
-          mkdir -p "Output/osx-universal/MelonLoader Installer.app/Contents/Resources"
-          cp Info.plist "Output/osx-universal/MelonLoader Installer.app/Contents/"
-          cp Resources/icon.icns "Output/osx-universal/MelonLoader Installer.app/Contents/Resources/"
-          
           lipo -create \
             Output/osx-x64/MelonLoader.Installer.MacOS \
             Output/osx-arm64/MelonLoader.Installer.MacOS \
             -output "Output/osx-universal/MelonLoader Installer.app/Contents/MacOS/MelonLoader.Installer.MacOS"
-          
-          for lib in Output/osx-x64/*.dylib; do
-            libname=$(basename "$lib")
-            lipo -create \
-            "Output/osx-x64/$libname" \
-            "Output/osx-arm64/$libname" \
-            -output "Output/osx-universal/MelonLoader Installer.app/Contents/MacOS/$libname"
-          done
+          cp Output/osx-arm64/libAvaloniaNative.dylib "Output/osx-universal/MelonLoader Installer.app/Contents/MacOS/"
+          cp Output/osx-arm64/libHarfBuzzSharp.dylib "Output/osx-universal/MelonLoader Installer.app/Contents/MacOS/"
+          cp Output/osx-arm64/libSkiaSharp.dylib "Output/osx-universal/MelonLoader Installer.app/Contents/MacOS/"
+        
+      - name: Copy App Bundle Resources
+        run: |
+          mkdir -p "Output/osx-universal/MelonLoader Installer.app/Contents/Resources"
+          cp Info.plist "Output/osx-universal/MelonLoader Installer.app/Contents/"
+          cp Resources/icon.icns "Output/osx-universal/MelonLoader Installer.app/Contents/Resources/"
 
       - name: Upload Release
         uses: actions/upload-artifact@v4
