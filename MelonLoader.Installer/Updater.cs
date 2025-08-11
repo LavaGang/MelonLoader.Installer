@@ -243,8 +243,8 @@ public static partial class Updater
                 ".exe"
 #elif LINUX
                 ".Linux"
-#elif OSX_X64
-                ".MacOS.x64.zip"
+#elif OSX
+                ".MacOS.zip"
 #endif
             );
         });

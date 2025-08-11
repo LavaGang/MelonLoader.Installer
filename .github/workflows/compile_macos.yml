@@ -8,7 +8,7 @@ on:
 jobs:
   compile_macos:
     name: Build MacOS App Bundles
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
       - name: Setup dotnet
@@ -20,9 +20,32 @@ jobs:
 
       - name: Build Release for osx-x64
         run: dotnet publish --no-restore -r osx-x64 -p:BuildNumber="${{ github.run_number }}" -p:Version="${{ inputs.VERSION }}"
+        
+      - name: Build Release for osx-arm64
+        run: dotnet publish --no-restore -r osx-arm64 -p:BuildNumber="${{ github.run_number }}" -p:Version="${{ inputs.VERSION }}"
 
-      - name: Upload Release for osx-x64
+      - name: Create Universal Binary using lipo
+        run: |
+          mkdir -p "Output/osx-universal/MelonLoader Installer.app/Contents/MacOS"
+          mkdir -p "Output/osx-universal/MelonLoader Installer.app/Contents/Resources"
+          cp Info.plist "Output/osx-universal/MelonLoader Installer.app/Contents/"
+          cp Resources/icon.icns "Output/osx-universal/MelonLoader Installer.app/Contents/Resources/"
+          
+          lipo -create \
+            Output/osx-x64/MelonLoader.Installer.MacOS \
+            Output/osx-arm64/MelonLoader.Installer.MacOS \
+            -output "Output/osx-universal/MelonLoader Installer.app/Contents/MacOS/MelonLoader.Installer.MacOS"
+          
+          for lib in Output/osx-x64/*.dylib; do
+            libname=$(basename "$lib")
+            lipo -create \
+            "Output/osx-x64/$libname" \
+            "Output/osx-arm64/$libname" \
+            -output "Output/osx-universal/MelonLoader Installer.app/Contents/MacOS/$libname"
+          done
+
+      - name: Upload Release
         uses: actions/upload-artifact@v4
         with:
-          name: MelonLoader.Installer.MacOS.x64
-          path: Output/osx-x64
+          name: MelonLoader.Installer.MacOS
+          path: Output/osx-universal

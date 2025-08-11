@@ -36,10 +36,6 @@
     <PropertyGroup Condition="'$(RuntimeIdentifier.StartsWith(`osx-`))' == 'true'">
         <DefineConstants>$(DefineConstants);OSX</DefineConstants>
         <AssemblyName>MelonLoader.Installer.MacOS</AssemblyName>
-        <PublishDir>../Output/$(RuntimeIdentifier)/MelonLoader Installer.app</PublishDir>
-    </PropertyGroup>
-    <PropertyGroup Condition="'$(RuntimeIdentifier.Equals(`osx-x64`))' == 'true'">
-        <DefineConstants>$(DefineConstants);OSX_X64</DefineConstants>
     </PropertyGroup>
 
     <ItemGroup>
