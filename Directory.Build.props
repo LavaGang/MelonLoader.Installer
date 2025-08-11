@@ -1,19 +1,34 @@
 <Project>
     <PropertyGroup>
         <BaseVersion>4.2.1</BaseVersion> <!-- This should be adjusted after every release -->
-
         <BuildNumber>0</BuildNumber>
         <Version>$(BaseVersion).$(BuildNumber)</Version>
-		
         <TargetFramework>net9.0</TargetFramework>
-
-        <!-- Sets the default identifiers. They can be overridden -->
-        <RuntimeIdentifiers>win-x64;linux-x64;osx-x64</RuntimeIdentifiers>
-        <RuntimeIdentifier Condition="'$([MSBuild]::IsOSUnixLike())' == 'false'">win-x64</RuntimeIdentifier>
-        <RuntimeIdentifier Condition="'$([MSBuild]::IsOSUnixLike())' == 'true'">linux-x64</RuntimeIdentifier>
-        <RuntimeIdentifier Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::OSX)))' == 'true'">osx-x64</RuntimeIdentifier>
-        
         <Nullable>enable</Nullable>
         <AvaloniaVersion>11.3.3</AvaloniaVersion>
+		
+		<!-- Sets the default identifiers. They can be overridden -->
+        <RuntimeIdentifiers>win-x64;linux-x64;osx-x64;osx-arm64</RuntimeIdentifiers> 
+		
+        <RuntimeIdentifier Condition="
+			'$([MSBuild]::IsOSUnixLike())' == 'false'
+		">win-x64</RuntimeIdentifier>
+		
+        <RuntimeIdentifier Condition="
+			'$([MSBuild]::IsOSUnixLike())' == 'true'
+			and '$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::OSX)))' == 'false'
+		">linux-x64</RuntimeIdentifier>
+		
+		<RuntimeIdentifier Condition="
+			'$([MSBuild]::IsOSUnixLike())' == 'true'
+			and '$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::OSX)))' == 'true'
+			and '$([System.Runtime.InteropServices.RuntimeInformation]::ProcessArchitecture)' == 'X64'
+		">osx-x64</RuntimeIdentifier>
+		
+		<RuntimeIdentifier Condition="
+			'$([MSBuild]::IsOSUnixLike())' == 'true'
+			and '$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::OSX)))' == 'true'
+			and '$([System.Runtime.InteropServices.RuntimeInformation]::ProcessArchitecture)' == 'Arm64'
+		">osx-arm64</RuntimeIdentifier>
     </PropertyGroup>
 </Project>
