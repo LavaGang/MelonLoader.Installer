@@ -7,7 +7,7 @@ on:
 
 jobs:
   compile_macos:
-    name: Build MacOS App Bundles
+    name: Build MacOS App Bundle
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
