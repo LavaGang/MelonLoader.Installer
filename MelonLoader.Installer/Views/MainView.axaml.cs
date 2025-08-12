@@ -1,9 +1,11 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Interactivity;
 using MelonLoader.Installer.ViewModels;
 using System.Collections.Specialized;
 using System.Diagnostics;
+using System.IO;
 
 namespace MelonLoader.Installer.Views;
 
@@ -156,5 +158,52 @@ public partial class MainView : UserControl
     private void TwitterLink(object sender, RoutedEventArgs args)
     {
         OpenURL(Config.Twitter);
+    }
+
+    // Method called by MainWindow when a drop occurs
+    public async Task HandleDropAsync(DragEventArgs e)
+    {
+        if (!e.Data.Contains(DataFormats.Files))
+            return;
+
+        var files = e.Data.GetFiles();
+        if (files == null)
+            return;
+
+        // Find the first game executable file
+        var gameFile = files.FirstOrDefault(file => 
+        {
+            var path = file.Path.LocalPath;
+            var extension = Path.GetExtension(path).ToLowerInvariant();
+            var fileName = Path.GetFileName(path);
+            
+            // Support Windows .exe, macOS .app bundles, and Linux .x86_64 executables
+            return extension == ".exe" || 
+                   extension == ".app" || 
+                   fileName.EndsWith(".x86_64", StringComparison.OrdinalIgnoreCase);
+        });
+
+        if (gameFile == null)
+            return;
+
+        var gamePath = gameFile.Path.LocalPath;
+
+        // Try to add the game using the same logic as the manual file picker
+        var result = GameManager.TryAddGame(gamePath, null, null, null, out var error);
+        if (error != null)
+        {
+            DialogBox.ShowError($"Failed to add game: {error}");
+            return;
+        }
+
+        if (result != null)
+        {
+            GameManager.SaveManualGameList();
+            // Show a brief success notification instead of a modal dialog
+            // The game will appear in the list which is visual confirmation enough
+        }
+        
+        // Make method actually async by awaiting a completed task
+        await Task.CompletedTask;
     }
 }
