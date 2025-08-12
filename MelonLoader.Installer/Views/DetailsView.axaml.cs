@@ -221,8 +221,6 @@ public partial class DetailsView : UserControl
         if (Model == null)
             return;
 
-        var currentMLVersion = Model.Game.MLVersion;
-        Model.Game.Validate(out errorMessage);
         Model.Installing = false;
 
 #if LINUX
@@ -231,6 +229,14 @@ public partial class DetailsView : UserControl
         ShowMacOSInstructions.IsVisible = Model.Game.MLInstalled;
 #endif
 
+        if (errorMessage != null)
+        {
+            DialogBox.ShowError(errorMessage);
+            return;
+        }
+
+        var currentMLVersion = Model.Game.MLVersion;
+        Model.Game.Validate(out errorMessage);
         if (errorMessage != null)
         {
             DialogBox.ShowError(errorMessage);
