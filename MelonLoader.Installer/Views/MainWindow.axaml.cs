@@ -3,29 +3,17 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Threading;
 using MelonLoader.Installer.ViewModels;
-using System;
 
 namespace MelonLoader.Installer.Views;
 
 public partial class MainWindow : Window
 {
     public static MainWindow Instance { get; private set; } = null!;
-    private bool _hasValidFiles = false;
-    private bool _overlayVisible = false;
     private DispatcherTimer? _hideTimer;
-    private readonly HashSet<string> _validExtensions = new(StringComparer.OrdinalIgnoreCase) { ".exe", ".app", ".x86_64" };
 
     public MainWindow()
     {
         Instance = this;
-
-        InitializeComponent();
-        
-        // Subscribe to drag and drop events
-        DragDrop.SetAllowDrop(this, true);
-        AddHandler(DragDrop.DragOverEvent, OnWindowDragOver);
-        AddHandler(DragDrop.DragLeaveEvent, OnWindowDragLeave);
-        AddHandler(DragDrop.DropEvent, OnWindowDrop);
 
         // Initialize timer for delayed hiding
         _hideTimer = new DispatcherTimer
@@ -34,87 +22,68 @@ public partial class MainWindow : Window
         };
         _hideTimer.Tick += OnHideTimerTick;
 
+        InitializeComponent();
+
+        // Subscribe to drag and drop events
+        DragDrop.SetAllowDrop(this, true);
+        AddHandler(DragDrop.DragOverEvent, OnWindowDragOver);
+        AddHandler(DragDrop.DragLeaveEvent, OnWindowDragLeave);
+        AddHandler(DragDrop.DropEvent, OnWindowDrop);
+
         ShowMainView();
     }
 
     private void OnWindowDragOver(object? sender, DragEventArgs e)
     {
-        // Stop any pending hide timer
-        _hideTimer?.Stop();
-
         // Check if the dragged data contains files
-        if (e.Data.Contains(DataFormats.Files))
+        if (Viewport.Child is MainView mainView)
         {
-            var files = e.Data.GetFiles();
-            if (files != null)
+            bool isExecutable = InstallerUtils.CheckDragEventForGameExecutable(e);
+            if (isExecutable)
             {
-                // Check if any of the files is a Unity game executable
-                var hasGameExecutable = files.Any(file => 
-                {
-                    var path = file.Path.LocalPath;
-                    var extension = Path.GetExtension(path);
-                    var fileName = Path.GetFileName(path);
-                    
-                    // Support Windows .exe, macOS .app bundles, and Linux .x86_64 executables
-                    return _validExtensions.Contains(extension) || 
-                           fileName.EndsWith(".x86_64", StringComparison.OrdinalIgnoreCase);
-                });
-
-                if (hasGameExecutable)
-                {
-                    e.DragEffects = DragDropEffects.Copy;
-                    
-                    // Only update UI if state has changed
-                    if (!_hasValidFiles || !_overlayVisible)
-                    {
-                        _hasValidFiles = true;
-                        _overlayVisible = true;
-                        WindowDragDropOverlay.IsVisible = true;
-                    }
-                    return;
-                }
+                e.DragEffects = DragDropEffects.Copy;
+                WindowDragDropOverlaySuccess.IsVisible = true;
+                WindowDragDropOverlayError.IsVisible = false;
             }
+            else
+            {
+                e.DragEffects = DragDropEffects.None;
+                WindowDragDropOverlaySuccess.IsVisible = false;
+                WindowDragDropOverlayError.IsVisible = true;
+            }
+
+            _hideTimer?.Stop();
+            return;
         }
 
         e.DragEffects = DragDropEffects.None;
-        
-        // Start timer to hide overlay
-        if (_hasValidFiles || _overlayVisible)
-        {
-            _hideTimer?.Start();
-        }
+        _hideTimer?.Start();
     }
 
     private void OnWindowDragLeave(object? sender, DragEventArgs e)
     {
-        // Start timer to hide overlay after a short delay
+        // Reset state
         _hideTimer?.Start();
-    }
-
-    private void OnHideTimerTick(object? sender, EventArgs e)
-    {
-        // Stop the timer and hide overlay
-        _hideTimer?.Stop();
-        
-        _hasValidFiles = false;
-        _overlayVisible = false;
-        WindowDragDropOverlay.IsVisible = false;
     }
 
     private async void OnWindowDrop(object? sender, DragEventArgs e)
     {
-        // Stop timer and reset state
-        _hideTimer?.Stop();
-        _hasValidFiles = false;
-        _overlayVisible = false;
-        WindowDragDropOverlay.IsVisible = false;
+        // Reset state
+        CloseDragDropOverlay();
 
         // Delegate to MainView if it's currently active
         if (Viewport.Child is MainView mainView)
-        {
-            // Await the async HandleDrop method
-            await mainView.HandleDropAsync(e);
-        }
+            await mainView.HandleDropAsync(e); // Await the async HandleDrop method
+    }
+
+    private void OnHideTimerTick(object? sender, EventArgs e)
+        => CloseDragDropOverlay();
+
+    private void CloseDragDropOverlay()
+    {
+        _hideTimer?.Stop();
+        WindowDragDropOverlaySuccess.IsVisible = false;
+        WindowDragDropOverlayError.IsVisible = false;
     }
 
     public async Task HandleUpdate(Task updaterTask)
@@ -157,10 +126,6 @@ public partial class MainWindow : Window
 
     protected override void OnClosed(EventArgs e)
     {
-        // Clean up timer
-        _hideTimer?.Stop();
-        _hideTimer = null;
-        
         base.OnClosed(e);
     }
 
@@ -176,6 +141,7 @@ public partial class MainWindow : Window
 
     public void ShowDetailsView(GameModel game)
     {
+        CloseDragDropOverlay();
         var view = new DetailsView()
         {
             DataContext = new DetailsViewModel(game)

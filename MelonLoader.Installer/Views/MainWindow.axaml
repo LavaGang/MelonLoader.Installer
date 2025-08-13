@@ -2,33 +2,68 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="clr-namespace:MelonLoader.Installer.ViewModels"
     mc:Ignorable="d"
     Width="500" Height="700"
     x:Class="MelonLoader.Installer.Views.MainWindow"
+    x:DataType="vm:MainViewModel"
     Icon="/Assets/icon.ico"
     Title="MelonLoader Installer"
     WindowStartupLocation="CenterScreen"
     CanResize="False"
     RenderOptions.BitmapInterpolationMode="HighQuality"
     DragDrop.AllowDrop="True">
+	<Design.DataContext>
+		<!-- This only sets the DataContext for the previewer in an IDE,
+         to set the actual DataContext for runtime, set the DataContext property in code (look at
+        App.axaml.cs) -->
+		<vm:MainViewModel />
+	</Design.DataContext>
     <Grid>
         <Image Source="/Assets/bg.png" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Stretch="UniformToFill" />
         <Border Name="Viewport" Margin="25" />
         
         <!-- Full Window Drag and Drop Overlay -->
-        <Border Name="WindowDragDropOverlay" Background="#80000000" 
-                IsVisible="False" ZIndex="2000" IsHitTestVisible="False">
+        <Border Name="WindowDragDropOverlaySuccess" Background="#80000000" 
+                IsVisible="False" ZIndex="2000">
           <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="20">
             <Border Background="#22AA44" CornerRadius="10" Padding="30" BoxShadow="0 5 20 #40000000">
               <StackPanel Spacing="15" HorizontalAlignment="Center">
                 <Image Source="/Assets/icon.ico" Width="48" Height="48" HorizontalAlignment="Center" />
                 <TextBlock Text="Drop game executable here" FontSize="20" FontWeight="Bold" 
                            Foreground="White" HorizontalAlignment="Center" />
-                <TextBlock Text="Supports .exe, .app, and .x86_64 files" FontSize="14" 
-                           Foreground="#CCFFFFFF" HorizontalAlignment="Center" />
+				  <TextBlock FontSize="14"
+							 Foreground="#CCFFFFFF" HorizontalAlignment="Center">
+					  <TextBlock.Inlines>
+						  <Run Text="Supports"/>
+						  <Run Text="{Binding SupportedExtensions}"/>
+						  <Run Text="files"/>
+					  </TextBlock.Inlines>
+				  </TextBlock>
               </StackPanel>
             </Border>
           </StackPanel>
         </Border>
+
+		<Border Name="WindowDragDropOverlayError" Background="#80000000"
+                IsVisible="False" ZIndex="2000">
+			<StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="20">
+				<Border Background="#D90404" CornerRadius="10" Padding="30" BoxShadow="0 5 20 #40000000">
+					<StackPanel Spacing="15" HorizontalAlignment="Center">
+						<Image Source="/Assets/error.png" Width="48" Height="48" HorizontalAlignment="Center" />
+						<TextBlock Text="This is not a game executable!" FontSize="20" FontWeight="Bold"
+								   Foreground="White" HorizontalAlignment="Center" />
+						<TextBlock FontSize="14"
+								   Foreground="#CCFFFFFF" HorizontalAlignment="Center">
+							<TextBlock.Inlines>
+								<Run Text="Only supports"/>
+								<Run Text="{Binding SupportedExtensions}"/>
+								<Run Text="files"/>
+							</TextBlock.Inlines>
+						</TextBlock>
+					</StackPanel>
+				</Border>
+			</StackPanel>
+		</Border>
     </Grid>
 </Window>

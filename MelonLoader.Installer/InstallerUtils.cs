@@ -1,6 +1,9 @@
-﻿using Semver;
+﻿using Avalonia.Input;
+using Avalonia.Platform.Storage;
 using System.Diagnostics;
 using System.IO.Compression;
+using Semver;
+
 #if LINUX || OSX
 using System.Runtime.InteropServices;
 #endif
@@ -9,6 +12,13 @@ namespace MelonLoader.Installer;
 
 public static partial class InstallerUtils
 {
+    public static readonly HashSet<string> _validExtensions = new(StringComparer.OrdinalIgnoreCase)
+    {
+        ".exe",
+        ".app",
+        ".x86_64"
+    };
+
     public static HttpClient Http { get; }
 
 #if LINUX
@@ -113,6 +123,27 @@ public static partial class InstallerUtils
         return null;
     }
 
+    public static bool CheckDragEventForGameExecutable(DragEventArgs evt)
+    {
+        var data = evt.Data;
+        if (!data.Contains(DataFormats.Files))
+            return false;
+
+        var files = data.GetFiles();
+        if (files == null)
+            return false;
+
+        return files.Any(IsFileGameExecutable);
+    }
+
+    public static bool IsFileGameExecutable(IStorageItem item)
+        => IsFileGameExecutable(item.Path.LocalPath);
+    public static bool IsFileGameExecutable(string path)
+    {
+        var extension = Path.GetExtension(path);
+        var fileName = Path.GetFileName(path);
+        return _validExtensions.Contains(extension);
+    }
 
     public static void OpenFolderInExplorer(string path)
     {

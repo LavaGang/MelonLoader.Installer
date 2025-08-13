@@ -106,7 +106,7 @@ public partial class MainView : UserControl
         GameManager.Games.CollectionChanged -= OnGameListUpdate;
     }
 
-    private void OnGameListUpdate(object? sender, NotifyCollectionChangedEventArgs? e)
+    public void OnGameListUpdate(object? sender, NotifyCollectionChangedEventArgs? e)
     {
         NoGamesText.IsVisible = GameManager.Games.Count == 0;
     }
@@ -171,18 +171,7 @@ public partial class MainView : UserControl
             return;
 
         // Find the first game executable file
-        var gameFile = files.FirstOrDefault(file => 
-        {
-            var path = file.Path.LocalPath;
-            var extension = Path.GetExtension(path).ToLowerInvariant();
-            var fileName = Path.GetFileName(path);
-            
-            // Support Windows .exe, macOS .app bundles, and Linux .x86_64 executables
-            return extension == ".exe" || 
-                   extension == ".app" || 
-                   fileName.EndsWith(".x86_64", StringComparison.OrdinalIgnoreCase);
-        });
-
+        var gameFile = files.FirstOrDefault(InstallerUtils.IsFileGameExecutable);
         if (gameFile == null)
             return;
 
