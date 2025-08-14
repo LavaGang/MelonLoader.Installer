@@ -13,7 +13,7 @@ jobs:
     name: Upload GitHub Release
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       
       - name: Download Windows x64 Artifact
         uses: actions/download-artifact@v5
