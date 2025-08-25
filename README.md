@@ -6,7 +6,7 @@
 # MelonLoader Installer
 <a href="https://github.com/LavaGang/MelonLoader.Installer/releases/latest/download/MelonLoader.Installer.exe"><img src="https://img.shields.io/github/downloads/LavaGang/MelonLoader.Installer/latest/MelonLoader.Installer.exe?style=for-the-badge&label=Download%20Latest%20for%20Windows"></a>
 <a href="https://github.com/LavaGang/MelonLoader.Installer/releases/latest/download/MelonLoader.Installer.Linux"><img src="https://img.shields.io/github/downloads/LavaGang/MelonLoader.Installer/latest/MelonLoader.Installer.Linux?style=for-the-badge&label=Download%20Latest%20for%20Linux"></a>
-<a href="https://github.com/LavaGang/MelonLoader.Installer/releases/latest/download/MelonLoader.Installer.MacOS.x64.zip"><img src="https://img.shields.io/github/downloads/LavaGang/MelonLoader.Installer/latest/MelonLoader.Installer.MacOS.x64.zip?style=for-the-badge&label=Download%20Latest%20for%20MacOS%20x64"></a>
+<a href="https://github.com/LavaGang/MelonLoader.Installer/releases/latest/download/MelonLoader.Installer.MacOS.zip"><img src="https://img.shields.io/github/downloads/LavaGang/MelonLoader.Installer/latest/MelonLoader.Installer.MacOS.zip?style=for-the-badge&label=Download%20Latest%20for%20MacOS"></a>
 
 The Official Dedicated Installer for [MelonLoader](https://github.com/LavaGang/MelonLoader).
 
