@@ -74,4 +74,8 @@
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>
     </ItemGroup>
+
+    <Target Name="SetExecutablePermissions" AfterTargets="Publish" Condition="'$(RuntimeIdentifier.StartsWith(`osx-`))' == 'true'">
+      <Exec Command="chmod +x &quot;$(PublishDir)$(AssemblyName)&quot;" />
+    </Target>
 </Project>
