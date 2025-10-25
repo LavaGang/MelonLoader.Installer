@@ -7,7 +7,7 @@
         <LangVersion>latest</LangVersion>
         <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
         <ApplicationIcon>Assets/icon.ico</ApplicationIcon>
-        <PublishDir>../Output/$(RuntimeIdentifier)</PublishDir>
+        <PublishDir>$(SolutionDir)/Output/$(RuntimeIdentifier)</PublishDir>
         <PublishSingleFile>true</PublishSingleFile>
         <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
         <DebugType>embedded</DebugType>
@@ -71,7 +71,7 @@
       </None>
     </ItemGroup>
 
-    <Target Name="SetExecutablePermissions" AfterTargets="Build" Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::OSX)))' == 'true'">
+    <Target Name="SetExecutablePermissions" AfterTargets="Publish" Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::OSX)))' == 'true'">
       <Exec Command="chmod +x &quot;$(PublishDir)$(AssemblyName)&quot;" />
     </Target>
 </Project>
