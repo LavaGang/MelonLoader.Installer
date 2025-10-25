@@ -32,7 +32,8 @@ jobs:
         with:
           name: MelonLoader.Installer.MacOS
           path: ./compiled_release/macos
-      - name: Package MacOS x64 into Zip Archive
+          
+      - name: Package MacOS into Zip Archive
         run: |
           cd compiled_release/macos
           zip -r ../MelonLoader.Installer.MacOS.zip  ./
