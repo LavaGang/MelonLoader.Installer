@@ -71,7 +71,13 @@
       </None>
     </ItemGroup>
 
-    <Target Name="SetExecutablePermissions" AfterTargets="Publish" Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::OSX)))' == 'true'">
+    <Target Name="SetExecutablePermissions" AfterTargets="Publish" Condition="'$(RuntimeIdentifier.StartsWith(`osx-`))' == 'true'
+		and '$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::OSX)))' == 'true'">
+      <Exec Command="chmod +x &quot;$(PublishDir)$(AssemblyName)&quot;" />
+    </Target>
+	
+    <Target Name="SetExecutablePermissions" AfterTargets="Publish" Condition="'$(RuntimeIdentifier.StartsWith(`linux-`))' == 'true'
+		and '$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))' == 'true'">
       <Exec Command="chmod +x &quot;$(PublishDir)$(AssemblyName)&quot;" />
     </Target>
 </Project>
