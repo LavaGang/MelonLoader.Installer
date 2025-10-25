@@ -46,13 +46,13 @@
         <!--Condition
         below is needed to remove Avalonia.Diagnostics package from build output in Release
         configuration.-->
-        <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.3.4" />
+        <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="$(AvaloniaVersion)" />
         <PackageReference Include="Avalonia" Version="$(AvaloniaVersion)" />
         <PackageReference Include="Avalonia.Themes.Fluent" Version="$(AvaloniaVersion)" />
         <PackageReference Include="Avalonia.Fonts.Inter" Version="$(AvaloniaVersion)" />
-        <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
         <PackageReference Include="Avalonia.Desktop" Version="$(AvaloniaVersion)" />
 
+        <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
         <PackageReference Include="Gameloop.Vdf" Version="0.6.2" />
         <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
         <PackageReference Include="Semver" Version="3.0.0" />
@@ -71,7 +71,7 @@
       </None>
     </ItemGroup>
 
-    <Target Name="SetExecutablePermissions" AfterTargets="Publish" Condition="'$(RuntimeIdentifier.StartsWith(`osx-`))' == 'true'">
+    <Target Name="SetExecutablePermissions" AfterTargets="Build" Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::OSX)))' == 'true'">
       <Exec Command="chmod +x &quot;$(PublishDir)$(AssemblyName)&quot;" />
     </Target>
 </Project>

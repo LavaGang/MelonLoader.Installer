@@ -5,30 +5,35 @@
         <Version>$(BaseVersion).$(BuildNumber)</Version>
         <TargetFramework>net9.0</TargetFramework>
         <Nullable>enable</Nullable>
-        <AvaloniaVersion>11.3.5</AvaloniaVersion>
+        <AvaloniaVersion>11.3.6</AvaloniaVersion>
 		
 		<!-- Sets the default identifiers. They can be overridden -->
-        <RuntimeIdentifiers>win-x64;linux-x64;osx-x64;osx-arm64</RuntimeIdentifiers> 
-		
-        <RuntimeIdentifier Condition="
-			'$([MSBuild]::IsOSUnixLike())' == 'false'
-		">win-x64</RuntimeIdentifier>
-		
-        <RuntimeIdentifier Condition="
-			'$([MSBuild]::IsOSUnixLike())' == 'true'
-			and '$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::OSX)))' == 'false'
-		">linux-x64</RuntimeIdentifier>
-		
-		<RuntimeIdentifier Condition="
-			'$([MSBuild]::IsOSUnixLike())' == 'true'
-			and '$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::OSX)))' == 'true'
-			and '$([System.Runtime.InteropServices.RuntimeInformation]::ProcessArchitecture)' == 'X64'
-		">osx-x64</RuntimeIdentifier>
-		
-		<RuntimeIdentifier Condition="
-			'$([MSBuild]::IsOSUnixLike())' == 'true'
-			and '$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::OSX)))' == 'true'
-			and '$([System.Runtime.InteropServices.RuntimeInformation]::ProcessArchitecture)' == 'Arm64'
-		">osx-arm64</RuntimeIdentifier>
+        <RuntimeIdentifiers>win-x64;linux-x64;osx-x64;osx-arm64</RuntimeIdentifiers>
+    </PropertyGroup>
+	
+	<PropertyGroup Condition="'$(ForceRID)' != ''">
+		<RuntimeIdentifier>$(ForceRID)</RuntimeIdentifier>
+    </PropertyGroup>
+	
+	<PropertyGroup Condition="'$(RuntimeIdentifier)' == ''
+		and '$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Windows)))' == 'true'">
+		<RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    </PropertyGroup>
+	
+	<PropertyGroup Condition="'$(RuntimeIdentifier)' == ''
+		and '$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))' == 'true'">
+		<RuntimeIdentifier>linux-x64</RuntimeIdentifier>
+    </PropertyGroup>
+	
+	<PropertyGroup Condition="'$(RuntimeIdentifier)' == ''
+		and '$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::OSX)))' == 'true'
+		and '$([System.Runtime.InteropServices.RuntimeInformation]::ProcessArchitecture)' == 'X64'">
+		<RuntimeIdentifier>osx-x64</RuntimeIdentifier>
+    </PropertyGroup>
+	
+	<PropertyGroup Condition="'$(RuntimeIdentifier)' == ''
+		and '$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::OSX)))' == 'true'
+		and '$([System.Runtime.InteropServices.RuntimeInformation]::ProcessArchitecture)' == 'Arm64'">
+		<RuntimeIdentifier>osx-arm64</RuntimeIdentifier>
     </PropertyGroup>
 </Project>
