@@ -55,13 +55,16 @@ public partial class MainView : UserControl
     {
         try
         {
+#if !OSX
             var checkUpdate = Task.Run(Updater.UpdateIfPossible);
-            var otherInit = Task.WhenAll(Task.Run(MLManager.Init), Task.Factory.StartNew(GameManager.Init, TaskCreationOptions.LongRunning));
             if (await checkUpdate is { } updateTask)
             {
                 _ = MainWindow.Instance.HandleUpdate(updateTask);
                 return false;
             }
+#endif
+
+            var otherInit = Task.WhenAll(Task.Run(MLManager.Init), Task.Factory.StartNew(GameManager.Init, TaskCreationOptions.LongRunning));
             await otherInit;
         }
         catch (Exception ex)
