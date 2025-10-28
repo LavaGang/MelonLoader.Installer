@@ -25,6 +25,9 @@ The installer should automatically list installed Unity games on your machine.
 ### Supported game launchers on Linux
 - Steam
 
+### Supported game launchers on MacOS
+- Steam
+
 ### Games from unsupported launchers
 If the game you're trying to mod isn't listed, you can locate it manually by clicking on the `Add Game Manually` button.
 
