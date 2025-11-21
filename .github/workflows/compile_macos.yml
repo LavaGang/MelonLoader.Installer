@@ -10,7 +10,7 @@ jobs:
     name: Build MacOS App Bundle
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Setup dotnet
         uses: actions/setup-dotnet@v5
         with:
