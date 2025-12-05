@@ -1,4 +1,4 @@
-﻿using Gameloop.Vdf;
+using Gameloop.Vdf;
 using Gameloop.Vdf.Linq;
 using Microsoft.Win32;
 
@@ -20,12 +20,13 @@ public class SteamLauncher : GameLauncher
         steamPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".steam", "steam");
 #elif OSX
         steamPath = Path.Combine(Path.GetDirectoryName(Environment.GetFolderPath(Environment.SpecialFolder.Personal)), "Library", "Application Support", "Steam");
-        if ((steamPath != null)
-            && !Directory.Exists(steamPath))
+
+        if ((steamPath != null) && !Directory.Exists(steamPath))
+
             steamPath = "/Applications/Steam.app";
 #endif
-        if ((steamPath != null)
-            && !Directory.Exists(steamPath))
+
+        if ((steamPath != null) && !Directory.Exists(steamPath))
             steamPath = null;
     }
 
@@ -40,8 +41,44 @@ public class SteamLauncher : GameLauncher
         if (!File.Exists(libPath))
             return;
 
-        var libraryFolders = VdfConvert.Deserialize(File.ReadAllText(libPath));
-        var libDirs = libraryFolders.Value.Select(x => ((VProperty)((VProperty)x).Value.First(y => ((VProperty)y).Key == "path")).Value.ToString()); // Lord forgive me for this one-liner
+        VToken vdfRoot;
+        try
+        {
+            vdfRoot = VdfConvert.Deserialize(File.ReadAllText(libPath)).Value;
+        }
+        catch
+        {
+            return;
+        }
+
+        var libDirs = new List<string>();
+
+        foreach (var child in vdfRoot.Children())
+        {
+            if (child is not VProperty prop)
+                continue;
+
+            // only process numeric keys (such as "0", "1", "2", ...)
+            if (!int.TryParse(prop.Key, out _))
+                continue;
+
+            if (prop.Value is not VObject folderObj)
+                continue;
+
+            var pathProp = folderObj.Properties().FirstOrDefault(p => p.Key == "path");
+            if (pathProp?.Value == null)
+                continue;
+
+            var rawPath = pathProp.Value.ToString();
+            if (string.IsNullOrWhiteSpace(rawPath))
+                continue;
+
+            // normalize windows style escaped paths
+            var cleanPath = rawPath.Replace(@"\\", @"\");
+
+            if (Directory.Exists(cleanPath))
+                libDirs.Add(cleanPath);
+        }
 
         foreach (var library in libDirs)
         {
@@ -49,7 +86,16 @@ public class SteamLauncher : GameLauncher
             if (!Directory.Exists(steamapps))
                 continue;
 
-            var acfs = Directory.EnumerateFiles(steamapps, "*.acf");
+            IEnumerable<string> acfs;
+            try
+            {
+                acfs = Directory.EnumerateFiles(steamapps, "*.acf");
+            }
+            catch
+            {
+                continue;
+            }
+
             foreach (var acfPath in acfs)
             {
                 VToken acf;
@@ -77,9 +123,8 @@ public class SteamLauncher : GameLauncher
                 iconPath = Directory.Exists(iconPath)
                     ? Directory.EnumerateFiles(iconPath, "*.jpg").FirstOrDefault(x =>
                     {
-                        var fileName = Path.GetFileName(x);
-                        return !fileName.StartsWith("library") && !fileName.StartsWith("header") &&
-                               !fileName.StartsWith("logo");
+                        var f = Path.GetFileName(x);
+                        return !f.StartsWith("library") && !f.StartsWith("header") && !f.StartsWith("logo");
                     })
                     : null;
 
