@@ -208,8 +208,7 @@ internal static class GameManager
         if (result == Architecture.MacOSX64)
         {
             var unityPlayerPath = Path.Combine(exe, "Contents/Frameworks/UnityPlayer.dylib");
-            if (File.Exists(unityPlayerPath))
-                result = MLVersion.ReadFromMachO(unityPlayerPath);
+            result = File.Exists(unityPlayerPath) ? MLVersion.ReadFromMachO(unityPlayerPath) : Architecture.Unknown;
         }
 
         if (result == Architecture.Unknown)
