@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Reflection.PortableExecutable;
 using ELF = ELFSharp.ELF;
+using MachO = ELFSharp.MachO;
 
 namespace MelonLoader.Installer;
 
@@ -118,24 +119,34 @@ public class MLVersion
         };
     }
 
+    public static Architecture ReadFromMachO(string filePath)
+    {
+        using var fs = File.OpenRead(filePath);
+        return MachO.MachOReader.TryLoadFat(fs, true, out var machOs) switch
+        {
+            MachO.MachOResult.OK => machOs[0].Machine switch
+            {
+                MachO.Machine.X86_64 => Architecture.MacOSX64,
+                MachO.Machine.Arm64 => Architecture.MacOSArm64,
+                _ => Architecture.Unknown
+            },
+            MachO.MachOResult.FatMachO =>
+                machOs.Any(x => x.Machine == MachO.Machine.X86_64)
+                    ? Architecture.MacOSX64
+                    : machOs.Any(x => x.Machine == MachO.Machine.Arm64)
+                        ? Architecture.MacOSArm64
+                        : Architecture.Unknown,
+            _ => Architecture.Unknown
+        };
+    }
+
     private static void ReadArchitecture(string filePath, out Architecture architecture)
     {
-        string proxyExt = Path.GetExtension(filePath);
-
-        bool isSO = (proxyExt == ".so");
-        if (isSO)
+        architecture = Path.GetExtension(filePath) switch
         {
-            architecture = ReadFromELF(filePath);
-            return;
-        }
-
-        bool isDylib = (proxyExt == ".dylib");
-        if (isDylib)
-        {
-            architecture = Architecture.MacOSX64;
-            return;
-        }
-
-        architecture = ReadFromPE(filePath);
+            ".so" => ReadFromELF(filePath),
+            ".dylib" => ReadFromMachO(filePath),
+            _ => ReadFromPE(filePath)
+        };
     }
 }
