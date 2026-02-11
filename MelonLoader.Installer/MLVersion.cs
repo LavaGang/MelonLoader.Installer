@@ -1,6 +1,7 @@
 ﻿using Semver;
 using System.Diagnostics;
 using System.Reflection.PortableExecutable;
+using ELF = ELFSharp.ELF;
 
 namespace MelonLoader.Installer;
 
@@ -107,6 +108,16 @@ public class MLVersion
         return architecture;
     }
 
+    public static Architecture ReadFromELF(string filePath)
+    {
+        return ELF.ELFReader.CheckELFType(filePath) switch
+        {
+            ELF.Class.Bit32 => Architecture.LinuxX86,
+            ELF.Class.Bit64 => Architecture.LinuxX64,
+            _ => Architecture.Unknown,
+        };
+    }
+
     private static void ReadArchitecture(string filePath, out Architecture architecture)
     {
         string proxyExt = Path.GetExtension(filePath);
@@ -114,7 +125,7 @@ public class MLVersion
         bool isSO = (proxyExt == ".so");
         if (isSO)
         {
-            architecture = Architecture.LinuxX64;
+            architecture = ReadFromELF(filePath);
             return;
         }
 

@@ -197,30 +197,23 @@ internal static class GameManager
 
     private static Architecture GetGameArchitecture(string exe, string exeExt)
     {
-        Architecture result = Architecture.Unknown;
-        switch (exeExt)
+        var result = exeExt switch
         {
-            case ".app":
-                result = Architecture.MacOSX64;
-                break;
-
-            case ".exe":
-                result = MLVersion.ReadFromPE(exe);
-                break;
-
-            case ".x86_64":
-                result = Architecture.LinuxX64;
-                break;
-
-            default:
-                break;
-        }
+            ".app" => Architecture.MacOSX64,
+            ".exe" => MLVersion.ReadFromPE(exe),
+            ".x86_64" => Architecture.LinuxX64,
+            _ => Architecture.Unknown
+        };
 
         if (result == Architecture.Unknown)
         {
             var unityPlayerPath = Path.Combine(Path.GetDirectoryName(exe)!, "UnityPlayer.dll");
             if (File.Exists(unityPlayerPath))
                 result = MLVersion.ReadFromPE(unityPlayerPath);
+
+            var unityPlayerLinuxPath = Path.Combine(Path.GetDirectoryName(exe)!, "UnityPlayer.so");
+            if (File.Exists(unityPlayerLinuxPath))
+                result = MLVersion.ReadFromELF(unityPlayerLinuxPath);
         }
 
         return result;
