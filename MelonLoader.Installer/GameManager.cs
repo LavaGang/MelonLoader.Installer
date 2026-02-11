@@ -107,31 +107,26 @@ internal static class GameManager
         path = Path.GetFullPath(path);
 
         // Validate Directory contains Applications
-        exeExt = ".app";
-        string? referenceExt = exeExt;
-        int skipCount = 4;
-        var rawDataDirs = Directory.GetDirectories(path, $"*{exeExt}");
-        var dataDirs = rawDataDirs.Where(x => Directory.Exists(x[..^skipCount] + referenceExt));
-        if (!dataDirs.Any())
+        var skipCount = 5;
+        IEnumerable<string> dataDirs = [];
+        ReadOnlySpan<string> extensions = [".app", ".exe", ".x86_64", ""];
+        foreach (var referenceExt in extensions)
         {
-            exeExt = ".exe";
-            referenceExt = exeExt;
-            skipCount = 5;
-            rawDataDirs = Directory.GetDirectories(path, "*_Data");
-            dataDirs = rawDataDirs.Where(x => File.Exists(x[..^skipCount] + referenceExt));
-            if (!dataDirs.Any())
-            {
-                exeExt = ".x86_64";
-                referenceExt = exeExt;
-                dataDirs = rawDataDirs.Where(x => File.Exists(x[..^skipCount] + referenceExt));
-                if (!dataDirs.Any())
-                {
-                    errorMessage = "The selected directory does not contain a Unity game.";
-                    return false;
-                }
-            }
+            exeExt = referenceExt;
+            skipCount = referenceExt == ".app" ? 4 : 5;
+            var searchPattern = referenceExt == ".app" ? $"*{exeExt}" : "*_Data";
+            var rawDataDirs = Directory.GetDirectories(path, searchPattern);
+            Func<string?, bool> exists = referenceExt == ".app" ? Directory.Exists : File.Exists;
+            dataDirs = rawDataDirs.Where(x => exists(x[..^skipCount] + referenceExt));
+            if (dataDirs.Any()) break;
         }
 
+        if (!dataDirs.Any())
+        {
+            errorMessage = "The selected directory does not contain a Unity game.";
+            return false;
+        }
+        
         // Validate Directory only contains 1 Application
         if (dataDirs.Count() > 1)
         {
