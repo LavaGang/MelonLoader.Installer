@@ -58,6 +58,7 @@ MelonLoader.Installer is licensed under the Apache License, Version 2.0. See [LI
 
 ### Third-party libraries used:
 - [Avalonia](https://avaloniaui.net/) is licensed under the MIT License. See [LICENSE](https://github.com/AvaloniaUI/Avalonia/blob/master/licence.md) for the full License.
+- [ELFSharp](https://elfsharp.it/) is licensed under the MIT License. See [LICENSE](https://github.com/konrad-kruczynski/elfsharp/blob/master/LICENSE) for the full license.
 - [Gameloop.Vdf](https://github.com/shravan2x/Gameloop.Vdf) is licensed under the MIT License. See [LICENSE](https://github.com/shravan2x/Gameloop.Vdf/blob/master/LICENSE) for the full license.
 
 ### External tools downloaded:

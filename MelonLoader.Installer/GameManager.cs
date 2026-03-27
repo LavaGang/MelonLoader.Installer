@@ -107,31 +107,26 @@ internal static class GameManager
         path = Path.GetFullPath(path);
 
         // Validate Directory contains Applications
-        exeExt = ".app";
-        string? referenceExt = exeExt;
-        int skipCount = 4;
-        var rawDataDirs = Directory.GetDirectories(path, $"*{exeExt}");
-        var dataDirs = rawDataDirs.Where(x => Directory.Exists(x[..^skipCount] + referenceExt));
-        if (!dataDirs.Any())
+        var skipCount = 5;
+        IEnumerable<string> dataDirs = [];
+        ReadOnlySpan<string> extensions = [".app", ".exe", ".x86_64", ""];
+        foreach (var referenceExt in extensions)
         {
-            exeExt = ".exe";
-            referenceExt = exeExt;
-            skipCount = 5;
-            rawDataDirs = Directory.GetDirectories(path, "*_Data");
-            dataDirs = rawDataDirs.Where(x => File.Exists(x[..^skipCount] + referenceExt));
-            if (!dataDirs.Any())
-            {
-                exeExt = ".x86_64";
-                referenceExt = exeExt;
-                dataDirs = rawDataDirs.Where(x => File.Exists(x[..^skipCount] + referenceExt));
-                if (!dataDirs.Any())
-                {
-                    errorMessage = "The selected directory does not contain a Unity game.";
-                    return false;
-                }
-            }
+            exeExt = referenceExt;
+            skipCount = referenceExt == ".app" ? 4 : 5;
+            var searchPattern = referenceExt == ".app" ? $"*{exeExt}" : "*_Data";
+            var rawDataDirs = Directory.GetDirectories(path, searchPattern);
+            Func<string?, bool> exists = referenceExt == ".app" ? Directory.Exists : File.Exists;
+            dataDirs = rawDataDirs.Where(x => exists(x[..^skipCount] + referenceExt));
+            if (dataDirs.Any()) break;
         }
 
+        if (!dataDirs.Any())
+        {
+            errorMessage = "The selected directory does not contain a Unity game.";
+            return false;
+        }
+        
         // Validate Directory only contains 1 Application
         if (dataDirs.Count() > 1)
         {
@@ -202,23 +197,18 @@ internal static class GameManager
 
     private static Architecture GetGameArchitecture(string exe, string exeExt)
     {
-        Architecture result = Architecture.Unknown;
-        switch (exeExt)
+        var result = exeExt switch
         {
-            case ".app":
-                result = Architecture.MacOSX64;
-                break;
+            ".app" => Architecture.MacOSX64,
+            ".exe" => MLVersion.ReadFromPE(exe),
+            ".x86_64" => Architecture.LinuxX64,
+            _ => Architecture.Unknown
+        };
 
-            case ".exe":
-                result = MLVersion.ReadFromPE(exe);
-                break;
-
-            case ".x86_64":
-                result = Architecture.LinuxX64;
-                break;
-
-            default:
-                break;
+        if (result == Architecture.MacOSX64)
+        {
+            var unityPlayerPath = Path.Combine(exe, "Contents/Frameworks/UnityPlayer.dylib");
+            result = File.Exists(unityPlayerPath) ? MLVersion.ReadFromMachO(unityPlayerPath) : Architecture.Unknown;
         }
 
         if (result == Architecture.Unknown)
@@ -226,6 +216,10 @@ internal static class GameManager
             var unityPlayerPath = Path.Combine(Path.GetDirectoryName(exe)!, "UnityPlayer.dll");
             if (File.Exists(unityPlayerPath))
                 result = MLVersion.ReadFromPE(unityPlayerPath);
+
+            var unityPlayerLinuxPath = Path.Combine(Path.GetDirectoryName(exe)!, "UnityPlayer.so");
+            if (File.Exists(unityPlayerLinuxPath))
+                result = MLVersion.ReadFromELF(unityPlayerLinuxPath);
         }
 
         return result;
