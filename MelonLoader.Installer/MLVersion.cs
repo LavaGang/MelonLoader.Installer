@@ -96,48 +96,63 @@ public class MLVersion
 
     public static Architecture ReadFromPE(string filePath)
     {
-        using var fs = File.OpenRead(filePath);
-        var pe = new PEReader(fs);
-        Architecture architecture = pe.PEHeaders.CoffHeader.Machine switch
+        try
         {
-            Machine.I386 => Architecture.WindowsX86,
-            Machine.Amd64 => Architecture.WindowsX64,
-            _ => Architecture.Unknown
-        };
-        pe.Dispose();
-        fs.Dispose();
-        return architecture;
+            using var fs = File.OpenRead(filePath);
+            var pe = new PEReader(fs, PEStreamOptions.Default, (int)fs.Length);
+            Architecture architecture = pe.PEHeaders.CoffHeader.Machine switch
+            {
+                Machine.I386 => Architecture.WindowsX86,
+                Machine.Amd64 => Architecture.WindowsX64,
+                _ => Architecture.Unknown
+            };
+            pe.Dispose();
+            fs.Dispose();
+            return architecture;
+        }
+        catch { }
+        return Architecture.Unknown;
     }
 
     public static Architecture ReadFromELF(string filePath)
     {
-        return ELF.ELFReader.CheckELFType(filePath) switch
+        try
         {
-            ELF.Class.Bit32 => Architecture.LinuxX86,
-            ELF.Class.Bit64 => Architecture.LinuxX64,
-            _ => Architecture.Unknown,
-        };
+            return ELF.ELFReader.CheckELFType(filePath) switch
+            {
+                ELF.Class.Bit32 => Architecture.LinuxX86,
+                ELF.Class.Bit64 => Architecture.LinuxX64,
+                _ => Architecture.Unknown,
+            };
+        }
+        catch { }
+        return Architecture.Unknown;
     }
 
     public static Architecture ReadFromMachO(string filePath)
     {
-        using var fs = File.OpenRead(filePath);
-        return MachO.MachOReader.TryLoadFat(fs, true, out var machOs) switch
+        try
         {
-            MachO.MachOResult.OK => machOs[0].Machine switch
+            using var fs = File.OpenRead(filePath);
+            return MachO.MachOReader.TryLoadFat(fs, true, out var machOs) switch
             {
-                MachO.Machine.X86_64 => Architecture.MacOSX64,
-                MachO.Machine.Arm64 => Architecture.MacOSArm64,
+                MachO.MachOResult.OK => machOs[0].Machine switch
+                {
+                    MachO.Machine.X86_64 => Architecture.MacOSX64,
+                    MachO.Machine.Arm64 => Architecture.MacOSArm64,
+                    _ => Architecture.Unknown
+                },
+                MachO.MachOResult.FatMachO =>
+                    machOs.Any(x => x.Machine == MachO.Machine.X86_64)
+                        ? Architecture.MacOSX64
+                        : machOs.Any(x => x.Machine == MachO.Machine.Arm64)
+                            ? Architecture.MacOSArm64
+                            : Architecture.Unknown,
                 _ => Architecture.Unknown
-            },
-            MachO.MachOResult.FatMachO =>
-                machOs.Any(x => x.Machine == MachO.Machine.X86_64)
-                    ? Architecture.MacOSX64
-                    : machOs.Any(x => x.Machine == MachO.Machine.Arm64)
-                        ? Architecture.MacOSArm64
-                        : Architecture.Unknown,
-            _ => Architecture.Unknown
-        };
+            };
+        }
+        catch { }
+        return Architecture.Unknown;
     }
 
     private static void ReadArchitecture(string filePath, out Architecture architecture)
