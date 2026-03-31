@@ -19,7 +19,7 @@
         App.axaml.cs) -->
 		<vm:MainViewModel />
 	</Design.DataContext>
-    <Grid>
+    <Grid Width="500" Height="700">
         <Image Source="/Assets/bg.png" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Stretch="UniformToFill" />
         <Border Name="Viewport" Margin="25" />
         

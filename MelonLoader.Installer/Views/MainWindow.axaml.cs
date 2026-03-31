@@ -1,6 +1,7 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
+using Avalonia.Media;
 using Avalonia.Threading;
 using MelonLoader.Installer.ViewModels;
 
@@ -31,6 +32,52 @@ public partial class MainWindow : Window
         AddHandler(DragDrop.DropEvent, OnWindowDrop);
 
         ShowMainView();
+
+        var now = DateTime.Now;
+        if (now.Month == 4 && now.Day == 1)
+        {
+            Background = Brushes.Transparent;
+
+            var rotation = 180;
+            ApplyRotationAndFit(rotation);
+
+            var btn = new Button()
+            {
+                Content = "🔄",
+                FontSize = 18,
+                HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Right,
+                VerticalAlignment = Avalonia.Layout.VerticalAlignment.Bottom,
+                Background = Brushes.Transparent,
+                Margin = new(5),
+            };
+
+            btn.Click += (s, e) =>
+            {
+                rotation += 30;
+                ApplyRotationAndFit(rotation);
+            };
+
+            ((Grid)LogicalChildren[0]).Children.Add(btn);
+        }
+    }
+
+    private void ApplyRotationAndFit(double angleDegrees)
+    {
+        var view = (Grid)LogicalChildren[0];
+        var bounds = view.Bounds;
+        var w = bounds.Width;
+        var h = bounds.Height;
+
+        view.RenderTransform = new RotateTransform(angleDegrees);
+
+        var radians = angleDegrees * Math.PI / 180.0;
+        var cos = Math.Abs(Math.Cos(radians));
+        var sin = Math.Abs(Math.Sin(radians));
+
+        var newWidth = w * cos + h * sin;
+        var newHeight = w * sin + h * cos;
+
+        ClientSize = new Size(Math.Ceiling(newWidth), Math.Ceiling(newHeight));
     }
 
     private void OnWindowDragOver(object? sender, DragEventArgs e)
