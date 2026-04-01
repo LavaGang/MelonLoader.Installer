@@ -82,7 +82,7 @@ internal static class Program
         try
         {
 #if OSX
-            string logLoc = Config.CacheDir;
+            string logLoc = PathManager.CacheDir;
 #else
             string logLoc = Path.GetDirectoryName(PathManager.ProcessPath)!;
 #endif
@@ -98,7 +98,7 @@ internal static class Program
         try
         {
 #if WINDOWS
-            Process.Start(new ProcessStartInfo(Config.ProcessPath!, ["-wait", Environment.ProcessId.ToString()])
+            Process.Start(new ProcessStartInfo(PathManager.ProcessPath!, ["-wait", Environment.ProcessId.ToString()])
             {
                 UseShellExecute = true,
                 Verb = "runas"
@@ -106,7 +106,7 @@ internal static class Program
 #elif LINUX
             Process.Start("pkexec", [PathManager.ProcessPath!, "-wait", Environment.ProcessId.ToString()]);
 #elif OSX
-            Process.Start("osascript", ["-e", "do shell script \"open '{Config.ProcessPath!}' --args -wait {Environment.ProcessId.ToString()}\" with prompt \"MelonLoader Installer\" with administrator privileges"]);
+            Process.Start("osascript", ["-e", "do shell script \"open '{PathManager.ProcessPath!}' --args -wait {Environment.ProcessId.ToString()}\" with prompt \"MelonLoader Installer\" with administrator privileges"]);
 #endif
         }
         catch

@@ -95,10 +95,10 @@ public static partial class Updater
 #if OSX
         if (!Directory.Exists(originalPath))
             Directory.CreateDirectory(originalPath);
-        foreach (string filePath in Directory.GetFiles(Config.ProcessPath, "*.*",SearchOption.AllDirectories))
-            File.Copy(filePath, filePath.Replace(Config.ProcessPath, originalPath), true);
+        foreach (string filePath in Directory.GetFiles(PathManager.ProcessPath, "*.*",SearchOption.AllDirectories))
+            File.Copy(filePath, filePath.Replace(PathManager.ProcessPath, originalPath), true);
 
-        Process.Start("open", [originalPath, "--args", "-cleanup", Config.ProcessPath!, Environment.ProcessId.ToString()]);
+        Process.Start("open", [originalPath, "--args", "-cleanup", PathManager.ProcessPath!, Environment.ProcessId.ToString()]);
 #else
 
         File.Copy(PathManager.ProcessPath!, originalPath, true);
@@ -139,7 +139,7 @@ public static partial class Updater
         // Extract Zip
         var archivePath = newPath;
         
-        string tempFolderPath = Path.Combine(Config.CacheDir, "tmp");
+        string tempFolderPath = Path.Combine(PathManager.CacheDir, "tmp");
         if (Directory.Exists(tempFolderPath))
             Directory.Delete(tempFolderPath, true);
         Directory.CreateDirectory(tempFolderPath);
@@ -176,7 +176,7 @@ public static partial class Updater
 #endif
 
 #if OSX
-        Process.Start("open", [newPath, "--args", "-handleupdate", Config.ProcessPath!, Environment.ProcessId.ToString()]);
+        Process.Start("open", [newPath, "--args", "-handleupdate", PathManager.ProcessPath!, Environment.ProcessId.ToString()]);
 #else
         Process.Start(newPath, ["-handleupdate", PathManager.ProcessPath!, Environment.ProcessId.ToString()]);
 #endif
@@ -187,11 +187,11 @@ public static partial class Updater
 #if WINDOWS
     public static bool CheckLegacyUpdate()
     {
-        if (!Config.ProcessPath!.EndsWith(".tmp.exe", StringComparison.OrdinalIgnoreCase))
+        if (!PathManager.ProcessPath!.EndsWith(".tmp.exe", StringComparison.OrdinalIgnoreCase))
             return false;
 
-        var dir = Path.GetDirectoryName(Config.ProcessPath)!;
-        var name = Path.GetFileNameWithoutExtension(Config.ProcessPath);
+        var dir = Path.GetDirectoryName(PathManager.ProcessPath)!;
+        var name = Path.GetFileNameWithoutExtension(PathManager.ProcessPath);
         name = name[..^4] + ".exe";
 
         var final = Path.Combine(dir, name);
