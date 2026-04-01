@@ -30,7 +30,7 @@ internal static class GameManager
 
     private static void LoadSavedGames()
     {
-        foreach (var gamePath in Config.LoadGameList())
+        foreach (var gamePath in PathManager.LoadGameList())
         {
             TryAddGame(gamePath, null, null, null, out _);
         }
@@ -41,7 +41,7 @@ internal static class GameManager
 
     public static void SaveManualGameList()
     {
-        Config.SaveGameList(Games.Where(x => x.Launcher == null).Select(x => x.Path));
+        PathManager.SaveGameList(Games.Where(x => x.Launcher == null).Select(x => x.Path));
     }
 
     private static void AddGameSorted(GameModel game)

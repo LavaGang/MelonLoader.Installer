@@ -56,6 +56,7 @@
         <PackageReference Include="ELFSharp" Version="2.17.3" />
         <PackageReference Include="Gameloop.Vdf" Version="0.6.2" />
         <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
+        <PackageReference Include="Samboy063.Tomlet" Version="6.2.0" />
         <PackageReference Include="Semver" Version="3.0.0" />
         <PackageReference Include="System.Drawing.Common" Version="10.0.5" />
         <PackageReference Include="System.Net.Http" Version="4.3.4" />

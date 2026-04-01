@@ -37,11 +37,11 @@ internal static class MLManager
 
     private static void HandleExit()
     {
-        if (Directory.Exists(Config.LocalZipCache))
+        if (Directory.Exists(PathManager.LocalZipCache))
         {
             try
             {
-                Directory.Delete(Config.LocalZipCache, true);
+                Directory.Delete(PathManager.LocalZipCache, true);
             }
             catch { }
         }
@@ -71,7 +71,7 @@ internal static class MLManager
         HttpResponseMessage resp;
         try
         {
-            resp = await InstallerUtils.Http.GetAsync(Config.MelonLoaderBuildWorkflowApi).ConfigureAwait(false);
+            resp = await InstallerUtils.Http.GetAsync(PathManager.MelonLoaderBuildWorkflowApi).ConfigureAwait(false);
         }
         catch
         {
@@ -112,7 +112,7 @@ internal static class MLManager
 
         try
         {
-            resp = await InstallerUtils.Http.GetAsync(Config.MelonLoaderReleasesApi).ConfigureAwait(false);
+            resp = await InstallerUtils.Http.GetAsync(PathManager.MelonLoaderReleasesApi).ConfigureAwait(false);
         }
         catch
         {
@@ -294,11 +294,11 @@ internal static class MLManager
         if (Versions.Count > 0 && Versions[0].IsLocalPath)
             Versions.RemoveAt(0);
 
-        if (Directory.Exists(Config.LocalZipCache))
+        if (Directory.Exists(PathManager.LocalZipCache))
         {
             try
             {
-                Directory.Delete(Config.LocalZipCache, true);
+                Directory.Delete(PathManager.LocalZipCache, true);
             }
             catch
             {
@@ -310,14 +310,14 @@ internal static class MLManager
         onProgress?.Invoke(0, "Extracting local zip archive");
 
         using var zipStr = File.OpenRead(zipPath);
-        var extRes = InstallerUtils.Extract(zipStr, Config.LocalZipCache, onProgress);
+        var extRes = InstallerUtils.Extract(zipStr, PathManager.LocalZipCache, onProgress);
         if (extRes != null)
         {
             onFinished?.Invoke(extRes);
             return;
         }
 
-        var mlVer = MLVersion.GetMelonLoaderVersion(Config.LocalZipCache, out var arch, out _);
+        var mlVer = MLVersion.GetMelonLoaderVersion(PathManager.LocalZipCache, out var arch, out _);
         if (mlVer == null)
         {
             onFinished?.Invoke("The selected zip archive does not contain a valid MelonLoader build.");
@@ -327,10 +327,10 @@ internal static class MLManager
         var version = new MLVersion()
         {
             Version = mlVer,
-            DownloadUrlWin = arch == Architecture.WindowsX64 ? Config.LocalZipCache : null,
-            DownloadUrlWinX86 = arch == Architecture.WindowsX86 ? Config.LocalZipCache : null,
-            DownloadUrlLinux = arch == Architecture.LinuxX64 ? Config.LocalZipCache : null,
-            DownloadUrlMacOS = arch == Architecture.MacOSX64 ? Config.LocalZipCache : null,
+            DownloadUrlWin = arch == Architecture.WindowsX64 ? PathManager.LocalZipCache : null,
+            DownloadUrlWinX86 = arch == Architecture.WindowsX86 ? PathManager.LocalZipCache : null,
+            DownloadUrlLinux = arch == Architecture.LinuxX64 ? PathManager.LocalZipCache : null,
+            DownloadUrlMacOS = arch == Architecture.MacOSX64 ? PathManager.LocalZipCache : null,
             IsLocalPath = true
         };
 

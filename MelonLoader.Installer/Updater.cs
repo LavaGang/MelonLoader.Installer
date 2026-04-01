@@ -42,7 +42,7 @@ public static partial class Updater
             return true;
 
         // Make sure we're not waiting for ourselves.
-        if (prevPID == Environment.ProcessId || Path.GetFullPath(originalPath).Equals(Path.GetFullPath(Config.ProcessPath!), StringComparison.OrdinalIgnoreCase))
+        if (prevPID == Environment.ProcessId || Path.GetFullPath(originalPath).Equals(Path.GetFullPath(PathManager.ProcessPath!), StringComparison.OrdinalIgnoreCase))
             return false;
 
         if (prevPID != 0)
@@ -101,8 +101,8 @@ public static partial class Updater
         Process.Start("open", [originalPath, "--args", "-cleanup", Config.ProcessPath!, Environment.ProcessId.ToString()]);
 #else
 
-        File.Copy(Config.ProcessPath!, originalPath, true);
-        Process.Start(originalPath, ["-cleanup", Config.ProcessPath!, Environment.ProcessId.ToString()]);
+        File.Copy(PathManager.ProcessPath!, originalPath, true);
+        Process.Start(originalPath, ["-cleanup", PathManager.ProcessPath!, Environment.ProcessId.ToString()]);
 #endif
     }
 
@@ -178,7 +178,7 @@ public static partial class Updater
 #if OSX
         Process.Start("open", [newPath, "--args", "-handleupdate", Config.ProcessPath!, Environment.ProcessId.ToString()]);
 #else
-        Process.Start(newPath, ["-handleupdate", Config.ProcessPath!, Environment.ProcessId.ToString()]);
+        Process.Start(newPath, ["-handleupdate", PathManager.ProcessPath!, Environment.ProcessId.ToString()]);
 #endif
 
         State = UpdateState.Done;
@@ -208,7 +208,7 @@ public static partial class Updater
         HttpResponseMessage response;
         try
         {
-            response = await InstallerUtils.Http.GetAsync(Config.InstallerLatestReleaseApi);
+            response = await InstallerUtils.Http.GetAsync(PathManager.InstallerLatestReleaseApi);
         }
         catch
         {

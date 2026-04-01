@@ -8,7 +8,7 @@ namespace MelonLoader.Installer;
 internal static class Program
 {
     private static FileStream processLock = null!;
-    private static readonly string processLockPath = Path.Combine(Config.CacheDir, "process.lock");
+    private static readonly string processLockPath = Path.Combine(PathManager.CacheDir, "process.lock");
 
     public static event Action? Exiting;
 
@@ -23,8 +23,8 @@ internal static class Program
     [STAThread]
     private static void Main(string[] args)
     {
-        if (!Directory.Exists(Config.CacheDir))
-            Directory.CreateDirectory(Config.CacheDir);
+        if (!Directory.Exists(PathManager.CacheDir))
+            Directory.CreateDirectory(PathManager.CacheDir);
 
         if (args.Length >= 3)
         {
@@ -61,7 +61,7 @@ internal static class Program
 
         try
         {
-
+            Config.Load();
             BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
 
         }
@@ -84,7 +84,7 @@ internal static class Program
 #if OSX
             string logLoc = Config.CacheDir;
 #else
-            string logLoc = Path.GetDirectoryName(Config.ProcessPath)!;
+            string logLoc = Path.GetDirectoryName(PathManager.ProcessPath)!;
 #endif
 
             var logPath = Path.Combine(logLoc, "melonloader-installer-crash.log");
@@ -104,7 +104,7 @@ internal static class Program
                 Verb = "runas"
             });
 #elif LINUX
-            Process.Start("pkexec", [Config.ProcessPath!, "-wait", Environment.ProcessId.ToString()]);
+            Process.Start("pkexec", [PathManager.ProcessPath!, "-wait", Environment.ProcessId.ToString()]);
 #elif OSX
             Process.Start("osascript", ["-e", "do shell script \"open '{Config.ProcessPath!}' --args -wait {Environment.ProcessId.ToString()}\" with prompt \"MelonLoader Installer\" with administrator privileges"]);
 #endif

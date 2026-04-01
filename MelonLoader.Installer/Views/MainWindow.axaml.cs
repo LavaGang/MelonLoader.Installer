@@ -30,55 +30,59 @@ public partial class MainWindow : Window
         AddHandler(DragDrop.DragOverEvent, OnWindowDragOver);
         AddHandler(DragDrop.DragLeaveEvent, OnWindowDragLeave);
         AddHandler(DragDrop.DropEvent, OnWindowDrop);
+        Opened += OnWindowOpened;
 
         ShowMainView();
-
-        var now = DateTime.Now;
-        if (now.Month == 4 && now.Day == 1)
-        {
-            Background = Brushes.Transparent;
-
-            var rotation = 180;
-            ApplyRotationAndFit(rotation);
-
-            var btn = new Button()
-            {
-                Content = "🔄",
-                FontSize = 18,
-                HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Right,
-                VerticalAlignment = Avalonia.Layout.VerticalAlignment.Bottom,
-                Background = Brushes.Transparent,
-                Margin = new(5),
-            };
-
-            btn.Click += (s, e) =>
-            {
-                rotation += 30;
-                ApplyRotationAndFit(rotation);
-            };
-
-            ((Grid)LogicalChildren[0]).Children.Add(btn);
-        }
     }
 
-    private void ApplyRotationAndFit(double angleDegrees)
+    private void AFJ()
     {
-        var view = (Grid)LogicalChildren[0];
-        var bounds = view.Bounds;
-        var w = bounds.Width;
-        var h = bounds.Height;
+        var now = DateTime.Now;
+        if ((now.Month != 4) || (now.Day > 2))
+            return;
 
-        view.RenderTransform = new RotateTransform(angleDegrees);
+        if (Config.Instance.AFJY != now.Year)
+        {
+            Config.Instance.AFJY = now.Year;
+            Config.Instance.AFJS = 2;
+            Config.Save();
+        }
+        if (Config.Instance.AFJS < 0)
+            Config.Instance.AFJS = 0;
+        if (Config.Instance.AFJS > 3)
+            Config.Instance.AFJS = 3;
+        
+        Background = Brushes.Transparent;
 
-        var radians = angleDegrees * Math.PI / 180.0;
-        var cos = Math.Abs(Math.Cos(radians));
-        var sin = Math.Abs(Math.Sin(radians));
+        var btn = new Button()
+        {
+            Content = "🔄",
+            FontSize = 18,
+            HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Right,
+            VerticalAlignment = Avalonia.Layout.VerticalAlignment.Bottom,
+            Background = Brushes.Transparent,
+            Margin = new(5),
+            RenderTransform = new ScaleTransform(-1, 1)
+        };
 
-        var newWidth = w * cos + h * sin;
-        var newHeight = w * sin + h * cos;
+        btn.Click += (s, e) =>
+        {
+            Config.Instance.AFJS++;
+            if (Config.Instance.AFJS > 3)
+                Config.Instance.AFJS = 0;
+            Config.Save();
+            AFJR();
+        };
 
-        ClientSize = new Size(Math.Ceiling(newWidth), Math.Ceiling(newHeight));
+        ((Grid)LogicalChildren[0]).Children.Add(btn);
+        AFJR();
     }
+
+    private void AFJR()
+        => ApplyRotationAndFit(90 * Config.Instance.AFJS);
+
+    private void OnWindowOpened(object? sender, EventArgs e)
+        => AFJ();
 
     private void OnWindowDragOver(object? sender, DragEventArgs e)
     {
@@ -195,5 +199,24 @@ public partial class MainWindow : Window
         };
         view.UpdateVersionInfo();
         SetViewport(view);
+    }
+    
+    private void ApplyRotationAndFit(double angleDegrees)
+    {
+        var view = (Grid)LogicalChildren[0];
+        var bounds = view.Bounds;
+        var w = bounds.Width;
+        var h = bounds.Height;
+
+        view.RenderTransform = new RotateTransform(angleDegrees);
+
+        var radians = angleDegrees * Math.PI / 180.0;
+        var cos = Math.Abs(Math.Cos(radians));
+        var sin = Math.Abs(Math.Sin(radians));
+
+        var newWidth = w * cos + h * sin;
+        var newHeight = w * sin + h * cos;
+
+        ClientSize = new Size(Math.Ceiling(newWidth), Math.Ceiling(newHeight));
     }
 }

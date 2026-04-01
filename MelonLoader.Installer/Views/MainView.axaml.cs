@@ -96,7 +96,7 @@ public partial class MainView : UserControl
 #if OSX
                                     Config.CacheDir
 #else
-                                    Config.ProcessDirectory
+                                    PathManager.ProcessDirectory
 #endif
                                     );
                             });
@@ -145,22 +145,22 @@ public partial class MainView : UserControl
 
     private void MelonWikiLink(object sender, RoutedEventArgs args)
     {
-        OpenURL(Config.MelonWiki);
+        OpenURL(PathManager.MelonWiki);
     }
 
     private void DiscordLink(object sender, RoutedEventArgs args)
     {
-        OpenURL(Config.Discord);
+        OpenURL(PathManager.Discord);
     }
 
     private void GithubLink(object sender, RoutedEventArgs args)
     {
-        OpenURL(Config.Github);
+        OpenURL(PathManager.Github);
     }
 
     private void TwitterLink(object sender, RoutedEventArgs args)
     {
-        OpenURL(Config.Twitter);
+        OpenURL(PathManager.Twitter);
     }
 
     // Method called by MainWindow when a drop occurs
