@@ -83,7 +83,7 @@ public partial class MainView : UserControl
                             Include the crash log named 'melonloader-installer-crash.log'
                             """
 #if OSX
-                            + $"Located in '{Config.CacheDir}'"
+                            + $"Located in '{PathManager.CacheDir}'"
 #else
                             + "Located next to the executable."
 #endif
@@ -94,7 +94,7 @@ public partial class MainView : UserControl
 
                                 InstallerUtils.OpenFolderInExplorer(
 #if OSX
-                                    Config.CacheDir
+                                    PathManager.CacheDir
 #else
                                     PathManager.ProcessDirectory
 #endif
