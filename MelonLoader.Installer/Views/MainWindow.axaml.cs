@@ -30,11 +30,13 @@ public partial class MainWindow : Window
         AddHandler(DragDrop.DragOverEvent, OnWindowDragOver);
         AddHandler(DragDrop.DragLeaveEvent, OnWindowDragLeave);
         AddHandler(DragDrop.DropEvent, OnWindowDrop);
-        Opened += OnWindowOpened;
+        
+        //Opened += OnWindowOpened;
 
         ShowMainView();
     }
 
+    /*
     private void AFJ()
     {
         var now = DateTime.Now;
@@ -83,6 +85,7 @@ public partial class MainWindow : Window
 
     private void OnWindowOpened(object? sender, EventArgs e)
         => AFJ();
+    */
 
     private void OnWindowDragOver(object? sender, DragEventArgs e)
     {

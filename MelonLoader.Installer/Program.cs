@@ -61,7 +61,7 @@ internal static class Program
 
         try
         {
-            Config.Load();
+            //Config.Load();
             BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
 
         }

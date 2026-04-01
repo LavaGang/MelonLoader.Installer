@@ -17,8 +17,9 @@ public class Config
     
     #region Serialized Variables
 
-    public int AFJY { get; set; }
-    public int AFJS { get; set; } = 2;
+    // AprilFools
+    //public int AFJY { get; set; }
+    //public int AFJS { get; set; } = 2;
     
     #endregion
     
