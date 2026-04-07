@@ -28,6 +28,8 @@ The installer should automatically list installed Unity games on your machine.
 ### Supported game launchers on MacOS
 - Steam
 
+> **macOS first-launch note:** the installer is not notarized with Apple, so Gatekeeper may refuse to open it on first launch ("cannot be opened because the developer cannot be verified"). To bypass, either right-click `MelonLoader Installer.app` → **Open** → **Open** in the confirmation dialog, or run `xattr -dr com.apple.quarantine "/Applications/MelonLoader Installer.app"` in Terminal once after installing.
+
 ### Games from unsupported launchers
 If the game you're trying to mod isn't listed, you can locate it manually by clicking on the `Add Game Manually` button.
 
