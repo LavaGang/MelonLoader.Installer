@@ -41,8 +41,86 @@ jobs:
           cp Info.plist "Output/osx-universal/MelonLoader Installer.app/Contents/"
           cp Resources/icon.icns "Output/osx-universal/MelonLoader Installer.app/Contents/Resources/"
 
+      - name: Package App Bundle as DMG
+        run: |
+          # Build a styled, Applications-alias DMG that preserves Unix metadata
+          # (including the exec bit on Contents/MacOS/MelonLoader.Installer.MacOS)
+          # through GitHub Actions' artifact upload, which zip does not.
+          #
+          # Approach: create a read/write DMG, mount it, drop the .app and an
+          # Applications alias into it, place a background image under a
+          # hidden .background directory, drive Finder via AppleScript to set
+          # window bounds / icon positions / background picture, then convert
+          # to compressed read-only (UDZO) for distribution.
+
+          APP_PATH="Output/osx-universal/MelonLoader Installer.app"
+          STAGING_DMG="Output/MelonLoader.Installer.rw.dmg"
+          FINAL_DMG="Output/MelonLoader Installer.dmg"
+          VOLNAME="MelonLoader Installer"
+          BG_SOURCE="MelonLoader.Installer/Assets/dmgbg.png"
+
+          rm -f "$STAGING_DMG" "$FINAL_DMG"
+
+          # Size the R/W DMG generously so the .app + assets fit with headroom.
+          hdiutil create \
+            -srcfolder "$APP_PATH" \
+            -volname "$VOLNAME" \
+            -fs HFS+ \
+            -fsargs "-c c=64,a=16,e=16" \
+            -format UDRW \
+            -size 200m \
+            "$STAGING_DMG"
+
+          MOUNT_DIR=$(hdiutil attach -readwrite -noverify -noautoopen "$STAGING_DMG" | \
+            grep -E '^/dev/' | sed -n 's/.*\(\/Volumes\/.*\)$/\1/p' | head -n 1)
+          echo "Mounted at: $MOUNT_DIR"
+
+          # Stage Applications alias and background image.
+          ln -s /Applications "$MOUNT_DIR/Applications"
+          mkdir -p "$MOUNT_DIR/.background"
+          cp "$BG_SOURCE" "$MOUNT_DIR/.background/background.png"
+
+          # Drive Finder to lay out the window. Values extracted from the
+          # reference DMG: 600x600 window, 128px icons, .app at (150,253),
+          # Applications at (450,253), 1200x1200 retina background.
+          osascript <<APPLESCRIPT
+          tell application "Finder"
+              tell disk "$VOLNAME"
+                  open
+                  set current view of container window to icon view
+                  set toolbar visible of container window to false
+                  set statusbar visible of container window to false
+                  set the bounds of container window to {489, 276, 1089, 876}
+                  set viewOptions to the icon view options of container window
+                  set arrangement of viewOptions to not arranged
+                  set icon size of viewOptions to 128
+                  set text size of viewOptions to 16
+                  set background picture of viewOptions to file ".background:background.png"
+                  set position of item "MelonLoader Installer.app" of container window to {150, 253}
+                  set position of item "Applications" of container window to {450, 253}
+                  update without registering applications
+                  delay 2
+                  close
+              end tell
+          end tell
+          APPLESCRIPT
+
+          # Give Finder a moment to flush .DS_Store changes, then sync.
+          sync
+          sleep 2
+
+          hdiutil detach "$MOUNT_DIR"
+
+          # Convert the staged R/W image to a compressed read-only DMG for release.
+          hdiutil convert "$STAGING_DMG" \
+            -format UDZO \
+            -imagekey zlib-level=9 \
+            -o "$FINAL_DMG"
+
+          rm -f "$STAGING_DMG"
+
       - name: Upload Release
         uses: actions/upload-artifact@v7
         with:
           name: MelonLoader.Installer.MacOS
-          path: Output/osx-universal
+          path: Output/MelonLoader Installer.dmg
