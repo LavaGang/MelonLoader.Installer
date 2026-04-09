@@ -123,4 +123,4 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: MelonLoader.Installer.MacOS
-          path: Output/MelonLoader Installer.dmg
+          path: Output/MelonLoader.Installer.MacOS.dmg
