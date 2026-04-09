@@ -42,4 +42,4 @@ jobs:
           files: |
             compiled_release/MelonLoader.Installer.exe
             compiled_release/MelonLoader.Installer.Linux
-            compiled_release/MelonLoader Installer.dmg
+            compiled_release/MelonLoader.Installer.MacOS.dmg
