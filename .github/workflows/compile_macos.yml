@@ -54,8 +54,8 @@ jobs:
           # to compressed read-only (UDZO) for distribution.
 
           APP_PATH="Output/osx-universal/MelonLoader Installer.app"
-          STAGING_DMG="Output/MelonLoader.Installer.rw.dmg"
-          FINAL_DMG="Output/MelonLoader Installer.dmg"
+          STAGING_DMG="Output/osx-universal/MelonLoader.Installer.rw.dmg"
+          FINAL_DMG="Output/osx-universal/MelonLoader.Installer.MacOS.dmg"
           VOLNAME="MelonLoader Installer"
           BG_SOURCE="MelonLoader.Installer/Assets/dmgbg.png"
 
@@ -123,4 +123,4 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: MelonLoader.Installer.MacOS
-          path: Output/MelonLoader.Installer.MacOS.dmg
+          path: Output/osx-universal/MelonLoader.Installer.MacOS.dmg
