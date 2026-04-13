@@ -1,4 +1,4 @@
 #!/bin/bash
 cd .
 dotnet restore
-dotnet build --no-restore -p:Version="$1" -c $2
+dotnet publish --no-restore -r $2-$3 -p:Version="$1"
