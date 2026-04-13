@@ -54,8 +54,13 @@ public partial class DetailsView : UserControl
 #elif OSX
         if (Model.Game.Arch == Architecture.MacOSX64)
         {
-            DylibPathVar.Text = $"DYLD_LIBRARY_PATH=\"{Model.Game.Dir}:$DYLD_LIBRARY_PATH\"";
-            DylibSteamLaunchOptions.Text = $"{DylibPathVar.Text} {DylibPreloadVar.Text} %command%";
+            // melonloader-launch.sh is shipped in the macOS build output next to
+            // MelonLoader.Bootstrap.dylib, so after install it lives at the root
+            // of Game.Dir alongside the .app bundle. It handles both manual
+            // (no-args) invocation and Steam invocation (with the .app passed in).
+            var launchScript = Path.Combine(Model.Game.Dir, "melonloader-launch.sh");
+            DylibManualLaunch.Text = $"\"{launchScript}\"";
+            DylibSteamLaunchOptions.Text = $"\"{launchScript}\" %command%";
         }
 
         ShowMacOSInstructions.IsVisible = Model.Game.MLInstalled;
