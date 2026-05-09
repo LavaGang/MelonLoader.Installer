@@ -34,7 +34,7 @@ jobs:
           path: ./compiled_release
 
       - name: Create Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           body_path: RELEASE-NOTES.md
           tag: ${{ inputs.TAG }}
