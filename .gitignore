@@ -445,6 +445,9 @@ $RECYCLE.BIN/
 .idea/
 *.sln.iml
 
+# Kate
+*.kate-swp
+
 ##
 ## Visual Studio Code
 ##
