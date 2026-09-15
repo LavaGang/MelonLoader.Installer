@@ -193,10 +193,16 @@ internal static class Program
 #endif
 
     // Avalonia configuration, don't remove; also used by visual designer.
-    public static AppBuilder BuildAvaloniaApp()
-        => AppBuilder.Configure<App>()
-            .UsePlatformDetect()
+    private static AppBuilder BuildAvaloniaApp()
+    {
+        var builder = AppBuilder.Configure<App>().UsePlatformDetect();
+
+        if (OperatingSystem.IsLinux()
+            && Environment.GetEnvironmentVariable("WAYLAND_DISPLAY") is not null)
+            builder = builder.UseWaylandWithFallback();
+        
+        return builder
             .WithInterFont()
             .LogToTrace();
-
+    }
 }

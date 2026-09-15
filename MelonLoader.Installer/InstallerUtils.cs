@@ -125,11 +125,11 @@ public static partial class InstallerUtils
 
     public static bool CheckDragEventForGameExecutable(DragEventArgs evt)
     {
-        var data = evt.Data;
-        if (!data.Contains(DataFormats.Files))
+        var data = evt.DataTransfer;
+        if (!data.Contains(DataFormat.File))
             return false;
 
-        var files = data.GetFiles();
+        var files = data.TryGetFiles();
         if (files == null)
             return false;
 
@@ -176,14 +176,10 @@ public static partial class InstallerUtils
             
 #if LINUX
             if (openCmd == "gio")
-            {
                 startInfo.ArgumentList.Add("open");
-                startInfo.ArgumentList.Add(path);
-            }
-            else
 #endif
-                startInfo.ArgumentList.Add(path);
             
+            startInfo.ArgumentList.Add(path);
             Process.Start(startInfo);
         }
         catch { }

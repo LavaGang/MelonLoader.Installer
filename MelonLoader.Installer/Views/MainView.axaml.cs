@@ -166,10 +166,10 @@ public partial class MainView : UserControl
     // Method called by MainWindow when a drop occurs
     public async Task HandleDropAsync(DragEventArgs e)
     {
-        if (!e.Data.Contains(DataFormats.Files))
+        if (!e.DataTransfer.Contains(DataFormat.File))
             return;
 
-        var files = e.Data.GetFiles();
+        var files = e.DataTransfer.TryGetFiles();
         if (files == null)
             return;
 
