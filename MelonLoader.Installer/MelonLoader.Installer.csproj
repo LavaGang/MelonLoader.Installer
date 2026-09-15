@@ -16,6 +16,7 @@
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
         <CETCompat>false</CETCompat>
+        <AvaloniaUseCompiledBindingsByDefault>false</AvaloniaUseCompiledBindingsByDefault>
 
         <Authors>Lava Gang</Authors>
         <Company>discord.gg/2Wn3N2P</Company>
