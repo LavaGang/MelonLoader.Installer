@@ -1,0 +1,7 @@
+[Desktop Entry]
+Categories=Game;Utility;
+Exec=MelonLoader.Installer
+Icon=MelonLoader.Installer.ico
+Name=MelonLoader Installer
+Terminal=false
+Type=Application
