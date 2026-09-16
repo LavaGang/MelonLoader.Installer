@@ -24,7 +24,7 @@ jobs:
       - name: Download Linux x64 Artifact
         uses: actions/download-artifact@v8
         with:
-          name: MelonLoader.Installer.Linux
+          name: MelonLoader.Installer.Linux.x64
           path: ./compiled_release
         
       - name: Download MacOS Artifact

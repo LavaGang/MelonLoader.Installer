@@ -21,8 +21,17 @@ jobs:
       - name: Build Release for win-x64
         run: dotnet publish --no-restore -r win-x64 -p:BuildNumber="${{ github.run_number }}" -p:Version="${{ inputs.VERSION }}"
 
+      - name: Build Release for win-arm64
+        run: dotnet publish --no-restore -r win-arm64 -p:BuildNumber="${{ github.run_number }}" -p:Version="${{ inputs.VERSION }}"
+
       - name: Upload Release for win-x64
         uses: actions/upload-artifact@v7
         with:
           name: MelonLoader.Installer
           path: Output/win-x64
+
+      - name: Upload Release for win-arm64
+        uses: actions/upload-artifact@v7
+        with:
+          name: MelonLoader.Installer.Arm64
+          path: Output/win-arm64
