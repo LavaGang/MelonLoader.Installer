@@ -5,7 +5,6 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <ApplicationManifest>app.manifest</ApplicationManifest>
         <LangVersion>latest</LangVersion>
-        <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
         <ApplicationIcon>Assets/icon.ico</ApplicationIcon>
         <PublishDir>$(SolutionDir)/Output/$(RuntimeIdentifier)</PublishDir>
         <PublishSingleFile>true</PublishSingleFile>
