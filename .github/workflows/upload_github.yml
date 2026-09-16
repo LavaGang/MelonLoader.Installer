@@ -20,12 +20,24 @@ jobs:
         with:
           name: MelonLoader.Installer
           path: ./compiled_release
+
+      # - name: Download Windows arm64 Artifact
+      #   uses: actions/download-artifact@v8
+      #   with:
+      #     name: MelonLoader.Installer.arm64
+      #     path: ./compiled_release
         
       - name: Download Linux x64 Artifact
         uses: actions/download-artifact@v8
         with:
-          name: MelonLoader.Installer.Linux.x64
+          name: MelonLoader.Installer.Linux
           path: ./compiled_release
+
+      # - name: Download Linux arm64 Artifact
+      #   uses: actions/download-artifact@v8
+      #   with:
+      #     name: MelonLoader.Installer.Linux.arm64
+      #     path: ./compiled_release
         
       - name: Download MacOS Artifact
         uses: actions/download-artifact@v8
@@ -41,5 +53,7 @@ jobs:
           release_name: ${{ inputs.RELEASE_NAME }}
           files: |
             compiled_release/MelonLoader.Installer.exe
+      #      compiled_release/MelonLoader.Installer.arm64.exe
             compiled_release/MelonLoader.Installer.Linux
+      #      compiled_release/MelonLoader.Installer.Linux.arm64
             compiled_release/MelonLoader.Installer.MacOS.dmg

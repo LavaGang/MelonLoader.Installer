@@ -23,19 +23,23 @@
         <TargetFramework>net9.0</TargetFramework>
     </PropertyGroup>
 
+    <PropertyGroup Condition="'$(RuntimeIdentifier.Contains(`arm64`))' == 'true'">
+        <Arm64Suffix>.arm64</Arm64Suffix>
+    </PropertyGroup>
+
     <PropertyGroup Condition="'$(RuntimeIdentifier.StartsWith(`win-`))' == 'true'">
         <DefineConstants>$(DefineConstants);WINDOWS</DefineConstants>
-        <AssemblyName>MelonLoader.Installer</AssemblyName>
+        <AssemblyName>MelonLoader.Installer$(Arm64Suffix)</AssemblyName>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(RuntimeIdentifier.StartsWith(`linux-`))' == 'true'">
         <DefineConstants>$(DefineConstants);LINUX</DefineConstants>
-        <AssemblyName>MelonLoader.Installer.Linux</AssemblyName>
+        <AssemblyName>MelonLoader.Installer.Linux$(Arm64Suffix)</AssemblyName>
     </PropertyGroup>
 	
     <PropertyGroup Condition="'$(RuntimeIdentifier.StartsWith(`osx-`))' == 'true'">
         <DefineConstants>$(DefineConstants);OSX</DefineConstants>
-        <AssemblyName>MelonLoader.Installer.MacOS</AssemblyName>
+        <AssemblyName>MelonLoader.Installer.MacOS$(Arm64Suffix)</AssemblyName>
     </PropertyGroup>
 
     <ItemGroup>

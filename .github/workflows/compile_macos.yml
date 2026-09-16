@@ -29,7 +29,7 @@ jobs:
           mkdir -p "Output/osx-universal/MelonLoader Installer.app/Contents/MacOS"
           lipo -create \
             Output/osx-x64/MelonLoader.Installer.MacOS \
-            Output/osx-arm64/MelonLoader.Installer.MacOS \
+            Output/osx-arm64/MelonLoader.Installer.MacOS.arm64 \
             -output "Output/osx-universal/MelonLoader Installer.app/Contents/MacOS/MelonLoader.Installer.MacOS"
           cp MelonLoader.Installer/bin/Release/net9.0/osx-arm64/libAvaloniaNative.dylib "Output/osx-universal/MelonLoader Installer.app/Contents/MacOS/"
           cp MelonLoader.Installer/bin/Release/net9.0/osx-arm64/libHarfBuzzSharp.dylib "Output/osx-universal/MelonLoader Installer.app/Contents/MacOS/"
