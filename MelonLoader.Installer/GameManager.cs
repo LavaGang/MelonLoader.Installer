@@ -86,6 +86,54 @@ internal static class GameManager
         Games.Remove(game);
     }
 
+    private static void GetDataDirectories(
+        string path,
+        bool searchAllDirectories,
+        out string? exeExt,
+        out int skipCount, 
+        out List<string> dataDirs)
+    {
+        exeExt = null;
+        skipCount = 5;
+        dataDirs = new();
+        
+        ReadOnlySpan<string> extensions = [".app", ".exe", ".x86_64", ""];
+        foreach (var referenceExt in extensions)
+        {
+            exeExt = referenceExt;
+            skipCount = referenceExt == ".app" ? 4 : 5;
+            var searchPattern = referenceExt == ".app" ? $"*{exeExt}" : "*_Data";
+            Func<string?, bool> exists = referenceExt == ".app" ? Directory.Exists : File.Exists;
+            
+            int foundDirectoriesLength = 0;
+            IEnumerable<string> foundDirectories = [];
+            try
+            {
+                foundDirectories = Directory.EnumerateDirectories(path, searchPattern, searchAllDirectories ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly);
+                foundDirectoriesLength = foundDirectories.Count();
+            }
+            catch
+            {
+                return;
+            }
+
+            for (int i = 0; i < foundDirectoriesLength; i++)
+            {
+                try
+                {
+                    string x = foundDirectories.ElementAt(i);
+                    string candidate = x[..^skipCount] + referenceExt;
+                    if (exists(candidate))
+                        dataDirs.Add(x);
+                }
+                catch { }
+            }
+
+            if (dataDirs.Any())
+                break;
+        }
+    }
+
     public static bool ValidateGame(ref string path, out string? exe, out string? exeExt, out string? errorMessage)
     {
         exe = null;
@@ -107,20 +155,9 @@ internal static class GameManager
         path = Path.GetFullPath(path);
 
         // Validate Directory contains Applications
-        var skipCount = 5;
-        IEnumerable<string> dataDirs = [];
-        ReadOnlySpan<string> extensions = [".app", ".exe", ".x86_64", ""];
-        foreach (var referenceExt in extensions)
-        {
-            exeExt = referenceExt;
-            skipCount = referenceExt == ".app" ? 4 : 5;
-            var searchPattern = referenceExt == ".app" ? $"*{exeExt}" : "*_Data";
-            var rawDataDirs = Directory.GetDirectories(path, searchPattern);
-            Func<string?, bool> exists = referenceExt == ".app" ? Directory.Exists : File.Exists;
-            dataDirs = rawDataDirs.Where(x => exists(x[..^skipCount] + referenceExt));
-            if (dataDirs.Any()) break;
-        }
-
+        GetDataDirectories(path, false, out exeExt, out int skipCount, out List<string> dataDirs);
+        if (!dataDirs.Any())
+            GetDataDirectories(path, true, out exeExt, out skipCount, out dataDirs);
         if (!dataDirs.Any())
         {
             errorMessage = "The selected directory does not contain a Unity game.";
@@ -136,6 +173,7 @@ internal static class GameManager
 
         // Get Executable and Return
         exe = dataDirs.First()[..^skipCount] + exeExt;
+        path = Path.GetFullPath(Path.GetDirectoryName(exe)!);
         return true;
     }
 
