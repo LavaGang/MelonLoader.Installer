@@ -106,6 +106,7 @@ jobs:
           APPLESCRIPT
 
           # Give Finder a moment to flush .DS_Store changes, then sync.
+          sleep 2
           sync
           sleep 2
 
