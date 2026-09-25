@@ -10,6 +10,7 @@ namespace MelonLoader.Installer;
 internal static class MLManager
 {
     private static bool inited;
+    
     internal static readonly string[] proxyNames =
     [
         "version.dll",
@@ -25,6 +26,22 @@ internal static class MLManager
         "libwinhttp.so",
         "MelonBootstrap.dylib",
         "MelonLoader.Bootstrap.dylib",
+    ];
+
+    private static readonly string[] userDirectories =
+    [
+        "UserData",
+        "UserLibs",
+        "Plugins",
+        "Mods"
+    ];
+
+    private static readonly string[] extraFiles =
+    [
+        "NOTICE.txt",
+        "README.txt",
+        "dobby.dll",
+        "melonloader-launch.sh"
     ];
 
     private static MLVersion? localBuild;
@@ -162,6 +179,10 @@ internal static class MLManager
         {
             return "The provided directory does not exist.";
         }
+        
+        List<string> filesToDelete = new();
+        List<string> dirsToDelete = new();
+        dirsToDelete.Add(Path.Combine(gameDir, "MelonLoader"));
 
         foreach (var proxy in proxyNames)
         {
@@ -174,108 +195,46 @@ internal static class MLManager
             if (versionInf.LegalCopyright != null && versionInf.LegalCopyright.Contains("Microsoft"))
                 continue;
 #endif
-
-            try
-            {
-                File.Delete(proxyPath);
-            }
-            catch
-            {
-                return "Failed to uninstall MelonLoader. Ensure that the game is fully closed before trying again.";
-            }
+            
+            filesToDelete.Add(proxyPath);
         }
 
-        var mlDir = Path.Combine(gameDir, "MelonLoader");
-        if (Directory.Exists(mlDir))
-        {
-            try
-            {
-                Directory.Delete(mlDir, true);
-            }
-            catch
-            {
-                return "Failed to uninstall MelonLoader. Ensure that the game is fully closed before trying again.";
-            }
-        }
-
-        var dobbyPath = Path.Combine(gameDir, "dobby.dll");
-        if (File.Exists(dobbyPath))
-        {
-            try
-            {
-                File.Delete(dobbyPath);
-            }
-            catch
-            {
-                return "Failed to fully uninstall MelonLoader: Failed to remove dobby.";
-            }
-        }
-
-        var noticePath = Path.Combine(gameDir, "NOTICE.txt");
-        if (File.Exists(noticePath))
-        {
-            try
-            {
-                File.Delete(noticePath);
-            }
-            catch
-            {
-                return "Failed to fully uninstall MelonLoader: Failed to remove 'NOTICE.txt'.";
-            }
-        }
+        foreach (var extraFileName in extraFiles)
+            filesToDelete.Add(Path.Combine(gameDir, extraFileName));
 
         if (removeUserFiles)
+            foreach (var userFolderName in userDirectories)
+                dirsToDelete.Add(Path.Combine(gameDir, userFolderName));
+
+        foreach (var filePath in filesToDelete)
         {
-            var modsDir = Path.Combine(gameDir, "Mods");
-            if (Directory.Exists(modsDir))
+            if (!File.Exists(filePath))
+                continue;
+            
+            string fileName = Path.GetFileName(filePath);
+            try
             {
-                try
-                {
-                    Directory.Delete(modsDir, true);
-                }
-                catch
-                {
-                    return "Failed to fully uninstall MelonLoader: Failed to remove the Mods folder.";
-                }
+                File.Delete(filePath);
             }
-
-            var pluginsDir = Path.Combine(gameDir, "Plugins");
-            if (Directory.Exists(pluginsDir))
+            catch
             {
-                try
-                {
-                    Directory.Delete(pluginsDir, true);
-                }
-                catch
-                {
-                    return "Failed to fully uninstall MelonLoader: Failed to remove the Plugins folder.";
-                }
+                return "Failed to remove {fileName} file\nEnsure that the game is fully closed before trying again.";
             }
+        }
 
-            var userDataDir = Path.Combine(gameDir, "UserData");
-            if (Directory.Exists(userDataDir))
+        foreach (var dirPath in dirsToDelete)
+        {
+            if (!Directory.Exists(dirPath))
+                continue;
+            
+            string dirName = Path.GetDirectoryName(dirPath)!;
+            try
             {
-                try
-                {
-                    Directory.Delete(userDataDir, true);
-                }
-                catch
-                {
-                    return "Failed to fully uninstall MelonLoader: Failed to remove the UserData folder.";
-                }
+                Directory.Delete(dirPath);
             }
-
-            var userLibsDir = Path.Combine(gameDir, "UserLibs");
-            if (Directory.Exists(userLibsDir))
+            catch
             {
-                try
-                {
-                    Directory.Delete(userLibsDir, true);
-                }
-                catch
-                {
-                    return "Failed to fully uninstall MelonLoader: Failed to remove the UserLibs folder.";
-                }
+                return "Failed to remove {dirName} folder\nEnsure that the game is fully closed before trying again.";
             }
         }
 
