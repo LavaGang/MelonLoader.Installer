@@ -70,10 +70,11 @@ public partial class DetailsView : UserControl
 
         UpdateVersionList();
 
-        if (!await MLManager.Init())
+        string? err = await MLManager.Init();
+        if (!string.IsNullOrEmpty(err))
         {
             Model.Offline = true;
-            DialogBox.ShowError("Failed to fetch MelonLoader releases. Ensure you're online.");
+            DialogBox.ShowError("Failed to fetch MelonLoader releases.\n{err}");
         }
     }
 

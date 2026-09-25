@@ -76,7 +76,6 @@ internal static class Program
         File.Delete(processLockPath);
     }
 
-
     public static void LogCrashException(Exception ex)
     {
         try

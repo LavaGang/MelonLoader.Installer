@@ -1,4 +1,5 @@
 ﻿using Semver;
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Nodes;
 
 #if WINDOWS
@@ -49,7 +50,7 @@ internal static class MLManager
     ];
 
     private static MLVersion? localBuild;
-    public static List<MLVersion> Versions { get; } = [];
+    public static List<MLVersion> Versions = [];
 
     static MLManager()
     {
@@ -67,47 +68,51 @@ internal static class MLManager
             catch { }
         }
     }
-
-    public static async Task<bool> Init()
+    
+    public static async Task<string?> Init()
     {
         if (inited)
-            return true;
+            return string.Empty;
 
-        inited = await RefreshVersions();
-        return inited;
+        inited = true;
+        string? err = await RefreshVersions();
+        inited = string.IsNullOrEmpty(err);
+        return err;
     }
 
-    private static Task<bool> RefreshVersions()
+    private static async Task<string?> RefreshVersions()
     {
         Versions.Clear();
 
         if (localBuild != null)
             Versions.Add(localBuild);
-
-        return GetVersionsAsync(Versions);
+        
+        string? fetchReleasesError = await GetReleasedVersionsAsync(Versions);
+        if (fetchReleasesError != null)
+            return fetchReleasesError;
+        
+        string? fetchNightlyError = await GetNightlyVersionsAsync(Versions);
+        if (fetchNightlyError != null)
+            return fetchNightlyError;
+        
+        Versions = Versions
+            .OrderBy(x => x.Version,
+                Comparer<SemVersion>.Create((a, b) => b.CompareSortOrderTo(a))).ToList();
+        if (Versions.Count > 0)
+            return "No Versions Found";
+        
+        return string.Empty;
     }
 
-    private static async Task<bool> GetVersionsAsync(List<MLVersion> versions)
+    private static async Task<string?> GetNightlyVersionsAsync(List<MLVersion> versions)
     {
-        HttpResponseMessage resp;
-        try
+        var runsJson = await GitHubApi.GetWorkflowRuns();
+        if (runsJson.Node == null)
+            return runsJson.Error;
+        
+        foreach (var run in runsJson.Node.AsArray())
         {
-            resp = await InstallerUtils.Http.GetAsync(PathManager.MelonLoaderBuildWorkflowApi).ConfigureAwait(false);
-        }
-        catch
-        {
-            return false;
-        }
-
-        if (!resp.IsSuccessStatusCode)
-            return false;
-
-        var relStr = await resp.Content.ReadAsStringAsync().ConfigureAwait(false);
-        var runsJson = JsonNode.Parse(relStr)!["workflow_runs"]!.AsArray();
-
-        // All run names must follow the following format: "{SemVersion} Remaining name"
-        foreach (var run in runsJson)
-        {
+            var runId = run!["id"]!.ToString();
             var runName = run!["name"]!.ToString();
             var runVerEnd = runName.IndexOf(' ');
             if (runVerEnd == -1)
@@ -115,66 +120,101 @@ internal static class MLManager
 
             if (!SemVersion.TryParse(runName[..runVerEnd], SemVersionStyles.Any, out var runVersion))
                 continue;
-
-            var version = new MLVersion
+            
+            if (versions.FirstOrDefault(x => x.Version == runVersion) != null)
+                continue;
+            
+            var version = new MLVersion { Version = runVersion };
+            var artifacts = await GitHubApi.GetWorkflowRunArtifacts(runId);
+            if (artifacts.Node == null)
+                continue;
+            
+            foreach (var art in artifacts.Node.AsArray())
             {
-                Version = runVersion,
-                DownloadUrlWin = $"https://nightly.link/LavaGang/MelonLoader/actions/runs/{run["id"]}/MelonLoader.Windows.x64.CI.Release.zip",
-                DownloadUrlWinX86 = $"https://nightly.link/LavaGang/MelonLoader/actions/runs/{run["id"]}/MelonLoader.Windows.x86.CI.Release.zip",
-                DownloadUrlLinux = $"https://nightly.link/LavaGang/MelonLoader/actions/runs/{run["id"]}/MelonLoader.Linux.x64.CI.Release.zip",
-                DownloadUrlMacOS = $"https://nightly.link/LavaGang/MelonLoader/actions/runs/{run["id"]}/MelonLoader.macOS.x64.CI.Release.zip"
-            };
+                string fileName = art!["name"]!.ToString();
+                string fileNameLower = fileName.ToLower();
+                string fixedNightlyDownload =
+                    $"https://nightly.link/LavaGang/MelonLoader/actions/runs/{runId}/{fileName}";
 
-            if (version.DownloadUrlWin == null && version.DownloadUrlWinX86 == null && version.DownloadUrlLinux == null)
+                if (fileNameLower.StartsWith("melonloader.windows.x64"))
+                    version.DownloadUrlWin = fixedNightlyDownload;
+
+                if (fileNameLower.StartsWith("melonloader.windows.x86"))
+                    version.DownloadUrlWinX86 = fixedNightlyDownload;
+
+                if (fileNameLower.StartsWith("melonloader.linux.x64"))
+                    version.DownloadUrlLinux = fixedNightlyDownload;
+
+                if (fileNameLower.StartsWith("melonloader.macos.x64")
+                    || fileNameLower.StartsWith("melonloader.macos"))
+                    version.DownloadUrlMacOS = fixedNightlyDownload;
+            }
+            
+            if ((version.DownloadUrlWin == null) 
+                && (version.DownloadUrlWinX86 == null) 
+                && (version.DownloadUrlLinux == null)
+                && (version.DownloadUrlMacOS == null))
                 continue;
 
             versions.Add(version);
         }
 
-        try
+        return string.Empty;
+    }
+    
+    private static async Task<string?> GetReleasedVersionsAsync(List<MLVersion> versions)
+    {
+        var releasesJson = await GitHubApi.GetReleases();
+        if (releasesJson.Node == null)
+            return releasesJson.Error;
+        
+        foreach (var release in releasesJson.Node.AsArray())
         {
-            resp = await InstallerUtils.Http.GetAsync(PathManager.MelonLoaderReleasesApi).ConfigureAwait(false);
-        }
-        catch
-        {
-            return false;
-        }
-
-        if (!resp.IsSuccessStatusCode)
-            return false;
-
-        relStr = await resp.Content.ReadAsStringAsync().ConfigureAwait(false);
-        var releasesJson = JsonNode.Parse(relStr)!.AsArray();
-
-        foreach (var release in releasesJson)
-        {
-            if (!SemVersion.TryParse(release!["tag_name"]!.ToString(), SemVersionStyles.Any, out var relVersion))
+            var releaseName = release!["tag_name"]!.ToString();
+            if (!SemVersion.TryParse(releaseName, SemVersionStyles.Any, out var relVersion))
                 continue;
 
             if (relVersion.Major == 0 && relVersion.Minor <= 2)
                 continue;
 
-            var x64Asset = release["assets"]!.AsArray().FirstOrDefault(x => x?["name"]?.ToString() == "MelonLoader.x64.zip");
-            var x86Asset = release["assets"]!.AsArray().FirstOrDefault(x => x?["name"]?.ToString() == "MelonLoader.x86.zip");
-            var linuxAsset = release["assets"]!.AsArray().FirstOrDefault(x => x?["name"]?.ToString() == "MelonLoader.Linux.x64.zip");
-            var macOSAsset = release["assets"]!.AsArray().FirstOrDefault(x => x?["name"]?.ToString() == "MelonLoader.macOS.x64.zip");
-
-            var version = new MLVersion
+            var releaseAssets = release!["assets"]!.AsArray();
+            if (releaseAssets.Count <= 0)
+                continue;
+            
+            if (versions.FirstOrDefault(x => x.Version == relVersion) != null)
+                continue;
+            
+            var version = new MLVersion { Version = relVersion };
+            foreach (var asset in releaseAssets)
             {
-                Version = relVersion,
-                DownloadUrlWin = x64Asset != null ? x64Asset["browser_download_url"]!.ToString() : null,
-                DownloadUrlWinX86 = x86Asset != null ? x86Asset["browser_download_url"]!.ToString() : null,
-                DownloadUrlLinux = linuxAsset != null ? linuxAsset["browser_download_url"]!.ToString() : null,
-                DownloadUrlMacOS = macOSAsset != null ? macOSAsset["browser_download_url"]!.ToString() : null
-            };
+                string fileName = asset!["name"]!.ToString();
+                string fileNameLower = fileName.ToLower();
+                string fixedDownload = asset!["url"]!.ToString();
 
-            if (version.DownloadUrlWin == null && version.DownloadUrlWinX86 == null && version.DownloadUrlLinux == null)
+                if (fileNameLower.StartsWith("melonloader.windows.x64"))
+                    version.DownloadUrlWin = fixedDownload;
+
+                if (fileNameLower.StartsWith("melonloader.windows.x86"))
+                    version.DownloadUrlWinX86 = fixedDownload;
+
+                if (fileNameLower.StartsWith("melonloader.linux.x64"))
+                    version.DownloadUrlLinux = fixedDownload;
+
+                if (fileNameLower.StartsWith("melonloader.macos.x64")
+                    || fileNameLower.StartsWith("melonloader.macos"))
+                    version.DownloadUrlMacOS = fixedDownload;
+            }
+            
+            if ((version.DownloadUrlWin == null) 
+                && (version.DownloadUrlWinX86 == null) 
+                && (version.DownloadUrlLinux == null)
+                && (version.DownloadUrlMacOS == null))
                 continue;
 
             versions.Add(version);
         }
-
-        return true;
+        
+        return string.Empty;
     }
 
     public static string? Uninstall(string gameDir, bool removeUserFiles)

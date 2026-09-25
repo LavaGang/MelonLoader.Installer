@@ -8,10 +8,10 @@ namespace MelonLoader.Installer;
 
 public class MLVersion
 {
-    public string? DownloadUrlWin { get; init; }
-    public string? DownloadUrlWinX86 { get; init; }
-    public string? DownloadUrlLinux { get; init; }
-    public string? DownloadUrlMacOS { get; init; }
+    public string? DownloadUrlWin { get; internal set; }
+    public string? DownloadUrlWinX86 { get; internal set; }
+    public string? DownloadUrlLinux { get; internal set; }
+    public string? DownloadUrlMacOS { get; internal set; }
     public required SemVersion Version { get; init; }
     public bool IsLocalPath { get; init; }
 
