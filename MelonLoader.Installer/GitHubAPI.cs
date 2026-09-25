@@ -30,7 +30,8 @@ public static class GitHubApi
             $"?branch=alpha-development" +
             $"&event=push" +
             $"&status=success" +
-            $"&per_page=10";
+            $"&page=1" +
+            $"&per_page=5";
         
         var resp = await ContactUrl(url);
         if (resp.Node != null)

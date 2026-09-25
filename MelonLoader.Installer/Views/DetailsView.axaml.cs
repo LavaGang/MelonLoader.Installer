@@ -74,7 +74,7 @@ public partial class DetailsView : UserControl
         if (!string.IsNullOrEmpty(err))
         {
             Model.Offline = true;
-            DialogBox.ShowError("Failed to fetch MelonLoader releases.\n{err}");
+            DialogBox.ShowError($"Failed to fetch MelonLoader releases.\n{err}");
         }
     }
 

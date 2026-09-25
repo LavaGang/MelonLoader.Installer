@@ -74,7 +74,6 @@ internal static class MLManager
         if (inited)
             return string.Empty;
 
-        inited = true;
         string? err = await RefreshVersions();
         inited = string.IsNullOrEmpty(err);
         return err;
