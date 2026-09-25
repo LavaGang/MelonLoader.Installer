@@ -41,6 +41,10 @@ internal static class MLManager
         "NOTICE.txt",
         "README.txt",
         "dobby.dll",
+        "dobby.so",
+        "libdobby.so",
+        "dobby.dylib",
+        "libdobby.dylib",
         "melonloader-launch.sh"
     ];
 
