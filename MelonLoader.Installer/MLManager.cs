@@ -190,6 +190,8 @@ internal static class MLManager
 
         foreach (var proxy in proxyNames)
         {
+            filesToDelete.Add(Path.Combine(gameDir, $"{proxy}.dbg"));
+            
             var proxyPath = Path.Combine(gameDir, proxy);
             if (!File.Exists(proxyPath))
                 continue;
@@ -222,7 +224,7 @@ internal static class MLManager
             }
             catch
             {
-                return "Failed to remove {fileName} file\nEnsure that the game is fully closed before trying again.";
+                return $"Failed to remove {fileName} file\nEnsure that the game is fully closed before trying again.";
             }
         }
 
@@ -231,14 +233,14 @@ internal static class MLManager
             if (!Directory.Exists(dirPath))
                 continue;
             
-            string dirName = Path.GetDirectoryName(dirPath)!;
+            string dirName = new DirectoryInfo(dirPath).Name;
             try
             {
-                Directory.Delete(dirPath);
+                Directory.Delete(dirPath, true);
             }
             catch
             {
-                return "Failed to remove {dirName} folder\nEnsure that the game is fully closed before trying again.";
+                return $"Failed to remove {dirName} folder\nEnsure that the game is fully closed before trying again.";
             }
         }
 
@@ -386,9 +388,34 @@ internal static class MLManager
         HandleMelonFolder(version, oldVersion, Path.Combine(gameDir, "UserLibs"));
         HandleMelonFolder(version, oldVersion, Path.Combine(gameDir, "Mods"));
         HandleMelonFolder(version, oldVersion, Path.Combine(gameDir, "Plugins"));
+        
+#if LINUX || OSX
+        TrySetLaunchScriptExecutable(Path.Combine(gameDir, "melonloader-launch.sh"));
+#endif
 
         onFinished?.Invoke(null);
     }
+    
+#if LINUX || OSX
+    private static void TrySetLaunchScriptExecutable(string scriptPath)
+    {
+        if (!File.Exists(scriptPath))
+            return;
+        
+#pragma warning disable CA1416
+        try
+        {
+            File.SetUnixFileMode(
+                scriptPath,
+                File.GetUnixFileMode(scriptPath) | UnixFileMode.UserExecute
+            );
+        }
+        catch
+        {
+        }
+#pragma warning restore CA1416
+    }
+#endif
 
     private static bool CreateNewDirectory(string path)
     {
