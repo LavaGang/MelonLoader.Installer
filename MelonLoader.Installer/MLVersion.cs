@@ -8,10 +8,15 @@ namespace MelonLoader.Installer;
 
 public class MLVersion
 {
-    public string? DownloadUrlWin { get; internal set; }
     public string? DownloadUrlWinX86 { get; internal set; }
-    public string? DownloadUrlLinux { get; internal set; }
-    public string? DownloadUrlMacOS { get; internal set; }
+    public string? DownloadUrlWinX64 { get; internal set; }
+    public string? DownloadUrlWinArm64 { get; internal set; }
+    public string? DownloadUrlLinuxX86 { get; internal set; }
+    public string? DownloadUrlLinuxX64 { get; internal set; }
+    public string? DownloadUrlLinuxArm64 { get; internal set; }
+    public string? DownloadUrlMacOSX64 { get; internal set; }
+    public string? DownloadUrlMacOSArm64 { get; internal set; }
+    public string? DownloadUrlAndroidArm64 { get; internal set; }
     public required SemVersion Version { get; init; }
     public bool IsLocalPath { get; init; }
 
@@ -98,12 +103,13 @@ public class MLVersion
     {
         try
         {
-            using var fs = File.OpenRead(filePath);
+            var fs = File.OpenRead(filePath);
             var pe = new PEReader(fs, PEStreamOptions.Default, (int)fs.Length);
             Architecture architecture = pe.PEHeaders.CoffHeader.Machine switch
             {
                 Machine.I386 => Architecture.WindowsX86,
                 Machine.Amd64 => Architecture.WindowsX64,
+                Machine.Arm64 => Architecture.WindowsArm64,
                 _ => Architecture.Unknown
             };
             pe.Dispose();
@@ -118,12 +124,25 @@ public class MLVersion
     {
         try
         {
-            return ELF.ELFReader.CheckELFType(filePath) switch
+            var elf = ELF.ELFReader.Load(filePath);
+            
+            var elfMachine = elf.Machine;
+            switch (elfMachine)
             {
-                ELF.Class.Bit32 => Architecture.LinuxX86,
-                ELF.Class.Bit64 => Architecture.LinuxX64,
-                _ => Architecture.Unknown,
-            };
+                case ELF.Machine.AArch64:
+                    return Architecture.LinuxArm64;
+            }
+            
+            var elfClass = elf.Class;
+            switch (elfClass)
+            {
+                case ELF.Class.Bit32:
+                    return Architecture.LinuxX86;
+                case ELF.Class.Bit64:
+                    return Architecture.LinuxX64;
+            }
+            
+            elf.Dispose();
         }
         catch { }
         return Architecture.Unknown;
@@ -163,5 +182,104 @@ public class MLVersion
             ".dylib" => ReadFromMachO(filePath),
             _ => ReadFromPE(filePath)
         };
+    }
+    
+    public string? GetDownload(Architecture architecture)
+        => architecture switch
+        {
+            Architecture.WindowsX86 => DownloadUrlWinX86,
+            Architecture.WindowsX64 => DownloadUrlWinX64,
+            Architecture.WindowsArm64 => DownloadUrlWinArm64,
+            
+            Architecture.LinuxX86 => DownloadUrlLinuxX86,
+            Architecture.LinuxX64 => DownloadUrlLinuxX64,
+            Architecture.LinuxArm64 => DownloadUrlLinuxArm64,
+            
+            Architecture.MacOSX64 => DownloadUrlMacOSX64,
+            Architecture.MacOSArm64 => DownloadUrlMacOSArm64,
+            
+            Architecture.AndroidArm64 => DownloadUrlAndroidArm64,
+            
+            _ => null
+        };
+
+    public string? GetDownloadOrDefault(Architecture architecture)
+    {
+        var attempt = GetDownload(architecture);
+        if (!string.IsNullOrEmpty(attempt))
+            return attempt;
+
+#if WINDOWS
+        return DownloadUrlWinX64,
+#elif LINUX
+        return DownloadUrlLinuxX64;
+#elif OSX
+        return DownloadUrlMacOSX64;
+#elif ANDROID
+        return DownloadUrlAndroidArm64;
+#endif
+    }
+    
+    public bool IsDownloadEmpty()
+        => ((DownloadUrlWinX86 == null)
+            && (DownloadUrlWinX64 == null)
+            && (DownloadUrlWinArm64 == null)
+            && (DownloadUrlLinuxX86 == null)
+            && (DownloadUrlLinuxX64 == null)
+            && (DownloadUrlLinuxArm64 == null)
+            && (DownloadUrlMacOSX64 == null)
+            && (DownloadUrlMacOSArm64 == null)
+            && (DownloadUrlAndroidArm64 == null));
+
+    public void ApplyLocalPathDownload(Architecture arch, string path)
+    {
+        DownloadUrlWinX86 = arch == Architecture.WindowsX86 ? path : null;
+        DownloadUrlWinX64 = arch == Architecture.WindowsX64 ? path : null;
+        DownloadUrlWinArm64 = arch == Architecture.WindowsArm64 ? path : null;
+
+        DownloadUrlLinuxX86 = arch == Architecture.LinuxX86 ? path : null;
+        DownloadUrlLinuxX64 = arch == Architecture.LinuxX64 ? path : null;
+        DownloadUrlLinuxArm64 = arch == Architecture.LinuxArm64 ? path : null;
+
+        DownloadUrlMacOSX64 = arch == Architecture.MacOSX64 ? path : null;
+        DownloadUrlMacOSArm64 = arch == Architecture.MacOSArm64 ? path : null;
+
+        DownloadUrlAndroidArm64 = arch == Architecture.AndroidArm64 ? path : null;
+    }
+    
+    public void ApplyURLDownload(string fileName, string downloadUrl)
+    {
+        string fileNameLower = fileName.ToLower();
+        
+        // Windows
+        if (fileNameLower.StartsWith("melonloader.windows.x64")
+            || fileNameLower.StartsWith("melonloader.x64"))
+            DownloadUrlWinX64 = downloadUrl;
+        if (fileNameLower.StartsWith("melonloader.windows.x86")
+            || fileNameLower.StartsWith("melonloader.x86"))
+            DownloadUrlWinX86 = downloadUrl;
+        if (fileNameLower.StartsWith("melonloader.windows.arm64")
+            || fileNameLower.StartsWith("melonloader.arm64"))
+            DownloadUrlWinArm64 = downloadUrl;
+
+        // Linux
+        if (fileNameLower.StartsWith("melonloader.linux.x86"))
+            DownloadUrlLinuxX86 = downloadUrl;
+        if (fileNameLower.StartsWith("melonloader.linux.x64"))
+            DownloadUrlLinuxX64 = downloadUrl;
+        if (fileNameLower.StartsWith("melonloader.linux.arm64"))
+            DownloadUrlLinuxArm64 = downloadUrl;
+
+        // MacOS
+        if (fileNameLower.StartsWith("melonloader.macos.x64")
+            || fileNameLower.StartsWith("melonloader.macos"))
+            DownloadUrlMacOSX64 = downloadUrl;
+        if (fileNameLower.StartsWith("melonloader.macos.arm64")
+            || fileNameLower.StartsWith("melonloader.macos"))
+            DownloadUrlMacOSArm64 = downloadUrl;
+        
+        // Android
+        if (fileNameLower.StartsWith("melonloader.android.arm64"))
+            DownloadUrlAndroidArm64 = downloadUrl;
     }
 }

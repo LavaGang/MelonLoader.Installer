@@ -88,23 +88,7 @@ public partial class DetailsView : UserControl
         if (Model == null)
             return;
 
-        var en = MLManager.Versions.Where(x =>
-        Model.Game.Arch switch
-        {
-            Architecture.MacOSX64 => x.DownloadUrlMacOS,
-            Architecture.LinuxX64 => x.DownloadUrlLinux,
-            Architecture.WindowsX64 => x.DownloadUrlWin,
-            Architecture.WindowsX86 => x.DownloadUrlWinX86,
-
-#if WINDOWS
-            _ => x.DownloadUrlWin,
-#elif LINUX
-            _ => x.DownloadUrlLinux,
-#elif OSX
-            _ => x.DownloadUrlMacOS,
-#endif
-
-        } != null);
+        var en = MLManager.Versions.Where(x => x.GetDownloadOrDefault(Model.Game.Arch) != null);
         if (NightlyCheck.IsChecked != true)
             en = en.Where(x => !x.Version.IsPrerelease || x.IsLocalPath);
 
@@ -329,14 +313,7 @@ public partial class DetailsView : UserControl
                 if (errorMessage == null)
                 {
                     var ver = MLManager.Versions[0];
-                    var downloadUrl = Model.Game.Arch switch
-                    {
-                        Architecture.MacOSX64 => ver.DownloadUrlMacOS,
-                        Architecture.LinuxX64 => ver.DownloadUrlLinux,
-                        Architecture.WindowsX64 => ver.DownloadUrlWin,
-                        Architecture.WindowsX86 => ver.DownloadUrlWinX86,
-                        _ => null
-                    };
+                    var downloadUrl = ver.GetDownload(Model.Game.Arch);
                     if (downloadUrl == null)
                     {
                         DialogBox.ShowError($"The selected version does not support the architecture of the current game: {Model.Game.Arch}");

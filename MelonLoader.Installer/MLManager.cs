@@ -131,30 +131,12 @@ internal static class MLManager
             foreach (var art in artifacts.Node.AsArray())
             {
                 string fileName = art!["name"]!.ToString();
-                string fileNameLower = fileName.ToLower();
                 string fixedNightlyDownload =
                     $"https://nightly.link/LavaGang/MelonLoader/actions/runs/{runId}/{fileName}.zip";
-
-                if (fileNameLower.StartsWith("melonloader.windows.x64")
-                    || fileNameLower.StartsWith("melonloader.x64"))
-                    version.DownloadUrlWin = fixedNightlyDownload;
-
-                if (fileNameLower.StartsWith("melonloader.windows.x86")
-                    || fileNameLower.StartsWith("melonloader.x86"))
-                    version.DownloadUrlWinX86 = fixedNightlyDownload;
-
-                if (fileNameLower.StartsWith("melonloader.linux.x64"))
-                    version.DownloadUrlLinux = fixedNightlyDownload;
-
-                if (fileNameLower.StartsWith("melonloader.macos.x64")
-                    || fileNameLower.StartsWith("melonloader.macos"))
-                    version.DownloadUrlMacOS = fixedNightlyDownload;
+                version.ApplyURLDownload(fileName, fixedNightlyDownload);
             }
             
-            if ((version.DownloadUrlWin == null) 
-                && (version.DownloadUrlWinX86 == null) 
-                && (version.DownloadUrlLinux == null)
-                && (version.DownloadUrlMacOS == null))
+            if (version.IsDownloadEmpty())
                 continue;
 
             versions.Add(version);
@@ -195,29 +177,11 @@ internal static class MLManager
             foreach (var asset in releaseAssets)
             {
                 string fileName = asset!["name"]!.ToString();
-                string fileNameLower = fileName.ToLower();
                 string fixedDownload = asset!["browser_download_url"]!.ToString();
-
-                if (fileNameLower.StartsWith("melonloader.windows.x64")
-                    || fileNameLower.StartsWith("melonloader.x64"))
-                    version.DownloadUrlWin = fixedDownload;
-
-                if (fileNameLower.StartsWith("melonloader.windows.x86")
-                    || fileNameLower.StartsWith("melonloader.x86"))
-                    version.DownloadUrlWinX86 = fixedDownload;
-
-                if (fileNameLower.StartsWith("melonloader.linux.x64"))
-                    version.DownloadUrlLinux = fixedDownload;
-
-                if (fileNameLower.StartsWith("melonloader.macos.x64")
-                    || fileNameLower.StartsWith("melonloader.macos"))
-                    version.DownloadUrlMacOS = fixedDownload;
+                version.ApplyURLDownload(fileName, fixedDownload);
             }
             
-            if ((version.DownloadUrlWin == null) 
-                && (version.DownloadUrlWinX86 == null) 
-                && (version.DownloadUrlLinux == null)
-                && (version.DownloadUrlMacOS == null))
+            if (version.IsDownloadEmpty())
                 continue;
 
             versions.Add(version);
@@ -341,12 +305,9 @@ internal static class MLManager
         var version = new MLVersion()
         {
             Version = mlVer,
-            DownloadUrlWin = arch == Architecture.WindowsX64 ? PathManager.LocalZipCache : null,
-            DownloadUrlWinX86 = arch == Architecture.WindowsX86 ? PathManager.LocalZipCache : null,
-            DownloadUrlLinux = arch == Architecture.LinuxX64 ? PathManager.LocalZipCache : null,
-            DownloadUrlMacOS = arch == Architecture.MacOSX64 ? PathManager.LocalZipCache : null,
             IsLocalPath = true
         };
+        version.ApplyLocalPathDownload(arch, PathManager.LocalZipCache);
 
         localBuild = version;
         Versions.Insert(0, version);
@@ -358,14 +319,7 @@ internal static class MLManager
     {
         var oldVersion = MLVersion.GetMelonLoaderVersion(gameDir, out _, out _);
 
-        var downloadUrl = arch switch
-        {
-            Architecture.MacOSX64 => version.DownloadUrlMacOS,
-            Architecture.LinuxX64 => version.DownloadUrlLinux,
-            Architecture.WindowsX64 => version.DownloadUrlWin,
-            Architecture.WindowsX86 => version.DownloadUrlWinX86,
-            _ => null
-        };
+        var downloadUrl = version.GetDownload(arch);
 
         if (downloadUrl == null)
         {
