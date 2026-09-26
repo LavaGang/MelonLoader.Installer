@@ -1,5 +1,6 @@
 ﻿using Semver;
 using System.Diagnostics;
+using System.Reflection;
 using System.Reflection.PortableExecutable;
 using ELF = ELFSharp.ELF;
 using MachO = ELFSharp.MachO;
@@ -50,7 +51,7 @@ public class MLVersion
         SemVersion? version;
         try
         {
-            ReadVersionInfo(mlAssemblyPath, out Version? fileVersion);
+            ReadVersionInfoFromManaged(mlAssemblyPath, out Version? fileVersion);
             if (fileVersion == null)
                 return null;
             version = SemVersion.ParsedFrom(fileVersion.Major, fileVersion.Minor, fileVersion.Build,
@@ -93,10 +94,20 @@ public class MLVersion
         return name;
     }
 
-    private static void ReadVersionInfo(string filePath, out Version? version)
+    private static void ReadVersionInfoFromManaged(string filePath, out Version? version)
     {
-        var fileVersionRaw = FileVersionInfo.GetVersionInfo(filePath).FileVersion!;
-        version = System.Version.Parse(fileVersionRaw);
+        version = null;
+        if (!File.Exists(filePath))
+            return;
+
+        try
+        {
+            var asmName = AssemblyName.GetAssemblyName(filePath);
+            version = asmName.Version;
+        }
+        catch
+        {
+        }
     }
 
     public static Architecture ReadFromPE(string filePath)

@@ -210,9 +210,13 @@ internal static class MLManager
                 continue;
 
 #if WINDOWS
-            var versionInf = FileVersionInfo.GetVersionInfo(proxyPath);
-            if (versionInf.LegalCopyright != null && versionInf.LegalCopyright.Contains("Microsoft"))
-                continue;
+            try
+            {
+                var versionInf = FileVersionInfo.GetVersionInfo(proxyPath);
+                if (versionInf.LegalCopyright != null && versionInf.LegalCopyright.Contains("Microsoft"))
+                    continue;
+            }
+            catch {}
 #endif
             
             filesToDelete.Add(proxyPath);
