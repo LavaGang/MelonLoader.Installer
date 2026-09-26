@@ -73,7 +73,7 @@ internal static class MLManager
     {
         if (inited)
             return string.Empty;
-
+        
         string? err = await RefreshVersions();
         inited = string.IsNullOrEmpty(err);
         return err;
@@ -86,18 +86,15 @@ internal static class MLManager
         if (localBuild != null)
             Versions.Add(localBuild);
         
-        string? fetchReleasesError = await GetReleasedVersionsAsync(Versions);
-        if (fetchReleasesError != null)
-            return fetchReleasesError;
-        
         string? fetchNightlyError = await GetNightlyVersionsAsync(Versions);
-        if (fetchNightlyError != null)
+        if (!string.IsNullOrEmpty(fetchNightlyError))
             return fetchNightlyError;
         
-        Versions = Versions
-            .OrderBy(x => x.Version,
-                Comparer<SemVersion>.Create((a, b) => b.CompareSortOrderTo(a))).ToList();
-        if (Versions.Count > 0)
+        string? fetchReleasesError = await GetReleasedVersionsAsync(Versions);
+        if (!string.IsNullOrEmpty(fetchReleasesError))
+            return fetchReleasesError;
+        
+        if (Versions.Count <= 0)
             return "No Versions Found";
         
         return string.Empty;
@@ -112,15 +109,18 @@ internal static class MLManager
         foreach (var run in runsJson.Node.AsArray())
         {
             var runId = run!["id"]!.ToString();
+            
             var runName = run!["name"]!.ToString();
+            if (runName.ToLower().StartsWith("v"))
+                runName = runName[1..];
             var runVerEnd = runName.IndexOf(' ');
-            if (runVerEnd == -1)
-                continue;
+            if (runVerEnd != -1)
+                runName = runName[..runVerEnd];
 
-            if (!SemVersion.TryParse(runName[..runVerEnd], SemVersionStyles.Any, out var runVersion))
+            if (!SemVersion.TryParse(runName, SemVersionStyles.Any, out var runVersion))
                 continue;
             
-            if (versions.FirstOrDefault(x => x.Version == runVersion) != null)
+            if (versions.FirstOrDefault(x => x.Version.CompareSortOrderTo(runVersion) == 0) != null)
                 continue;
             
             var version = new MLVersion { Version = runVersion };
@@ -133,12 +133,14 @@ internal static class MLManager
                 string fileName = art!["name"]!.ToString();
                 string fileNameLower = fileName.ToLower();
                 string fixedNightlyDownload =
-                    $"https://nightly.link/LavaGang/MelonLoader/actions/runs/{runId}/{fileName}";
+                    $"https://nightly.link/LavaGang/MelonLoader/actions/runs/{runId}/{fileName}.zip";
 
-                if (fileNameLower.StartsWith("melonloader.windows.x64"))
+                if (fileNameLower.StartsWith("melonloader.windows.x64")
+                    || fileNameLower.StartsWith("melonloader.x64"))
                     version.DownloadUrlWin = fixedNightlyDownload;
 
-                if (fileNameLower.StartsWith("melonloader.windows.x86"))
+                if (fileNameLower.StartsWith("melonloader.windows.x86")
+                    || fileNameLower.StartsWith("melonloader.x86"))
                     version.DownloadUrlWinX86 = fixedNightlyDownload;
 
                 if (fileNameLower.StartsWith("melonloader.linux.x64"))
@@ -170,7 +172,16 @@ internal static class MLManager
         foreach (var release in releasesJson.Node.AsArray())
         {
             var releaseName = release!["tag_name"]!.ToString();
+            if (releaseName.ToLower().StartsWith("v"))
+                releaseName = releaseName[1..];
+            var runVerEnd = releaseName.IndexOf(' ');
+            if (runVerEnd != -1)
+                releaseName = releaseName[..runVerEnd];
+            
             if (!SemVersion.TryParse(releaseName, SemVersionStyles.Any, out var relVersion))
+                continue;
+            
+            if (versions.FirstOrDefault(x => x.Version.CompareSortOrderTo(relVersion) == 0) != null)
                 continue;
 
             if (relVersion.Major == 0 && relVersion.Minor <= 2)
@@ -180,20 +191,19 @@ internal static class MLManager
             if (releaseAssets.Count <= 0)
                 continue;
             
-            if (versions.FirstOrDefault(x => x.Version == relVersion) != null)
-                continue;
-            
             var version = new MLVersion { Version = relVersion };
             foreach (var asset in releaseAssets)
             {
                 string fileName = asset!["name"]!.ToString();
                 string fileNameLower = fileName.ToLower();
-                string fixedDownload = asset!["url"]!.ToString();
+                string fixedDownload = asset!["browser_download_url"]!.ToString();
 
-                if (fileNameLower.StartsWith("melonloader.windows.x64"))
+                if (fileNameLower.StartsWith("melonloader.windows.x64")
+                    || fileNameLower.StartsWith("melonloader.x64"))
                     version.DownloadUrlWin = fixedDownload;
 
-                if (fileNameLower.StartsWith("melonloader.windows.x86"))
+                if (fileNameLower.StartsWith("melonloader.windows.x86")
+                    || fileNameLower.StartsWith("melonloader.x86"))
                     version.DownloadUrlWinX86 = fixedDownload;
 
                 if (fileNameLower.StartsWith("melonloader.linux.x64"))
