@@ -308,7 +308,7 @@ internal static class MLManager
 
         var version = new MLVersion()
         {
-            Version = mlVer,
+            Version = mlVer.Value.Item1!,
             IsLocalPath = true
         };
         version.ApplyLocalPathDownload(arch, PathManager.LocalZipCache);
@@ -392,9 +392,9 @@ internal static class MLManager
         }
 
         CreateNewDirectory(Path.Combine(gameDir, "UserData"));
-        HandleMelonFolder(version, oldVersion, Path.Combine(gameDir, "UserLibs"));
-        HandleMelonFolder(version, oldVersion, Path.Combine(gameDir, "Mods"));
-        HandleMelonFolder(version, oldVersion, Path.Combine(gameDir, "Plugins"));
+        HandleMelonFolder(version, oldVersion?.Item1 ?? null, Path.Combine(gameDir, "UserLibs"));
+        HandleMelonFolder(version, oldVersion?.Item1 ?? null, Path.Combine(gameDir, "Mods"));
+        HandleMelonFolder(version, oldVersion?.Item1 ?? null, Path.Combine(gameDir, "Plugins"));
         
 #if LINUX || OSX
         TrySetLaunchScriptExecutable(Path.Combine(gameDir, "melonloader-launch.sh"));

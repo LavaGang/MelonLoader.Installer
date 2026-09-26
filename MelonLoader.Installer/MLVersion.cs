@@ -21,7 +21,7 @@ public class MLVersion
     public required SemVersion Version { get; init; }
     public bool IsLocalPath { get; init; }
 
-    public static SemVersion? GetMelonLoaderVersion(string gameDir, out Architecture architecture, out string? errorMessage)
+    public static (SemVersion?, string?)? GetMelonLoaderVersion(string gameDir, out Architecture architecture, out string? errorMessage)
     {
         architecture = Architecture.Unknown;
         errorMessage = null;
@@ -68,10 +68,13 @@ public class MLVersion
         var proxyName = MLManager.proxyNames.FirstOrDefault(x => File.Exists(Path.Combine(gameDir, x)));
         if (proxyName == null)
             return null;
+        
         string proxyPath = Path.Combine(gameDir, proxyName);
         try
         {
             ReadArchitecture(proxyPath, out architecture);
+            if (architecture == Architecture.Unknown)
+                return null;
         }
         catch (Exception ex)
         {
@@ -79,10 +82,15 @@ public class MLVersion
             errorMessage = ex.ToString();
             return null;
         }
-        if (architecture == Architecture.Unknown)
-            return null;
 
-        return version;
+#if !WINDOWS
+        if ((architecture == Architecture.WindowsX86)
+            || (architecture == Architecture.WindowsX64)
+            || (architecture == Architecture.WindowsArm64))
+            proxyName = Path.GetFileNameWithoutExtension(proxyName);
+#endif
+
+        return (version, proxyName);
     }
 
     public override string ToString()

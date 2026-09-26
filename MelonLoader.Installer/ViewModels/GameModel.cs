@@ -5,14 +5,23 @@ using Semver;
 
 namespace MelonLoader.Installer.ViewModels;
 
-public class GameModel(string path, string name, Architecture architecture, GameLauncher? launcher, Bitmap? icon, SemVersion? mlVersion, bool isProtected) : ViewModelBase
+public class GameModel(string path, string name, Architecture architecture, GameLauncher? launcher, Bitmap? icon, SemVersion? mlVersion, string? proxyName, bool isProtected) : ViewModelBase
 {
     public string Path => path;
     public string Name => name;
     public Architecture Arch => architecture;
-    public bool IsWindows => ((architecture == Architecture.WindowsX64) || (architecture == Architecture.WindowsX86));
-    public bool IsLinux => ((architecture == Architecture.LinuxX64) || (architecture == Architecture.LinuxX86));
-    public bool IsMacOS => ((architecture == Architecture.MacOSX64) || (architecture == Architecture.MacOSArm64));
+    
+    public bool IsWindows => ((architecture == Architecture.WindowsX86)
+                              || (architecture == Architecture.WindowsX64) 
+                              || (architecture == Architecture.WindowsArm64));
+    
+    public bool IsLinux => ((architecture == Architecture.LinuxX86)
+                            || (architecture == Architecture.LinuxX64)
+                            || (architecture == Architecture.LinuxArm64));
+    
+    public bool IsMacOS => ((architecture == Architecture.MacOSX64) 
+                            || (architecture == Architecture.MacOSArm64));
+    
     public GameLauncher? Launcher => launcher;
     public Bitmap? Icon => icon;
     public string? MLVersionText => mlVersion != null ? 'v' + mlVersion.ToString() : null;
@@ -20,6 +29,7 @@ public class GameModel(string path, string name, Architecture architecture, Game
     public bool MLInstalled => mlVersion != null;
     public bool IsProtected => isProtected;
     public string Dir { get; } = System.IO.Path.GetDirectoryName(path)!;
+    public string? ProxyName = proxyName;
 
     public SemVersion? MLVersion
     {
@@ -51,15 +61,19 @@ public class GameModel(string path, string name, Architecture architecture, Game
         }
 
         var newMlVersion = Installer.MLVersion.GetMelonLoaderVersion(gameDir, out var arch, out errorMessage);
-        if (newMlVersion != null && arch != Arch)
-            newMlVersion = null;
-
-        if (newMlVersion == MLVersion)
-            return true;
-
-        MLVersion = newMlVersion;
+        if ((newMlVersion == null)
+            || (arch != Arch))
+        {
+            MLVersion = null;
+            ProxyName = null;
+        }
+        else
+        {
+            MLVersion = newMlVersion.Value.Item1;
+            ProxyName = newMlVersion.Value.Item2;
+        }
+        
         GameManager.ResortGame(this);
-
         return true;
     }
 }

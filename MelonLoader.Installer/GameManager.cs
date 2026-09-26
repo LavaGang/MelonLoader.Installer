@@ -1,6 +1,7 @@
 ﻿using Avalonia.Media.Imaging;
 using MelonLoader.Installer.GameLaunchers;
 using MelonLoader.Installer.ViewModels;
+using Semver;
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection.PortableExecutable;
@@ -204,9 +205,15 @@ internal static class GameManager
         }
 
         // Get Installed MelonLoader Version Information
+        string? proxyName = null;
+        SemVersion? foundVersion = null;
         var mlVersion = MLVersion.GetMelonLoaderVersion(gameDir, out var mlArch, out errorMessage);
-        if (mlVersion != null && mlArch != arch)
-            mlVersion = null;
+        if ((mlVersion != null)
+            && (arch == mlArch))
+        {
+            foundVersion = mlVersion.Value.Item1;
+            proxyName = mlVersion.Value.Item2;
+        }
 
         // Get Icon
         Bitmap? icon = null;
@@ -227,7 +234,7 @@ internal static class GameManager
         var isProtected = Directory.Exists(Path.Combine(path, "EasyAntiCheat"));
 
         // Create New Result
-        var result = new GameModel(exe!, (customName ?? Path.GetFileNameWithoutExtension(exe))!, arch, launcher, icon, mlVersion, isProtected);
+        var result = new GameModel(exe!, (customName ?? Path.GetFileNameWithoutExtension(exe))!, arch, launcher, icon, foundVersion, proxyName, isProtected);
         errorMessage = null;
         AddGameSorted(result);
         return result;
@@ -243,10 +250,18 @@ internal static class GameManager
             _ => Architecture.Unknown
         };
 
-        if (result == Architecture.MacOSX64)
+        if ((result == Architecture.MacOSX64)
+            || (result == Architecture.MacOSArm64))
         {
             var unityPlayerPath = Path.Combine(exe, "Contents/Frameworks/UnityPlayer.dylib");
-            result = File.Exists(unityPlayerPath) ? MLVersion.ReadFromMachO(unityPlayerPath) : Architecture.Unknown;
+            if (File.Exists(unityPlayerPath))
+                result = MLVersion.ReadFromMachO(unityPlayerPath);
+            else
+            {
+                var unityPlayerPath2 = Path.Combine(Path.GetDirectoryName(exe)!, "Contents/Frameworks/libUnityPlayer.dylib");
+                if (File.Exists(unityPlayerPath2))
+                    result = MLVersion.ReadFromMachO(unityPlayerPath2);
+            }
         }
 
         if (result == Architecture.Unknown)
@@ -254,10 +269,18 @@ internal static class GameManager
             var unityPlayerPath = Path.Combine(Path.GetDirectoryName(exe)!, "UnityPlayer.dll");
             if (File.Exists(unityPlayerPath))
                 result = MLVersion.ReadFromPE(unityPlayerPath);
-
-            var unityPlayerLinuxPath = Path.Combine(Path.GetDirectoryName(exe)!, "UnityPlayer.so");
-            if (File.Exists(unityPlayerLinuxPath))
-                result = MLVersion.ReadFromELF(unityPlayerLinuxPath);
+            else
+            {
+                var unityPlayerLinuxPath = Path.Combine(Path.GetDirectoryName(exe)!, "UnityPlayer.so");
+                if (File.Exists(unityPlayerLinuxPath))
+                    result = MLVersion.ReadFromELF(unityPlayerLinuxPath);
+                else
+                {
+                    var unityPlayerLinuxPath2 = Path.Combine(Path.GetDirectoryName(exe)!, "libUnityPlayer.so");
+                    if (File.Exists(unityPlayerLinuxPath2))
+                        result = MLVersion.ReadFromELF(unityPlayerLinuxPath2);
+                }
+            }
         }
 
         return result;

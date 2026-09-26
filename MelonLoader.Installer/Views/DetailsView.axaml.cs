@@ -44,15 +44,26 @@ public partial class DetailsView : UserControl
             return;
 
 #if LINUX
-        if (Model.Game.Arch == Architecture.LinuxX64)
+        if ((Model.Game.Arch == Architecture.LinuxX86)
+            || (Model.Game.Arch == Architecture.LinuxX64)
+            || (Model.Game.Arch == Architecture.LinuxArm64))
         {
             LdLibPathVar.Text = $"LD_LIBRARY_PATH=\"{Model.Game.Dir}:$LD_LIBRARY_PATH\"";
             LdSteamLaunchOptions.Text = $"{LdLibPathVar.Text} {LdPreloadVar.Text} %command%";
         }
         
+        if ((Model.Game.Arch == Architecture.WindowsX86)
+            || (Model.Game.Arch == Architecture.WindowsX64)
+            || (Model.Game.Arch == Architecture.WindowsArm64))
+        {
+            WineOverride.Text = $"WINEDLLOVERRIDES=\"{Model.Game.ProxyName}=n,b\"";
+            WineOverrideSteam.Text = $"{WineOverride.Text} %command%";
+        }
+        
         ShowLinuxInstructions.IsVisible = Model.Game.MLInstalled;
 #elif OSX
-        if (Model.Game.Arch == Architecture.MacOSX64)
+        if ((Model.Game.Arch == Architecture.MacOSX64)
+            || (Model.Game.Arch == Architecture.MacOSArm64)
         {
             // melonloader-launch.sh is shipped in the macOS build output next to
             // MelonLoader.Bootstrap.dylib, so after install it lives at the root
