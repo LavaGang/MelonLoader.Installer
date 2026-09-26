@@ -202,23 +202,6 @@ public class MLVersion
             
             _ => null
         };
-
-    public string? GetDownloadOrDefault(Architecture architecture)
-    {
-        var attempt = GetDownload(architecture);
-        if (!string.IsNullOrEmpty(attempt))
-            return attempt;
-
-#if WINDOWS
-        return DownloadUrlWinX64,
-#elif LINUX
-        return DownloadUrlLinuxX64;
-#elif OSX
-        return DownloadUrlMacOSX64;
-#elif ANDROID
-        return DownloadUrlAndroidArm64;
-#endif
-    }
     
     public bool IsDownloadEmpty()
         => ((DownloadUrlWinX86 == null)

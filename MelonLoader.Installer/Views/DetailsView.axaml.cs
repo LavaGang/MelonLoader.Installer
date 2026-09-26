@@ -88,7 +88,7 @@ public partial class DetailsView : UserControl
         if (Model == null)
             return;
 
-        var en = MLManager.Versions.Where(x => x.GetDownloadOrDefault(Model.Game.Arch) != null);
+        var en = MLManager.Versions.Where(x => x.GetDownload(Model.Game.Arch) != null);
         if (NightlyCheck.IsChecked != true)
             en = en.Where(x => !x.Version.IsPrerelease || x.IsLocalPath);
 
