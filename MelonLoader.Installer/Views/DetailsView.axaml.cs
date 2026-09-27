@@ -63,7 +63,7 @@ public partial class DetailsView : UserControl
         ShowLinuxInstructions.IsVisible = Model.Game.MLInstalled;
 #elif OSX
         if ((Model.Game.Arch == Architecture.MacOSX64)
-            || (Model.Game.Arch == Architecture.MacOSArm64)
+            || (Model.Game.Arch == Architecture.MacOSArm64))
         {
             // melonloader-launch.sh is shipped in the macOS build output next to
             // MelonLoader.Bootstrap.dylib, so after install it lives at the root
