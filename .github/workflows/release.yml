@@ -21,3 +21,4 @@ jobs:
     with:
       TAG: ${{ github.ref_name }}
       RELEASE_NAME: $${{ github.ref_name }}
+    secrets: inherit
