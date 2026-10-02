@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../MelonLoader.Installer/MelonLoader.Installer.csproj" />
+    <None Include="../MelonLoader.Installer/Views/DetailsView.axaml" Link="DetailsView.axaml" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+</Project>

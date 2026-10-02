@@ -15,3 +15,22 @@ jobs:
     uses: ./.github/workflows/compile_all.yml
     with:
       VERSION: "4.4.0${{ github.event_name != 'workflow_dispatch' && format('.{0}', github.run_number) || '' }}"
+
+  regression:
+    name: Installer regression checks (${{ matrix.rid }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: macos-latest
+            rid: osx-arm64
+          - os: windows-latest
+            rid: win-x64
+    steps:
+      - uses: actions/checkout@v7
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: 9.0.x
+      - name: Check installation and launch setup
+        run: dotnet run --project MelonLoader.Installer.RegressionTests -c Release -r ${{ matrix.rid }} -p:RuntimeIdentifiers=${{ matrix.rid }}
