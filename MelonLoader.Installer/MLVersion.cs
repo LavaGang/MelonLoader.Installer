@@ -251,7 +251,7 @@ public class MLVersion
     
     public void ApplyURLDownload(string fileName, string downloadUrl)
     {
-        string fileNameLower = fileName.ToLower();
+        string fileNameLower = fileName.ToLowerInvariant();
         
         // Windows
         if (fileNameLower.StartsWith("melonloader.windows.x64")
@@ -273,12 +273,15 @@ public class MLVersion
             DownloadUrlLinuxArm64 = downloadUrl;
 
         // MacOS
-        if (fileNameLower.StartsWith("melonloader.macos.x64")
-            || fileNameLower.StartsWith("melonloader.macos"))
+        // Release archives have a .zip suffix; nightly artifacts do not.
+        var macArtifactName = fileNameLower.EndsWith(".zip") ? fileNameLower[..^4] : fileNameLower;
+        if (macArtifactName == "melonloader.macos.x64")
             DownloadUrlMacOSX64 = downloadUrl;
-        if (fileNameLower.StartsWith("melonloader.macos.arm64")
-            || fileNameLower.StartsWith("melonloader.macos"))
+        else if (macArtifactName == "melonloader.macos.arm64")
             DownloadUrlMacOSArm64 = downloadUrl;
+        else if (macArtifactName == "melonloader.macos")
+            // Historical unsuffixed macOS builds are Intel-only. Prefer an explicit x64 asset.
+            DownloadUrlMacOSX64 ??= downloadUrl;
         
         // Android
         if (fileNameLower.StartsWith("melonloader.android.arm64"))

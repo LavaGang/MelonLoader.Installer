@@ -11,7 +11,7 @@
                 FontSize="20" Background="Transparent" Content="←" FontWeight="Bold" Foreground="Gray"
                 HorizontalContentAlignment="Center" />
         
-        <Grid Grid.Row="1" RowDefinitions="auto, *, 80, 60, auto, *, 80, auto, 2*, auto, auto, 30, 70, auto, auto, *" IsVisible="{Binding !LinuxInstructions}">
+        <Grid Grid.Row="1" RowDefinitions="auto, *, 80, 60, auto, *, 80, auto, 2*, auto, auto, auto, 70, auto, auto, *" IsVisible="{Binding !LinuxInstructions}">
         <Border Grid.Row="2" ClipToBounds="True" CornerRadius="20" HorizontalAlignment="Center">
             <Image Source="{Binding Game.Icon}" />
         </Border>
@@ -29,9 +29,13 @@
         <ComboBox SelectionChanged="VersionSelectHandler" IsEnabled="{Binding EnableSettings}"
             Name="VersionCombobox" Grid.Row="10" Margin="5" HorizontalAlignment="Center"
             SelectedIndex="0" MaxDropDownHeight="150" />
-        <TextBlock Grid.Row="11" Tapped="SelectZipHandler" HorizontalAlignment="Center" IsEnabled="{Binding EnableSettings}"
+        <StackPanel Grid.Row="11">
+        <TextBlock IsVisible="{Binding !HasCompatibleVersion}" Text="{Binding NoCompatibleVersionMessage}"
+            TextWrapping="Wrap" TextAlignment="Center" Margin="10 4" Foreground="#BFFF" FontSize="13" />
+        <TextBlock Tapped="SelectZipHandler" HorizontalAlignment="Center" IsEnabled="{Binding EnableSettings}"
             Foreground="Gray" TextDecorations="Underline" FontSize="13" Cursor="Hand">Or select a
             zipped version</TextBlock>
+        </StackPanel>
         <StackPanel Grid.Row="12" IsEnabled="{Binding !Installing}">
             <CheckBox Name="NightlyCheck" IsEnabled="{Binding EnableSettings}"
                 ToolTip.Tip="Enables bleeding-edge builds. ONLY ENABLE IF YOU KNOW WHAT YOU'RE DOING!"
@@ -43,7 +47,7 @@
         </StackPanel>
         <Grid Grid.Row="13" Margin="10" Width="300" HorizontalAlignment="Center">
             <Grid IsVisible="{Binding !Installing}" ColumnDefinitions="*, auto">
-                <Button Click="InstallHandler" IsEnabled="{Binding !Offline}" Name="InstallButton" Grid.Column="0"
+                <Button Click="InstallHandler" IsEnabled="{Binding CanInstall}" Name="InstallButton" Grid.Column="0"
                     HorizontalAlignment="Stretch" Background="#383" Height="40"
                     HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
                     FontSize="18">Install</Button>
@@ -59,12 +63,20 @@
             </Grid>
         </Grid>
         
-        <TextBlock Name="ShowLinuxInstructions" IsEnabled="{Binding !Installing}" Grid.Row="14" Tapped="ShowLinuxInstructionsHandler" HorizontalAlignment="Center" Foreground="Gray" TextDecorations="Underline" FontSize="13" Cursor="Hand" IsVisible="False">
-            How do I start MelonLoader?
-        </TextBlock>
-		<TextBlock Name="ShowMacOSInstructions" IsEnabled="{Binding !Installing}" Grid.Row="14" Tapped="ShowMacOSInstructionsHandler" HorizontalAlignment="Center" Foreground="Gray" TextDecorations="Underline" FontSize="13" Cursor="Hand" IsVisible="False">
-			How do I start MelonLoader?
-		</TextBlock>
+        <StackPanel Grid.Row="14" IsEnabled="{Binding !Installing}">
+            <Border Name="LinuxLaunchHelp" IsVisible="False">
+                <TextBlock IsVisible="{Binding Game.MLInstalled}" Tapped="ShowLinuxInstructionsHandler"
+                    HorizontalAlignment="Center" Foreground="Gray" TextDecorations="Underline" FontSize="13" Cursor="Hand">
+                    How do I start MelonLoader?
+                </TextBlock>
+            </Border>
+            <Border Name="MacOSLaunchHelp" IsVisible="False">
+                <TextBlock IsVisible="{Binding Game.MLInstalled}" Tapped="ShowMacOSInstructionsHandler"
+                    HorizontalAlignment="Center" Foreground="Gray" TextDecorations="Underline" FontSize="13" Cursor="Hand">
+                    Finish setup: launch instructions
+                </TextBlock>
+            </Border>
+        </StackPanel>
     </Grid>
         <Border Grid.Row="1" Background="#121217" IsVisible="{Binding LinuxInstructions}">
             <Grid Margin="30" RowDefinitions="auto, *">

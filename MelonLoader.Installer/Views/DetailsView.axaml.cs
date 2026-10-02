@@ -60,26 +60,19 @@ public partial class DetailsView : UserControl
             WineOverrideSteam.Text = $"{WineOverride.Text} %command%";
         }
         
-        ShowLinuxInstructions.IsVisible = Model.Game.MLInstalled;
+        LinuxLaunchHelp.IsVisible = true;
 #elif OSX
         if ((Model.Game.Arch == Architecture.MacOSX64)
             || (Model.Game.Arch == Architecture.MacOSArm64))
         {
-            // melonloader-launch.sh is shipped in the macOS build output next to
-            // MelonLoader.Bootstrap.dylib, so after install it lives at the root
-            // of Game.Dir alongside the .app bundle. It handles both manual
-            // (no-args) invocation and Steam invocation (with the .app passed in).
-            var launchScript = Path.Combine(Model.Game.Dir, "melonloader-launch.sh");
-            DylibManualLaunch.Text = $"\"{launchScript}\"";
-            DylibSteamLaunchOptions.Text = $"\"{launchScript}\" %command%";
+            DylibManualLaunch.Text = LaunchInstructions.MacOSManual(Model.Game.Path);
+            DylibSteamLaunchOptions.Text = LaunchInstructions.MacOSSteam(Model.Game.Path);
         }
 
-        ShowMacOSInstructions.IsVisible = Model.Game.MLInstalled;
+        MacOSLaunchHelp.IsVisible = true;
 #endif
 
         Model.Game.PropertyChanged += PropertyChangedHandler;
-
-        UpdateVersionList();
 
         string? err = await MLManager.Init();
         if (!string.IsNullOrEmpty(err))
@@ -87,6 +80,7 @@ public partial class DetailsView : UserControl
             Model.Offline = true;
             DialogBox.ShowError($"Failed to fetch MelonLoader releases.\n{err}");
         }
+        UpdateVersionList();
     }
 
     private void NightlyToggleHandler(object sender, RoutedEventArgs args)
@@ -103,8 +97,9 @@ public partial class DetailsView : UserControl
         if (NightlyCheck.IsChecked != true)
             en = en.Where(x => !x.Version.IsPrerelease || x.IsLocalPath);
 
-        VersionCombobox.ItemsSource = en;
+        VersionCombobox.ItemsSource = en.ToArray();
         VersionCombobox.SelectedIndex = 0;
+        Model.SelectedVersion = VersionCombobox.SelectedItem as MLVersion;
     }
 
     private void BackClickHandler(object sender, RoutedEventArgs args)
@@ -132,6 +127,8 @@ public partial class DetailsView : UserControl
 
     private void VersionSelectHandler(object? sender, SelectionChangedEventArgs args)
     {
+        if (Model != null)
+            Model.SelectedVersion = VersionCombobox.SelectedItem as MLVersion;
         UpdateVersionInfo();
     }
 
@@ -166,15 +163,16 @@ public partial class DetailsView : UserControl
             return;
         }
 
+        if (!Model.CanInstall || Model.SelectedVersion is not { } selectedVersion)
+            return;
+
         if (AskForElevation())
             return;
 
         Model.Installing = true;
-        ShowLinuxInstructions.IsVisible = false;
-        ShowMacOSInstructions.IsVisible = false;
 
         _ = MLManager.InstallAsync(Model.Game.Dir, Model.Game.MLInstalled && !KeepFilesCheck.IsChecked!.Value,
-            (MLVersion)VersionCombobox.SelectedItem!, Model.Game.Arch,
+            selectedVersion, Model.Game.Arch,
             (progress, newStatus) => Dispatcher.UIThread.Post(() => OnInstallProgress(progress, newStatus)),
             (errorMessage) => Dispatcher.UIThread.Post(() => OnOperationFinished(errorMessage)));
     }
@@ -224,12 +222,6 @@ public partial class DetailsView : UserControl
 
         Model.Installing = false;
 
-#if LINUX
-        ShowLinuxInstructions.IsVisible = Model.Game.MLInstalled;
-#elif OSX
-        ShowMacOSInstructions.IsVisible = Model.Game.MLInstalled;
-#endif
-
         if (errorMessage != null)
         {
             DialogBox.ShowError(errorMessage);
@@ -242,6 +234,12 @@ public partial class DetailsView : UserControl
         {
             DialogBox.ShowError(errorMessage);
             return;
+        }
+
+        if (!Model.Game.MLInstalled)
+        {
+            Model.LinuxInstructions = false;
+            Model.MacOSInstructions = false;
         }
 
         if (addedLocalBuild)
@@ -263,7 +261,8 @@ public partial class DetailsView : UserControl
             };
         }
 
-        DialogBox.ShowNotice("SUCCESS!", $"Successfully {operationType}{((!Model.Game.MLInstalled || isInstall) ? string.Empty : " to")}\nMelonLoader v{(Model.Game.MLInstalled ? Model.Game.MLVersion : currentMLVersion)}");
+        var setupMessage = LaunchInstructions.MacOSCompletion(Model.Game.IsMacOS, Model.Game.MLInstalled);
+        DialogBox.ShowNotice("SUCCESS!", $"Successfully {operationType}{((!Model.Game.MLInstalled || isInstall) ? string.Empty : " to")}\nMelonLoader v{(Model.Game.MLInstalled ? Model.Game.MLVersion : currentMLVersion)}{setupMessage}");
     }
 
     private void OpenDirHandler(object sender, RoutedEventArgs args)
@@ -315,7 +314,6 @@ public partial class DetailsView : UserControl
         var path = files[0].Path.LocalPath;
 
         Model.Installing = true;
-        ShowLinuxInstructions.IsVisible = false;
 
         _ = Task.Run(() => MLManager.SetLocalZip(path,
             (progress, newStatus) => Dispatcher.UIThread.Post(() => OnInstallProgress(progress, newStatus)),
