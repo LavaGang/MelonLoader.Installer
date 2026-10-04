@@ -240,11 +240,21 @@ public static partial class Updater
             string fileName = x!["name"]!.ToString();
             return fileName.EndsWith(
 #if WINDOWS
+
+#if ARM64
+                ".arm64" +
+#endif
                 ".exe"
+                
 #elif LINUX
+                
                 ".Linux"
+#if ARM64
+                + ".arm64"
+#endif
+                
 #elif OSX
-                ".MacOS.zip"
+                ".MacOS"
 #endif
             );
         });
