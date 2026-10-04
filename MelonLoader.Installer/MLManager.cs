@@ -73,9 +73,9 @@ internal static class MLManager
     {
         if (inited)
             return string.Empty;
-        
-        string? err = await RefreshVersions();
-        inited = string.IsNullOrEmpty(err);
+
+        string? err;
+        inited = string.IsNullOrEmpty(err = await RefreshVersions());
         return err;
     }
 
@@ -178,7 +178,7 @@ internal static class MLManager
             {
                 string fileName = asset!["name"]!.ToString();
                 string fixedDownload = asset!["browser_download_url"]!.ToString();
-                version.ApplyURLDownload(fileName, fixedDownload);
+                version.ApplyURLDownload(Path.GetFileNameWithoutExtension(fileName), fixedDownload);
             }
             
             if (version.IsDownloadEmpty())

@@ -252,36 +252,64 @@ public class MLVersion
     public void ApplyURLDownload(string fileName, string downloadUrl)
     {
         string fileNameLower = fileName.ToLower();
-        
-        // Windows
-        if (fileNameLower.StartsWith("melonloader.windows.x64")
-            || fileNameLower.StartsWith("melonloader.x64"))
-            DownloadUrlWinX64 = downloadUrl;
-        if (fileNameLower.StartsWith("melonloader.windows.x86")
-            || fileNameLower.StartsWith("melonloader.x86"))
-            DownloadUrlWinX86 = downloadUrl;
-        if (fileNameLower.StartsWith("melonloader.windows.arm64")
-            || fileNameLower.StartsWith("melonloader.arm64"))
-            DownloadUrlWinArm64 = downloadUrl;
-
-        // Linux
-        if (fileNameLower.StartsWith("melonloader.linux.x86"))
-            DownloadUrlLinuxX86 = downloadUrl;
-        if (fileNameLower.StartsWith("melonloader.linux.x64"))
-            DownloadUrlLinuxX64 = downloadUrl;
-        if (fileNameLower.StartsWith("melonloader.linux.arm64"))
-            DownloadUrlLinuxArm64 = downloadUrl;
-
-        // MacOS
-        if (fileNameLower.StartsWith("melonloader.macos.x64")
-            || fileNameLower.StartsWith("melonloader.macos"))
-            DownloadUrlMacOSX64 = downloadUrl;
-        if (fileNameLower.StartsWith("melonloader.macos.arm64")
-            || fileNameLower.StartsWith("melonloader.macos"))
-            DownloadUrlMacOSArm64 = downloadUrl;
-        
-        // Android
-        if (fileNameLower.StartsWith("melonloader.android.arm64"))
-            DownloadUrlAndroidArm64 = downloadUrl;
+        switch (fileNameLower)
+        {
+            // Windows
+            case "melonloader.x86":
+            case "melonloader.x86.ci.release":
+                if (string.IsNullOrEmpty(DownloadUrlWinX86))
+                    DownloadUrlWinX86 = downloadUrl;
+                goto default;
+            case "melonloader.x64":
+            case "melonloader.x64.ci.release":
+                if (string.IsNullOrEmpty(DownloadUrlWinX64))
+                    DownloadUrlWinX64 = downloadUrl;
+                goto default;
+            case "melonloader.arm64":
+            case "melonloader.arm64.ci.release":
+                if (string.IsNullOrEmpty(DownloadUrlWinArm64))
+                    DownloadUrlWinArm64 = downloadUrl;
+                goto default;
+                        
+            // Linux
+            case "melonloader.linux.x86":
+            case "melonloader.linux.x86.ci.release":
+                if (string.IsNullOrEmpty(DownloadUrlLinuxX86))
+                    DownloadUrlLinuxX86 = downloadUrl;
+                goto default;
+            case "melonloader.linux.x64":
+            case "melonloader.linux.x64.ci.release":
+                if (string.IsNullOrEmpty(DownloadUrlLinuxX64))
+                    DownloadUrlLinuxX64 = downloadUrl;
+                goto default;
+            case "melonloader.linux.arm64":
+            case "melonloader.linux.arm64.ci.release":
+                if (string.IsNullOrEmpty(DownloadUrlLinuxArm64))
+                    DownloadUrlLinuxArm64 = downloadUrl;
+                goto default;
+                    
+            // MacOS
+            case "melonloader.macos.x64":
+            case "melonloader.macos.x64.ci.release":
+                if (string.IsNullOrEmpty(DownloadUrlMacOSX64))
+                    DownloadUrlMacOSX64 = downloadUrl;
+                goto default;
+            case "melonloader.macos.arm64":
+            case "melonloader.macos.arm64.ci.release":
+                if (string.IsNullOrEmpty(DownloadUrlMacOSArm64))
+                    DownloadUrlMacOSArm64 = downloadUrl;
+                goto default;
+                
+            // Android
+            case "melonloader.android.arm64":
+            case "melonloader.android.arm64.ci.release":
+                if (string.IsNullOrEmpty(DownloadUrlAndroidArm64))
+                    DownloadUrlAndroidArm64 = downloadUrl;
+                goto default;
+                
+            // No Match Found
+            default:
+                break;
+        }
     }
 }
