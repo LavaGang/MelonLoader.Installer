@@ -5,7 +5,7 @@
         <Version>$(BaseVersion).$(BuildNumber)</Version>
         <TargetFramework>net9.0</TargetFramework>
         <Nullable>enable</Nullable>
-        <AvaloniaVersion>12.1.2</AvaloniaVersion>
+        <AvaloniaVersion>12.1.4</AvaloniaVersion>
         <AvaloniaDiagnosticsVersion>11.3.22</AvaloniaDiagnosticsVersion>
 		
 		<!-- Sets the default identifiers. They can be overridden -->
