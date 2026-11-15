@@ -130,14 +130,14 @@ internal static class MLManager
             [
                 "MelonLoader.Windows.x86.CI.Release",
                 "MelonLoader.Windows.x64.CI.Release",
-                //"MelonLoader.Windows.arm64.CI.Release",
+                "MelonLoader.Windows.arm64.CI.Release",
 
-                "MelonLoader.Linux.x86.CI.Release",
+                //"MelonLoader.Linux.x86.CI.Release",
                 "MelonLoader.Linux.x64.CI.Release",
-                //"MelonLoader.Linux.arm64.CI.Release",
+                "MelonLoader.Linux.arm64.CI.Release",
 
-                "MelonLoader.macOS.x64.CI.Release",
-                "MelonLoader.macOS.arm64.CI.Release",
+                "MelonLoader.MacOS.x64.CI.Release",
+                "MelonLoader.MacOS.arm64.CI.Release",
 
                 //"MelonLoader.Android.arm64.CI.Release",
             ];
@@ -145,7 +145,7 @@ internal static class MLManager
             {
                 string fixedNightlyDownload =
                 $"https://nightly.link/LavaGang/MelonLoader/actions/runs/{runId}/{fileName}.zip";
-                version.ApplyURLDownload(fileName, fixedNightlyDownload);
+                version.ApplyUrlDownload(fileName, fixedNightlyDownload);
             }
 
             if (version.IsDownloadEmpty())
@@ -190,7 +190,7 @@ internal static class MLManager
             {
                 string fileName = asset!["name"]!.ToString();
                 string fixedDownload = asset!["browser_download_url"]!.ToString();
-                version.ApplyURLDownload(Path.GetFileNameWithoutExtension(fileName), fixedDownload);
+                version.ApplyUrlDownload(Path.GetFileNameWithoutExtension(fileName), fixedDownload);
             }
             
             if (version.IsDownloadEmpty())

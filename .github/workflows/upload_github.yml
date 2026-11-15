@@ -25,7 +25,7 @@ jobs:
         uses: actions/download-artifact@v8
         with:
           name: MelonLoader.Installer.arm64
-          path: ./compiled_release/win-x64
+          path: ./compiled_release/win-arm64
 
       - name: Download Linux x64 Artifact
         uses: actions/download-artifact@v8
