@@ -9,6 +9,7 @@ namespace MelonLoader.Installer;
 
 public static partial class Updater
 {
+    private static GitHubApi _api = new("LavaGang", "MelonLoader.Installer");
     public static volatile UpdateState State;
     public static event InstallProgressEventHandler? Progress;
 
@@ -205,22 +206,13 @@ public static partial class Updater
 
     private static async Task<string?> CheckForUpdateAsync()
     {
-        HttpResponseMessage response;
-        try
-        {
-            response = await InstallerUtils.Http.GetAsync(PathManager.InstallerLatestReleaseApi);
-        }
-        catch
-        {
-            return null;
-        }
-
-        if (!response.IsSuccessStatusCode)
+        var response = await _api.GetLatestRelease();
+        if (!string.IsNullOrEmpty(response.Error))
             return null;
 
-        var respStr = await response.Content.ReadAsStringAsync();
-        var json = JsonNode.Parse(respStr)!;
-
+        JsonNode? json = response.Node;
+        if (json == null)
+            return null;
         if (json["tag_name"] == null)
             return null;
 

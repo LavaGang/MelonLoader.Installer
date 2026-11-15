@@ -9,29 +9,43 @@ internal class GitHubResponse
     internal string? Error;
 }
 
-public static class GitHubApi
+public class GitHubApi
 {
-    private const string RepoOwner = "LavaGang";
-    private const string RepoName = "MelonLoader";
-    private static readonly string ApiUrl = $"https://api.github.com/repos/{RepoOwner}/{RepoName}";
-    
-    internal static async Task<GitHubResponse> GetReleases()
-    {
-        var url =
-            $"{ApiUrl}/releases";
+    private string RepoOwner;
+    private string RepoName;
+    private string ApiUrl;
 
+    public GitHubApi(string repoOwner, string repoName)
+    {
+        RepoOwner = repoOwner;
+        RepoName = repoName;
+        ApiUrl = $"https://api.github.com/repos/{RepoOwner}/{RepoName}";
+    }
+    
+    internal async Task<GitHubResponse> GetReleases()
+    {
+        var url = $"{ApiUrl}/releases";
         return await ContactUrl(url);
     }
     
-    internal static async Task<GitHubResponse> GetWorkflowRuns()
+    internal async Task<GitHubResponse> GetLatestRelease()
     {
-        var url =
-            $"{ApiUrl}/actions/workflows/5411546/runs" +
-            $"?branch=alpha-development" +
-            $"&event=push" +
-            $"&status=success" +
-            $"&page=1" +
-            $"&per_page=5";
+        var url = $"{ApiUrl}/releases/latest";
+        return await ContactUrl(url);
+    }
+    
+    internal async Task<GitHubResponse> GetWorkflowRuns(string? runId,
+        string? branch = null)
+    {
+        var url = $"{ApiUrl}/actions/workflows/{runId}/runs?";
+        
+        if (!string.IsNullOrEmpty(branch))
+            url += $"branch={branch}&";
+        
+        url += $"event=push" +
+               $"&status=success" +
+               $"&page=1" +
+               $"&per_page=5";
         
         var resp = await ContactUrl(url);
         if (resp.Node != null)
@@ -39,18 +53,16 @@ public static class GitHubApi
         return resp;
     }
     
-    internal static async Task<GitHubResponse> GetWorkflowRunArtifacts(string runId)
+    internal async Task<GitHubResponse> GetWorkflowRunArtifacts(string runId)
     {
-        var url =
-            $"{ApiUrl}/actions/runs/{runId}/artifacts";
-        
+        var url = $"{ApiUrl}/actions/runs/{runId}/artifacts";
         var resp = await ContactUrl(url);
         if (resp.Node != null)
             resp.Node = resp.Node["artifacts"];
         return resp;
     }
     
-    private static async Task<GitHubResponse> ContactUrl(string url)
+    private async Task<GitHubResponse> ContactUrl(string url)
     {
         HttpResponseMessage resp;
         try
@@ -63,7 +75,6 @@ public static class GitHubApi
         }
         if (!resp.IsSuccessStatusCode)
             return new() { Error = $"Status Code: {(int)resp.StatusCode}\n{Enum.GetName(resp.StatusCode)}\n{resp.ReasonPhrase}" };
-
         var relStr = await resp.Content.ReadAsStringAsync();
         return new() { Node = JsonNode.Parse(relStr) };
     }

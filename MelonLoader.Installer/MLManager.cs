@@ -10,6 +10,7 @@ namespace MelonLoader.Installer;
 
 internal static class MLManager
 {
+    private static GitHubApi _api = new("LavaGang", "MelonLoader");
     private static bool inited;
     
     internal static readonly string[] proxyNames =
@@ -102,14 +103,14 @@ internal static class MLManager
 
     private static async Task<string?> GetNightlyVersionsAsync(List<MLVersion> versions)
     {
-        var runsJson = await GitHubApi.GetWorkflowRuns();
+        var runsJson = await _api.GetWorkflowRuns("5411546", "alpha-development");
         if (runsJson.Node == null)
             return runsJson.Error;
-        
+
         foreach (var run in runsJson.Node.AsArray())
         {
             var runId = run!["id"]!.ToString();
-            
+
             var runName = run!["name"]!.ToString();
             if (runName.ToLower().StartsWith("v"))
                 runName = runName[1..];
@@ -119,23 +120,34 @@ internal static class MLManager
 
             if (!SemVersion.TryParse(runName, SemVersionStyles.Any, out var runVersion))
                 continue;
-            
+
             if (versions.FirstOrDefault(x => x.Version.CompareSortOrderTo(runVersion) == 0) != null)
                 continue;
-            
+
             var version = new MLVersion { Version = runVersion };
-            var artifacts = await GitHubApi.GetWorkflowRunArtifacts(runId);
-            if (artifacts.Node == null)
-                continue;
-            
-            foreach (var art in artifacts.Node.AsArray())
+
+            string[] fileNames =
+            [
+                "MelonLoader.Windows.x86.CI.Release",
+                "MelonLoader.Windows.x64.CI.Release",
+                //"MelonLoader.Windows.arm64.CI.Release",
+
+                "MelonLoader.Linux.x86.CI.Release",
+                "MelonLoader.Linux.x64.CI.Release",
+                //"MelonLoader.Linux.arm64.CI.Release",
+
+                "MelonLoader.macOS.x64.CI.Release",
+                "MelonLoader.macOS.arm64.CI.Release",
+
+                //"MelonLoader.Android.arm64.CI.Release",
+            ];
+            foreach (var fileName in fileNames)
             {
-                string fileName = art!["name"]!.ToString();
                 string fixedNightlyDownload =
-                    $"https://nightly.link/LavaGang/MelonLoader/actions/runs/{runId}/{fileName}.zip";
+                $"https://nightly.link/LavaGang/MelonLoader/actions/runs/{runId}/{fileName}.zip";
                 version.ApplyURLDownload(fileName, fixedNightlyDownload);
             }
-            
+
             if (version.IsDownloadEmpty())
                 continue;
 
@@ -147,7 +159,7 @@ internal static class MLManager
     
     private static async Task<string?> GetReleasedVersionsAsync(List<MLVersion> versions)
     {
-        var releasesJson = await GitHubApi.GetReleases();
+        var releasesJson = await _api.GetReleases();
         if (releasesJson.Node == null)
             return releasesJson.Error;
         
