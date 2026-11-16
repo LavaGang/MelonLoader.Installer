@@ -79,14 +79,14 @@ public partial class DetailsView : UserControl
 
         Model.Game.PropertyChanged += PropertyChangedHandler;
 
-        UpdateVersionList();
-
         string? err = await MLManager.Init();
         if (!string.IsNullOrEmpty(err))
         {
             Model.Offline = true;
             DialogBox.ShowError($"Failed to fetch MelonLoader releases.\n{err}");
         }
+
+        UpdateVersionList();
     }
 
     private void NightlyToggleHandler(object sender, RoutedEventArgs args)
