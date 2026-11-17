@@ -5,8 +5,8 @@
         <Version>$(BaseVersion).$(BuildNumber)</Version>
         <TargetFramework>net9.0</TargetFramework>
         <Nullable>enable</Nullable>
-        <AvaloniaVersion>12.1.4</AvaloniaVersion>
-        <AvaloniaDiagnosticsVersion>11.3.23</AvaloniaDiagnosticsVersion>
+        <AvaloniaVersion>12.1.6</AvaloniaVersion>
+        <AvaloniaDiagnosticsVersion>11.3.22</AvaloniaDiagnosticsVersion>
 		
 		<!-- Sets the default identifiers. They can be overridden -->
         <RuntimeIdentifiers>win-x64;win-arm64;linux-x64;linux-arm64;osx-x64;osx-arm64</RuntimeIdentifiers>
