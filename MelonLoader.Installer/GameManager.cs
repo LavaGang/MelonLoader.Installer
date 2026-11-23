@@ -89,7 +89,7 @@ internal static class GameManager
 
     private static void GetDataDirectories(
         string path,
-        bool searchAllDirectories,
+        bool searchMoreDirectories,
         out string? exeExt,
         out int skipCount, 
         out List<string> dataDirs)
@@ -110,7 +110,17 @@ internal static class GameManager
             IEnumerable<string> foundDirectories = [];
             try
             {
-                foundDirectories = Directory.EnumerateDirectories(path, searchPattern, searchAllDirectories ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly);
+                if (searchMoreDirectories)
+                {
+                    foreach (var directory in Directory.EnumerateDirectories(path))
+                    {
+                        foundDirectories = foundDirectories.Concat(Directory.EnumerateDirectories(directory, searchPattern, SearchOption.TopDirectoryOnly));
+                    }
+                }
+                else
+                {
+                    foundDirectories = Directory.EnumerateDirectories(path, searchPattern, SearchOption.TopDirectoryOnly);
+                }
                 foundDirectoriesLength = foundDirectories.Count();
             }
             catch
